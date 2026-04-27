@@ -1,0 +1,1040 @@
+/* ================================================================
+ * voipoke.reverb-lab.com — VoiPoke 事前登録 LP（v0.2 design-led）
+ *
+ * デザイン方向：ダークグリーンテック近未来 × Editorial × Industrial
+ * 設計：frontend-design スキル準拠（非対称・bento・モーション最小限・
+ *       ノイズ＋メッシュで質感）
+ * 言葉：ひらがな7割、AI-slop 表現禁止
+ * ================================================================ */
+
+/* ----------------------------------------------------------------
+ * 0. デザイントークン
+ * ---------------------------------------------------------------- */
+:root {
+  /* 色：1ドミナント（dark green）+ 1アクセント（mint glow） */
+  --c-bg: #070b08;
+  --c-bg-2: #0a1410;
+  --c-bg-3: #0e1a14;
+
+  --c-surface-low: rgba(63, 224, 160, 0.04);
+  --c-surface: rgba(63, 224, 160, 0.07);
+  --c-surface-high: rgba(63, 224, 160, 0.12);
+
+  --c-border-low: rgba(132, 239, 182, 0.08);
+  --c-border: rgba(132, 239, 182, 0.16);
+  --c-border-high: rgba(132, 239, 182, 0.32);
+
+  --c-green-deep: #0d3520;
+  --c-green: #1a4d2e;
+  --c-mint: #3fe0a0;
+  --c-mint-soft: #84efb6;
+  --c-mint-glow: rgba(63, 224, 160, 0.45);
+
+  --c-gold: #f5d27a;
+  --c-danger: #ff6b6b;
+
+  --c-ink: #f0faf3;
+  --c-ink-2: rgba(240, 250, 243, 0.7);
+  --c-ink-3: rgba(240, 250, 243, 0.45);
+  --c-ink-4: rgba(240, 250, 243, 0.25);
+
+  /* タイポ：日本語の Display は Noto 900、英語は Inter 800 */
+  --font-en: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-jp: 'Noto Sans JP', 'Hiragino Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --font-stack: var(--font-en), var(--font-jp);
+
+  --t-display: clamp(2.75rem, 1.6rem + 4.8vw, 5.75rem);
+  --t-section: clamp(2rem, 1.2rem + 3vw, 3.25rem);
+  --t-h3: clamp(1.25rem, 1rem + 0.8vw, 1.625rem);
+  --t-base: clamp(1rem, 0.92rem + 0.4vw, 1.0625rem);
+  --t-small: 0.875rem;
+  --t-tiny: 0.75rem;
+
+  /* スペース */
+  --s-section: clamp(3.5rem, 2.8rem + 3.6vw, 6rem);
+  --s-card: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  --s-page-x: clamp(1.25rem, 4vw, 3rem);
+
+  /* 角丸 */
+  --r-card: 22px;
+  --r-pill: 999px;
+  --r-input: 12px;
+
+  /* モーション */
+  --d-fast: 160ms;
+  --d-normal: 360ms;
+  --d-slow: 720ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* ----------------------------------------------------------------
+ * 1. リセット
+ * ---------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-stack);
+  font-size: var(--t-base);
+  line-height: 1.75;
+  color: var(--c-ink);
+  background: var(--c-bg);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'palt' 1, 'pkna' 1;
+  letter-spacing: 0.02em;
+}
+
+a {
+  color: var(--c-mint-soft);
+  text-decoration: none;
+  transition: color var(--d-fast) var(--ease);
+}
+
+a:hover, a:focus-visible {
+  color: var(--c-mint);
+}
+
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--c-mint);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+button { font: inherit; cursor: pointer; }
+img { max-width: 100%; height: auto; display: block; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ----------------------------------------------------------------
+ * 2. 背景レイヤー（4枚重ね：mesh → grid → noise → vignette）
+ * ---------------------------------------------------------------- */
+.bg-mesh,
+.bg-grid,
+.bg-noise,
+.bg-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bg-mesh {
+  z-index: -4;
+  background:
+    radial-gradient(ellipse 70% 55% at 18% 10%, rgba(26, 77, 46, 0.55), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 35%, rgba(63, 224, 160, 0.10), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(13, 53, 32, 0.7), transparent 70%),
+    var(--c-bg);
+}
+
+.bg-grid {
+  z-index: -3;
+  background-image:
+    linear-gradient(rgba(132, 239, 182, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(132, 239, 182, 0.05) 1px, transparent 1px);
+  background-size: 88px 88px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 30%, transparent 80%);
+}
+
+.bg-noise {
+  z-index: -2;
+  background-image: url('/noise.svg');
+  background-size: 220px 220px;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+
+.bg-vignette {
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 110%, rgba(0, 0, 0, 0.55), transparent 60%),
+    radial-gradient(ellipse 100% 30% at 50% -10%, rgba(0, 0, 0, 0.4), transparent 60%);
+}
+
+/* ----------------------------------------------------------------
+ * 3. ヘッダー
+ * ---------------------------------------------------------------- */
+.header {
+  position: sticky; top: 0; z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem var(--s-page-x);
+  background: rgba(7, 11, 8, 0.65);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid var(--c-border-low);
+}
+
+.logo {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  color: var(--c-ink); font-weight: 800;
+  font-size: 1rem; letter-spacing: 0.02em;
+}
+.logo-mark { color: var(--c-mint); display: inline-flex; filter: drop-shadow(0 0 8px var(--c-mint-glow)); }
+.logo-text { font-family: var(--font-en); font-weight: 800; }
+
+.nav {
+  display: flex; justify-content: center; gap: clamp(1rem, 2.5vw, 2rem);
+}
+.nav a { color: var(--c-ink-2); font-size: 0.9375rem; font-weight: 500; }
+.nav a:hover { color: var(--c-ink); }
+
+.status-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.4rem 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--c-mint);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+.status-dot {
+  width: 7px; height: 7px;
+  background: var(--c-mint);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--c-mint-glow);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+@media (max-width: 768px) {
+  .header { grid-template-columns: auto 1fr; gap: 0.75rem; padding: 0.875rem 1rem; }
+  .nav { display: none; }
+  .status-pill {
+    font-size: 0.625rem;
+    padding: 0.3rem 0.625rem;
+    letter-spacing: 0.06em;
+  }
+  .status-dot { width: 6px; height: 6px; }
+}
+
+/* ----------------------------------------------------------------
+ * 4. main コンテナ
+ * ---------------------------------------------------------------- */
+main {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 var(--s-page-x);
+}
+
+.section-tag {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--c-mint);
+}
+
+.accent {
+  background: linear-gradient(120deg, var(--c-mint) 20%, var(--c-mint-soft));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ----------------------------------------------------------------
+ * 5. HERO ／ 非対称：左テキスト・右オーブ
+ * ---------------------------------------------------------------- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: center;
+  padding: clamp(3rem, 8vw, 6rem) 0 var(--s-section);
+  min-height: clamp(640px, 90vh, 900px);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding-top: 2rem;
+  }
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  margin: 0 0 1.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--c-mint);
+}
+.eyebrow-line {
+  display: inline-block;
+  width: 32px; height: 1px;
+  background: var(--c-mint);
+  box-shadow: 0 0 6px var(--c-mint-glow);
+}
+
+.hero-headline {
+  margin: 0 0 1.75rem;
+  font-size: var(--t-display);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+.hero-line {
+  display: block;
+  overflow: hidden; /* word の rise を切り取って演出 */
+  padding-bottom: 0.05em;
+}
+
+.hero-headline .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(110%);
+  animation: word-rise var(--d-slow) var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--word-delay, 0ms) + 100ms);
+  white-space: nowrap;
+}
+.hero-headline .word[data-delay="0"]   { --word-delay: 0ms; }
+.hero-headline .word[data-delay="180"] { --word-delay: 180ms; }
+
+@keyframes word-rise {
+  0%   { opacity: 0; transform: translateY(110%); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.headline-accent {
+  background: linear-gradient(110deg,
+    var(--c-mint) 0%,
+    var(--c-mint-soft) 35%,
+    #fff 50%,
+    var(--c-mint-soft) 65%,
+    var(--c-mint) 100%);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 4.5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hero-sub {
+  margin: 0 0 2.5rem;
+  max-width: 30em;
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.1875rem);
+  color: var(--c-ink-2);
+  line-height: 1.85;
+  opacity: 0;
+  animation: fade-in var(--d-slow) var(--ease-out-expo) forwards;
+  animation-delay: 0.45s;
+}
+@keyframes fade-in { to { opacity: 1; } }
+
+/* カウントダウン：横長コンソール風 */
+.countdown {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0 0 2rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(180deg, rgba(13, 53, 32, 0.4), rgba(7, 11, 8, 0.6));
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  animation: fade-in var(--d-slow) var(--ease-out-expo) forwards;
+  animation-delay: 0.6s;
+}
+.countdown-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--c-ink-3);
+}
+.countdown-value {
+  display: inline-flex; align-items: baseline; gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.countdown-cell { display: inline-flex; align-items: baseline; gap: 0.15rem; }
+.countdown-num {
+  font-size: clamp(1.625rem, 1.2rem + 1.5vw, 2.25rem);
+  font-weight: 700;
+  color: var(--c-mint);
+  text-shadow: 0 0 18px var(--c-mint-glow);
+  min-width: 1.6em; text-align: right;
+}
+.countdown-unit {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--c-ink-3);
+  text-transform: uppercase;
+}
+.countdown-divider {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-ink-4);
+  margin: 0 0.2rem;
+  position: relative; top: -2px;
+}
+
+/* 事前登録フォーム */
+.signup {
+  display: flex; gap: 0.4rem;
+  max-width: 30rem;
+  margin: 0 0 1rem;
+  padding: 0.4rem;
+  background: linear-gradient(180deg, rgba(63, 224, 160, 0.08), rgba(13, 53, 32, 0.3));
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-input);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color var(--d-normal) var(--ease),
+              box-shadow var(--d-normal) var(--ease);
+  opacity: 0;
+  animation: fade-in var(--d-slow) var(--ease-out-expo) forwards;
+  animation-delay: 0.75s;
+}
+.signup:focus-within {
+  border-color: var(--c-mint);
+  box-shadow: 0 0 0 4px rgba(63, 224, 160, 0.14),
+              0 12px 40px -12px var(--c-mint-glow);
+}
+.signup-input {
+  flex: 1; min-width: 0;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  color: var(--c-ink); background: transparent;
+  border: none; outline: none;
+}
+.signup-input::placeholder { color: var(--c-ink-4); }
+
+.signup-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.875rem 1.4rem;
+  font-size: 0.9375rem; font-weight: 700;
+  color: #062014;
+  background: linear-gradient(135deg, var(--c-mint) 20%, var(--c-mint-soft));
+  border: none; border-radius: 10px;
+  white-space: nowrap;
+  transition: transform var(--d-fast) var(--ease),
+              box-shadow var(--d-normal) var(--ease);
+}
+.signup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px -10px var(--c-mint-glow);
+}
+.signup-btn:hover svg { transform: translateX(3px); }
+.signup-btn svg { transition: transform var(--d-normal) var(--ease); }
+.signup-btn:active { transform: translateY(0); }
+
+@media (max-width: 480px) {
+  .signup { flex-direction: column; padding: 0.6rem; }
+  .signup-btn { padding: 1rem; justify-content: center; }
+}
+
+.signup-bonus {
+  margin: 0 0 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--c-ink-2);
+  opacity: 0;
+  animation: fade-in var(--d-slow) var(--ease-out-expo) forwards;
+  animation-delay: 0.9s;
+}
+.signup-bonus strong {
+  color: var(--c-gold);
+  font-weight: 700;
+  text-shadow: 0 0 14px rgba(245, 210, 122, 0.4);
+}
+
+.signup-result {
+  min-height: 1.5em;
+  font-size: 0.875rem;
+  color: var(--c-ink-2);
+}
+.signup-result.is-success { color: var(--c-mint); font-weight: 600; }
+.signup-result.is-error { color: var(--c-danger); }
+
+/* ----------------------------------------------------------------
+ * 6. HERO ／ オーブ（右側ビジュアル）
+ * ---------------------------------------------------------------- */
+.hero-orb-wrap {
+  position: relative;
+  display: grid; place-items: center;
+  min-height: 540px;
+  padding-bottom: 4rem; /* キャプション用余白 */
+  opacity: 0;
+  animation: fade-in 1.2s var(--ease-out-expo) forwards;
+  animation-delay: 0.4s;
+}
+
+.orb-stage {
+  position: relative;
+  width: clamp(280px, 38vw, 440px);
+  aspect-ratio: 1;
+  display: grid; place-items: center;
+}
+
+.orb-rings {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  pointer-events: none;
+}
+.orb-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--c-border-high);
+}
+.orb-ring-1 { width: 100%; height: 100%; animation: ring-rotate 30s linear infinite; }
+.orb-ring-2 { width: 75%; height: 75%; border-color: var(--c-border); animation: ring-rotate 22s linear infinite reverse; }
+.orb-ring-3 { width: 50%; height: 50%; border-color: var(--c-border-low); animation: ring-rotate 16s linear infinite; }
+
+@keyframes ring-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.orb {
+  position: relative;
+  width: 38%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: grab;
+  transition: transform var(--d-normal) var(--ease);
+  will-change: transform;
+}
+.orb:active { cursor: grabbing; }
+
+.orb-core {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%,
+    #ffffff 0%,
+    var(--c-mint-soft) 22%,
+    var(--c-mint) 55%,
+    var(--c-green) 90%);
+  box-shadow:
+    inset -4px -8px 24px rgba(7, 11, 8, 0.6),
+    inset 4px 4px 18px rgba(255, 255, 255, 0.18);
+}
+
+.orb-glow {
+  position: absolute; inset: -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--c-mint-glow), transparent 60%);
+  filter: blur(24px);
+  opacity: 0.7;
+  pointer-events: none;
+  animation: orb-breath 4.5s ease-in-out infinite;
+}
+@keyframes orb-breath {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.08); }
+}
+
+.orb-caption {
+  position: absolute;
+  bottom: -3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+.orb-caption span:first-child {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: var(--c-mint);
+}
+.orb-caption-jp {
+  font-size: 0.8125rem;
+  color: var(--c-ink-3);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .hero-orb-wrap { min-height: 320px; margin-top: 1rem; }
+  .orb-stage { width: clamp(220px, 60vw, 320px); }
+}
+
+/* ----------------------------------------------------------------
+ * 7. EXPERIENCE
+ * ---------------------------------------------------------------- */
+.exp {
+  padding: var(--s-section) 0;
+  max-width: 920px;
+}
+
+.exp-heading {
+  margin: 0 0 1.5rem;
+  font-size: var(--t-section);
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+.exp-heading-accent {
+  color: var(--c-mint);
+}
+
+.exp-lead {
+  margin: 0 0 2rem;
+  max-width: 38em;
+  color: var(--c-ink-2);
+  line-height: 1.95;
+}
+
+.exp-meta {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  margin: 0; padding: 0; list-style: none;
+}
+.exp-meta li {
+  padding: 0.4rem 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--c-ink-2);
+  background: var(--c-surface-low);
+  border: 1px solid var(--c-border-low);
+  border-radius: var(--r-pill);
+}
+.exp-meta strong { color: var(--c-mint); font-weight: 700; }
+
+/* ----------------------------------------------------------------
+ * 8. BENTO ／ 非対称グリッド
+ * ---------------------------------------------------------------- */
+.bento {
+  padding: var(--s-section) 0;
+}
+
+.bento-heading {
+  margin: 0 0 3rem;
+  font-size: var(--t-section);
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+}
+
+.bento-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: var(--s-card);
+  background: linear-gradient(180deg, var(--c-surface), rgba(13, 53, 32, 0.18));
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform var(--d-normal) var(--ease),
+              border-color var(--d-normal) var(--ease),
+              background var(--d-normal) var(--ease);
+}
+.bento-card::before {
+  /* 上部にグロウのハイライト */
+  content: '';
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-mint), transparent);
+  opacity: 0; transition: opacity var(--d-normal) var(--ease);
+}
+.bento-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--c-border-high);
+  background: linear-gradient(180deg, var(--c-surface-high), rgba(13, 53, 32, 0.28));
+}
+.bento-card:hover::before { opacity: 1; }
+
+.bento-main {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  min-height: 320px;
+  background: linear-gradient(160deg, rgba(26, 77, 46, 0.4), rgba(13, 53, 32, 0.2));
+}
+.bento-sub-1, .bento-sub-2 {
+  /* main と同じ高さに揃える：grid-template-rows: 1fr 1fr で自動配分 */
+  min-height: 0;
+}
+.bento-main .bento-card-icon { font-size: 3rem; }
+.bento-main .bento-card-title { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); }
+
+.bento-sub-1 { grid-column: 2 / 3; grid-row: 1 / 2; }
+.bento-sub-2 { grid-column: 2 / 3; grid-row: 2 / 3; }
+
+@media (max-width: 720px) {
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-main, .bento-sub-1, .bento-sub-2 {
+    grid-column: auto; grid-row: auto;
+  }
+  .bento-main { min-height: 280px; }
+}
+
+.bento-card-icon {
+  font-size: 2.25rem; line-height: 1;
+  margin-bottom: 1.25rem;
+  filter: drop-shadow(0 0 12px rgba(63, 224, 160, 0.2));
+}
+
+.bento-card-title {
+  margin: 0 0 0.875rem;
+  font-size: var(--t-h3);
+  font-weight: 800;
+  color: var(--c-ink);
+  letter-spacing: -0.01em;
+}
+
+.bento-card-text {
+  margin: 0;
+  color: var(--c-ink-2);
+  line-height: 1.85;
+  font-size: 0.9375rem;
+}
+.bento-card-text strong { color: var(--c-mint); font-weight: 700; }
+
+.bento-card-tag {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--c-mint);
+}
+
+/* ----------------------------------------------------------------
+ * 9. DEV ／ 開発者紹介
+ * ---------------------------------------------------------------- */
+.dev {
+  padding: var(--s-section) 0;
+}
+
+.dev-card {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  background: linear-gradient(180deg, var(--c-surface-high), rgba(13, 53, 32, 0.2));
+  border: 1px solid var(--c-border);
+  border-radius: 28px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.dev-meta {
+  display: flex; align-items: center; gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.dev-avatar {
+  width: 64px; height: 64px;
+  display: grid; place-items: center;
+  font-family: var(--font-en);
+  font-size: 1.75rem; font-weight: 900;
+  color: var(--c-bg);
+  background: linear-gradient(135deg, var(--c-mint), var(--c-mint-soft));
+  border-radius: 50%;
+  box-shadow: 0 0 36px var(--c-mint-glow);
+}
+
+.dev-name {
+  margin: 0 0 0.125rem;
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.dev-role {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--c-mint);
+}
+
+.dev-quote {
+  position: relative;
+  margin: 0 0 2rem;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  border-left: 3px solid var(--c-mint);
+}
+.dev-quote p {
+  margin: 0;
+  font-size: clamp(1.125rem, 0.95rem + 0.7vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.7;
+  color: var(--c-ink);
+  letter-spacing: -0.005em;
+}
+.quote-mark {
+  /* 引用符は控えめに：日本語に合わせて装飾度を下げる */
+  display: none;
+}
+
+.dev-text {
+  margin: 0 0 1.75rem;
+  color: var(--c-ink-2);
+  line-height: 1.9;
+}
+
+.dev-link {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.25rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+  color: var(--c-ink);
+  font-weight: 600;
+  transition: background var(--d-normal) var(--ease),
+              border-color var(--d-normal) var(--ease),
+              color var(--d-normal) var(--ease);
+}
+@media (max-width: 480px) {
+  .dev-link { border-radius: 14px; }
+  .dev-link-meta { padding-left: 0; margin-left: 0; border-left: none; }
+}
+.dev-link:hover {
+  background: var(--c-surface-high);
+  border-color: var(--c-border-high);
+  color: var(--c-ink);
+}
+.dev-link:hover svg { transform: translateX(3px); }
+.dev-link svg { transition: transform var(--d-normal) var(--ease); }
+.dev-link-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--c-ink-3);
+  padding-left: 0.6rem;
+  margin-left: 0.2rem;
+  border-left: 1px solid var(--c-border);
+}
+
+/* ----------------------------------------------------------------
+ * 10. SNS
+ * ---------------------------------------------------------------- */
+.sns {
+  padding: var(--s-section) 0;
+}
+
+.sns-heading {
+  margin: 0 0 0.875rem;
+  font-size: var(--t-section);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+.sns-sub {
+  margin: 0 0 3rem;
+  color: var(--c-ink-2);
+  line-height: 1.85;
+}
+
+.sns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.sns-link {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  padding: 1.5rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 18px;
+  color: var(--c-ink);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform var(--d-normal) var(--ease),
+              border-color var(--d-normal) var(--ease),
+              background var(--d-normal) var(--ease);
+}
+.sns-link:hover, .sns-link:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--c-border-high);
+  background: var(--c-surface-high);
+  color: var(--c-ink);
+}
+.sns-link:hover .sns-link-arrow { transform: translateX(4px); }
+
+.sns-link-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.5rem;
+}
+.sns-icon {
+  display: inline-flex; align-items: center;
+  font-size: 1.75rem; line-height: 1;
+  color: var(--c-mint);
+  filter: drop-shadow(0 0 8px var(--c-mint-glow));
+}
+.sns-link-arrow {
+  font-size: 1.25rem;
+  color: var(--c-ink-3);
+  transition: transform var(--d-normal) var(--ease),
+              color var(--d-normal) var(--ease);
+}
+.sns-link:hover .sns-link-arrow { color: var(--c-mint); }
+
+.sns-name { font-weight: 800; font-size: 1.0625rem; letter-spacing: -0.005em; }
+.sns-handle { font-size: 0.8125rem; color: var(--c-ink-3); }
+
+/* Discord アイコンの SVG fill 対応 */
+.sns-link[data-net="discord"] .sns-icon { color: var(--c-mint); }
+
+/* ----------------------------------------------------------------
+ * 11. CLOSING
+ * ---------------------------------------------------------------- */
+.closing {
+  padding: clamp(5rem, 10vw, 8rem) 0;
+  text-align: center;
+}
+
+.closing-headline {
+  margin: 0 0 2rem;
+  font-size: clamp(2.25rem, 1.6rem + 4vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.closing-back {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--c-ink-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+  transition: background var(--d-normal) var(--ease),
+              color var(--d-normal) var(--ease);
+}
+.closing-back:hover {
+  background: var(--c-surface);
+  color: var(--c-mint);
+}
+
+/* ----------------------------------------------------------------
+ * 12. フッター
+ * ---------------------------------------------------------------- */
+.footer {
+  margin-top: var(--s-section);
+  padding: 3rem var(--s-page-x) 2rem;
+  border-top: 1px solid var(--c-border-low);
+  background: rgba(7, 11, 8, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: start;
+  max-width: 1240px;
+  margin: 0 auto 2rem;
+}
+
+@media (max-width: 720px) {
+  .footer-grid { grid-template-columns: 1fr; }
+}
+
+.footer-brand { display: flex; flex-direction: column; gap: 0.4rem; }
+.footer-logo {
+  font-family: var(--font-en);
+  font-size: 1rem; font-weight: 800;
+  color: var(--c-ink);
+}
+.footer-tag {
+  font-size: 0.75rem;
+  color: var(--c-ink-3);
+  letter-spacing: 0.04em;
+}
+
+.footer-links {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
+}
+.footer-links a {
+  color: var(--c-ink-2);
+  transition: color var(--d-fast) var(--ease);
+}
+.footer-links a:hover { color: var(--c-mint); }
+
+.footer-copy {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--c-ink-4);
+  letter-spacing: 0.16em;
+  max-width: 1240px;
+  margin-inline: auto;
+}
+
+/* ----------------------------------------------------------------
+ * 13. モーション軽減（アクセシビリティ）
+ * ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hero-headline .word {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hero-sub, .countdown, .signup, .signup-bonus, .hero-orb-wrap {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .orb-glow, .status-dot, .orb-ring-1, .orb-ring-2, .orb-ring-3 {
+    animation: none !important;
+  }
+}
+
+/* ----------------------------------------------------------------
+ * 14. Scroll-driven reveal
+ * ---------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s var(--ease-out-expo),
+              transform 0.9s var(--ease-out-expo);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}

@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+Thumbs.db
+
+# Vercel
+.vercel
+
+# build (将来 Vite/Astro 等を入れたとき用)
+node_modules/
+dist/
+.cache/

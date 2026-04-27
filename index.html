@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#070b08" />
+
+    <title>VoiPoke ／ あなたの声を、どこに置く？</title>
+    <meta name="description" content="ドラッグで声が3D空間を動く iOS アプリ。声優志望者・ASMR好きのための擬似ASMR体験。2026年6月30日リリース、事前登録で100ポケ銭プレゼント。" />
+
+    <!-- OGP -->
+    <meta property="og:title" content="VoiPoke ／ あなたの声を、どこに置く？" />
+    <meta property="og:description" content="ドラッグで声が3D空間を動く。2026年6月30日リリース。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://voipoke.reverb-lab.com" />
+    <meta property="og:image" content="https://voipoke.reverb-lab.com/ogp.png" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="canonical" href="https://voipoke.reverb-lab.com" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- font preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+
+  <body>
+    <!-- 背景レイヤー：奥から順 -->
+    <div class="bg-mesh" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-noise" aria-hidden="true"></div>
+    <div class="bg-vignette" aria-hidden="true"></div>
+
+    <!-- ヘッダー -->
+    <header class="header">
+      <a href="/" class="logo" aria-label="VoiPoke ホーム">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="12" cy="12" r="4" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="logo-text">VoiPoke</span>
+      </a>
+
+      <nav class="nav" aria-label="メイン">
+        <a href="#exp">たいけん</a>
+        <a href="#bento">とくちょう</a>
+        <a href="#dev">つくった人</a>
+        <a href="#sns">SNS</a>
+      </nav>
+
+      <span class="status-pill" aria-label="リリース予定">
+        <span class="status-dot" aria-hidden="true"></span>
+        2026.06.30 ／ App Store
+      </span>
+    </header>
+
+    <main>
+      <!-- ============================================
+           HERO ／ 非対称：左テキスト・右オーブ
+           ============================================ -->
+      <section class="hero" aria-labelledby="hero-heading">
+        <div class="hero-text">
+          <p class="hero-eyebrow">
+            <span class="eyebrow-line" aria-hidden="true"></span>
+            擬似ASMR ／ 3Dオーディオ
+          </p>
+
+          <h1 id="hero-heading" class="hero-headline">
+            <span class="hero-line">
+              <span class="word" data-delay="0">あなたの声を、</span>
+            </span>
+            <span class="hero-line">
+              <span class="word headline-accent" data-delay="180">どこに置く？</span>
+            </span>
+          </h1>
+
+          <p class="hero-sub">
+            ドラッグで、声が3D空間を動く。<br />
+            あたらしい擬似ASMR体験を、iPhone で。
+          </p>
+
+          <!-- カウントダウン：横長コンソール風 -->
+          <div class="countdown" role="timer" aria-live="polite">
+            <span class="countdown-label">RELEASE IN</span>
+            <span class="countdown-value">
+              <span class="countdown-cell"><span id="cd-days" class="countdown-num">--</span><span class="countdown-unit">d</span></span>
+              <span class="countdown-divider" aria-hidden="true">:</span>
+              <span class="countdown-cell"><span id="cd-hours" class="countdown-num">--</span><span class="countdown-unit">h</span></span>
+              <span class="countdown-divider" aria-hidden="true">:</span>
+              <span class="countdown-cell"><span id="cd-mins" class="countdown-num">--</span><span class="countdown-unit">m</span></span>
+            </span>
+          </div>
+
+          <!-- 事前登録フォーム -->
+          <form
+            class="signup"
+            id="signup-form"
+            action="https://formspree.io/f/REPLACE_ME"
+            method="POST"
+            novalidate
+          >
+            <label for="email" class="sr-only">メールアドレス</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              autocomplete="email"
+              inputmode="email"
+              placeholder="メールアドレス"
+              class="signup-input"
+            />
+            <button type="submit" class="signup-btn">
+              <span>事前登録する</span>
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </form>
+
+          <p class="signup-bonus">
+            🎁 リリース当日、<strong>100ポケ銭</strong>プレゼント
+          </p>
+
+          <div id="signup-result" class="signup-result" role="status" aria-live="polite"></div>
+        </div>
+
+        <!-- オーブ：ドラッグ体験の予告ビジュアル -->
+        <div class="hero-orb-wrap" aria-hidden="true">
+          <div class="orb-stage" id="orb-stage">
+            <div class="orb-rings">
+              <span class="orb-ring orb-ring-1"></span>
+              <span class="orb-ring orb-ring-2"></span>
+              <span class="orb-ring orb-ring-3"></span>
+            </div>
+            <div class="orb" id="orb">
+              <div class="orb-core"></div>
+              <div class="orb-glow"></div>
+            </div>
+            <p class="orb-caption" data-text="DRAG ME ／ ここをドラッグできる、と想像してみて">
+              <span>DRAG ME</span>
+              <span class="orb-caption-jp">ここをドラッグできる、と想像してみて</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           EXPERIENCE ／ ドラッグ体験を1文で説明
+           ============================================ -->
+      <section id="exp" class="exp" aria-labelledby="exp-heading">
+        <p class="section-tag">01 ／ EXPERIENCE</p>
+        <h2 id="exp-heading" class="exp-heading">
+          指で動かす。<br />
+          <span class="exp-heading-accent">耳で受け止める。</span>
+        </h2>
+        <p class="exp-lead">
+          画面のオーブをドラッグすると、声が右耳から左耳へ、耳元へ、遠くへ移動する。<br />
+          HRTF（頭部伝達関数）と AVAudioEnvironmentNode で、頭の中に声優を召喚する感覚を作った。
+        </p>
+        <ul class="exp-meta">
+          <li><strong>iOS 16+</strong> ／ iPhone 全機種対応</li>
+          <li><strong>両耳イヤホン</strong>推奨</li>
+          <li><strong>HRTF</strong> 立体音響</li>
+        </ul>
+      </section>
+
+      <!-- ============================================
+           BENTO ／ 3つの特徴を非対称グリッドで
+           ============================================ -->
+      <section id="bento" class="bento" aria-labelledby="bento-heading">
+        <p class="section-tag">02 ／ FEATURES</p>
+        <h2 id="bento-heading" class="bento-heading">
+          ３つの、<span class="accent">あたらしさ</span>
+        </h2>
+
+        <div class="bento-grid">
+          <!-- メインカード（大） -->
+          <article class="bento-card bento-main">
+            <div class="bento-card-icon">🎧</div>
+            <h3 class="bento-card-title">ドラッグで、声が動く</h3>
+            <p class="bento-card-text">
+              指で音源をドラッグ。<br />
+              右耳から左耳へ、耳元へ、遠くへ。<br />
+              頭の中に声優を召喚する、新しい体験。
+            </p>
+            <div class="bento-card-tag">CORE EXPERIENCE</div>
+          </article>
+
+          <!-- サブカード（縦長） -->
+          <article class="bento-card bento-sub-1">
+            <div class="bento-card-icon">🎁</div>
+            <h3 class="bento-card-title">100ポケ銭、もらえる</h3>
+            <p class="bento-card-text">
+              事前登録した人にだけ、リリース当日プレゼント。<br />
+              好きな声優に投げ銭できる、アプリ内通貨。
+            </p>
+          </article>
+
+          <!-- サブカード（横長） -->
+          <article class="bento-card bento-sub-2">
+            <div class="bento-card-icon">🎙</div>
+            <h3 class="bento-card-title">声優は、収益化できる</h3>
+            <p class="bento-card-text">
+              還元率は <strong>業界最高水準60%</strong>。<br />
+              月3-5本でも、生活の足しになる設計。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ============================================
+           DEV ／ 開発者紹介（オフセット配置）
+           ============================================ -->
+      <section id="dev" class="dev" aria-labelledby="dev-heading">
+        <p class="section-tag">03 ／ MAKER</p>
+        <div class="dev-card">
+          <div class="dev-meta">
+            <div class="dev-avatar" aria-hidden="true">E</div>
+            <div>
+              <h2 id="dev-heading" class="dev-name">エイト</h2>
+              <p class="dev-role">現役声優 ／ 個人開発者</p>
+            </div>
+          </div>
+
+          <blockquote class="dev-quote">
+            <p>
+              <span class="quote-mark" aria-hidden="true">“</span>
+              「声優のための声活アプリが、ない。」<br />
+              じゃあ、自分で作ろう。
+              <span class="quote-mark quote-mark-end" aria-hidden="true">”</span>
+            </p>
+          </blockquote>
+
+          <p class="dev-text">
+            養成所5年、フリーランス声優3年目、事務所所属2年目。<br />
+            得意はシチュエーションボイスと吹き替え。<br />
+            「続かない声活」を、技術で解決したい。
+          </p>
+
+          <a href="https://note.com/tachibana_voice" target="_blank" rel="noopener noreferrer" class="dev-link">
+            <span>開発の理由を読む</span>
+            <span class="dev-link-meta">note ／ 3,000字</span>
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- ============================================
+           SNS ／ チップ風横並び
+           ============================================ -->
+      <section id="sns" class="sns" aria-labelledby="sns-heading">
+        <p class="section-tag">04 ／ JOIN</p>
+        <h2 id="sns-heading" class="sns-heading">
+          並走、<span class="accent">してください</span>
+        </h2>
+        <p class="sns-sub">
+          毎日、開発進捗ぜんぶ公開してます。<br />
+          失敗も、数字も、つまずきも、ぜんぶ。
+        </p>
+
+        <div class="sns-grid">
+          <a href="https://x.com/itty_voice" target="_blank" rel="noopener noreferrer" class="sns-link" data-net="x">
+            <span class="sns-link-row">
+              <span class="sns-icon" aria-hidden="true">𝕏</span>
+              <span class="sns-link-arrow" aria-hidden="true">→</span>
+            </span>
+            <span class="sns-name">X（旧Twitter）</span>
+            <span class="sns-handle">@itty_voice</span>
+          </a>
+
+          <a href="https://discord.gg/FYdyCQgztg" target="_blank" rel="noopener noreferrer" class="sns-link" data-net="discord">
+            <span class="sns-link-row">
+              <span class="sns-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                  <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12z"/>
+                </svg>
+              </span>
+              <span class="sns-link-arrow" aria-hidden="true">→</span>
+            </span>
+            <span class="sns-name">ぼいラボ</span>
+            <span class="sns-handle">声優のコミュニティ ／ 無料</span>
+          </a>
+
+          <a href="https://note.com/tachibana_voice" target="_blank" rel="noopener noreferrer" class="sns-link" data-net="note">
+            <span class="sns-link-row">
+              <span class="sns-icon" aria-hidden="true">📝</span>
+              <span class="sns-link-arrow" aria-hidden="true">→</span>
+            </span>
+            <span class="sns-name">note</span>
+            <span class="sns-handle">開発の裏話・つまずき・数字</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ============================================
+           CLOSING ／ 最後の押し
+           ============================================ -->
+      <section class="closing" aria-labelledby="closing-heading">
+        <h2 id="closing-heading" class="closing-headline">
+          6月30日、<br />
+          App Store で、<br />
+          <span class="accent">会いましょう。</span>
+        </h2>
+        <a href="#hero-heading" class="closing-back">
+          ↑ 上にもどって、事前登録する
+        </a>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="footer-logo">◉ VoiPoke</span>
+          <span class="footer-tag">a product of reverb-lab ／ developed by エイト</span>
+        </div>
+        <nav class="footer-links" aria-label="法務・サポート">
+          <a href="/privacy">プライバシーポリシー</a>
+          <a href="/terms">利用規約</a>
+          <a href="/tokushoho">特商法表記</a>
+          <a href="/creator-terms">クリエイター規約</a>
+          <a href="/support">サポート</a>
+        </nav>
+      </div>
+      <p class="footer-copy">© 2026 reverb-lab</p>
+    </footer>
+
+    <script src="/script.js" defer></script>
+  </body>
+</html>
