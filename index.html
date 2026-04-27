@@ -1,422 +1,1289 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#070b08" />
+<head>
 
-    <title>VoiPoke ／ あなたは癒す側？ 癒される側？</title>
-    <meta name="description" content="指でこえを動かす擬似ASMRアプリ。レコーディングはシチュエーションボイス感覚。HRTF と AVAudioEnvironmentNode で、声優のこえが3D空間を泳ぐ。2026年6月30日 App Store リリース、先着500名に100ポケ銭プレゼント。" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>VoiPoke ─ あなたは癒す側？癒される側？</title>
+<meta name="description" content="VoiPoke（ボイポケ）は、画面のオーブをドラッグするとこえが3D空間を泳ぐ擬似ASMR×立体音響アプリ。2026年6月30日 App Store リリース予定。事前登録で 100ポケ銭 を先行受取。" />
+<link rel="canonical" href="https://voipoke-lp.reverb-lab.com/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="VoiPoke ─ あなたは癒す側？癒される側？" />
+<meta property="og:description" content="指でこえを動かす擬似ASMR×3D立体音響アプリ。2026.06.30 App Store。事前登録で100ポケ銭プレゼント。" />
+<meta property="og:url" content="https://voipoke-lp.reverb-lab.com/" />
+<meta property="og:site_name" content="VoiPoke" />
+<meta property="og:locale" content="ja_JP" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="VoiPoke ─ あなたは癒す側？癒される側？" />
+<meta name="twitter:description" content="指でこえを動かす擬似ASMR×3D立体音響アプリ。2026.06.30 App Store。" />
+<meta name="theme-color" content="#0A1410" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Zen+Kaku+Gothic+Antique:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#070b08;
+    --ink-2:#0f1d17;
+    --ink-3:#142922;
+    --mint:#3FE0A0;
+    --mint-soft:#3FE0A055;
+    --mint-dim:#3FE0A022;
+    --bone:#E8F1EC;
+    --bone-dim:#E8F1EC99;
+    --bone-mute:#E8F1EC55;
+    --line:#E8F1EC15;
+    --line-strong:#E8F1EC30;
+    --grid:#E8F1EC0a;
+    --noise-amt:0.07;
+    --display:'Zen Kaku Gothic New','Zen Kaku Gothic Antique',system-ui,sans-serif;
+    --serif:'Shippori Mincho',serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+  html,body{background:var(--ink);color:var(--bone);font-family:var(--display);font-weight:400;}
+  body{
+    overflow-x:hidden;
+    line-height:1.6;
+    font-feature-settings:"palt" 1;
+  }
+  ::selection{background:var(--mint);color:var(--ink);}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer;}
+  input{font-family:inherit;color:inherit;}
 
-    <meta property="og:title" content="VoiPoke ／ あなたは癒す側？ 癒される側？" />
-    <meta property="og:description" content="指でこえを動かす擬似ASMRアプリ。レコーディングはシチュエーションボイス感覚。2026年6月30日 App Store リリース。先着500名に100ポケ銭プレゼント。" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://voipoke-lp.reverb-lab.com" />
-    <meta property="og:image" content="https://voipoke-lp.reverb-lab.com/ogp.png" />
-    <meta property="og:locale" content="ja_JP" />
-    <meta name="twitter:card" content="summary_large_image" />
+  /* ===== Global texture: grid + noise ===== */
+  .bg-grid{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 110% 80% at 50% 30%,#000 40%,#0006 80%,transparent 100%);
+  }
+  .bg-grid-fine{
+    position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:
+      linear-gradient(#E8F1EC07 1px,transparent 1px),
+      linear-gradient(90deg,#E8F1EC07 1px,transparent 1px);
+    background-size:8px 8px;
+    mask-image:radial-gradient(ellipse 60% 40% at 50% 50%,#000 0%,transparent 70%);
+  }
+  .bg-noise{
+    position:fixed;inset:0;pointer-events:none;z-index:60;
+    opacity:var(--noise-amt);
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
 
-    <link rel="canonical" href="https://voipoke-lp.reverb-lab.com" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  /* ===== Layout primitives ===== */
+  .wrap{position:relative;z-index:2;}
+  .container{max-width:1440px;margin:0 auto;padding:0 32px;}
+  @media (max-width:720px){ .container{padding:0 20px;} }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Zen+Kaku+Gothic+New:wght@700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  /* ===== Top nav ===== */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    backdrop-filter:blur(8px);
+    background:linear-gradient(to bottom,#070b08CC,#070b0866 70%,transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;font-family:var(--mono);font-size:12px;}
+  .nav-mark{display:flex;align-items:center;gap:10px;letter-spacing:.04em;font-weight:500;}
+  .nav-mark .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px var(--mint);}
+  .nav-meta{display:flex;gap:24px;color:var(--bone-mute);}
+  .nav-meta .live{color:var(--mint);}
+  @media (max-width:720px){
+    .nav-inner{padding:12px 20px;font-size:10.5px;}
+    .nav-meta{gap:14px;}
+    .nav-meta .hide-sm{display:none;}
+  }
 
-    <link rel="stylesheet" href="/style.css" />
-  </head>
+  /* ===== Section frame ===== */
+  section{position:relative;}
+  .sect-tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    color:var(--mint);text-transform:uppercase;
+    display:flex;align-items:center;gap:12px;
+  }
+  .sect-tag::before{
+    content:"";width:24px;height:1px;background:var(--mint);
+  }
+  .sect-num{
+    font-family:var(--mono);font-size:11px;color:var(--bone-mute);letter-spacing:.1em;
+  }
 
-  <body>
-    <div class="bg-mesh" aria-hidden="true"></div>
-    <div class="bg-grid" aria-hidden="true"></div>
-    <div class="bg-noise" aria-hidden="true"></div>
-    <div class="bg-vignette" aria-hidden="true"></div>
+  /* ===== Display type ===== */
+  .display{
+    font-family:var(--display);
+    font-weight:900;
+    letter-spacing:-0.04em;
+    line-height:0.95;
+    font-feature-settings:"palt" 1;
+  }
+  .h-mega{font-size:clamp(56px,11vw,168px);}
+  .h-xl{font-size:clamp(40px,7.5vw,108px);}
+  .h-l{font-size:clamp(32px,5vw,72px);}
+  .h-m{font-size:clamp(24px,3.4vw,44px);}
+  .mincho{font-family:var(--serif);font-weight:800;letter-spacing:-0.02em;}
+  .mono{font-family:var(--mono);}
+  .small{font-size:13px;color:var(--bone-dim);line-height:1.7;}
+  .smaller{font-size:11px;color:var(--bone-mute);font-family:var(--mono);letter-spacing:.08em;}
 
-    <!-- ============== ヘッダー ============== -->
-    <header class="header">
-      <a href="/" class="logo" aria-label="VoiPoke ホーム">
-        <span class="logo-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="22" height="22">
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-            <circle cx="12" cy="12" r="4" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="logo-text">VOIPOKE <span class="logo-divider">／</span> <span class="logo-jp">ボイポケ</span></span>
-      </a>
+  /* ===== Buttons / pills ===== */
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:18px 28px;
+    border-radius:999px;
+    font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:0.02em;
+    background:var(--mint);color:var(--ink);
+    transition:transform .2s ease, box-shadow .2s ease;
+    box-shadow:0 0 0 1px var(--mint), 0 12px 40px -10px var(--mint);
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 0 0 1px var(--mint), 0 18px 60px -10px var(--mint);}
+  .btn-ghost{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 22px;border-radius:999px;
+    border:1px solid var(--line-strong);
+    font-family:var(--mono);font-size:12px;letter-spacing:.1em;
+    color:var(--bone);
+    transition:border-color .2s ease,color .2s ease,background .2s ease;
+  }
+  .btn-ghost:hover{border-color:var(--mint);color:var(--mint);background:var(--mint-dim);}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 12px;border-radius:999px;
+    border:1px solid var(--line-strong);
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--bone-dim);
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint);}
 
-      <nav class="nav" aria-label="メイン">
-        <a href="#exp">たいけん</a>
-        <a href="#bento">とくちょう</a>
-        <a href="#dev">つくった人</a>
-        <a href="#sns">SNS</a>
-      </nav>
+  /* ===== Hero ===== */
+  .hero{
+    position:relative;min-height:100vh;
+    padding:120px 0 80px;
+    display:grid;grid-template-columns:1fr;
+    overflow:hidden;
+  }
+  .hero-grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(#E8F1EC10 1px,transparent 1px),
+      linear-gradient(90deg,#E8F1EC10 1px,transparent 1px);
+    background-size:80px 80px;
+    background-position:center center;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000 30%,transparent 90%);
+  }
+  .hero-axes{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(transparent calc(50% - 0.5px),#3FE0A030 50%,transparent calc(50% + 0.5px)),
+      linear-gradient(90deg,transparent calc(50% - 0.5px),#3FE0A030 50%,transparent calc(50% + 0.5px));
+  }
+  .hero-axes::before,.hero-axes::after{
+    content:"";position:absolute;font-family:var(--mono);font-size:10px;color:var(--mint);letter-spacing:.1em;
+  }
+  .hero-axes::before{content:"X →";top:calc(50% - 16px);right:24px;}
+  .hero-axes::after{content:"Y";left:calc(50% + 8px);top:24px;}
 
-      <div class="status-cluster" aria-label="ステータス">
-        <span class="status-pill">v0.9 BETA</span>
-        <span class="status-pill">HRTF · iOS 17+</span>
-        <span class="status-pill status-live">
-          <span class="status-dot" aria-hidden="true"></span>
-          PRE-REG OPEN
-        </span>
+  .hero-inner{
+    position:relative;z-index:3;
+    display:grid;
+    grid-template-columns:1.05fr 0.95fr;
+    gap:48px;
+    align-items:stretch;
+  }
+  @media (max-width:980px){ .hero-inner{grid-template-columns:1fr;gap:24px;} }
+
+  .hero-headline{
+    margin-top:40px;
+  }
+  .hero-headline .pre{
+    margin-bottom:28px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  }
+  .hero-headline h1{
+    margin-bottom:36px;
+  }
+  .hero-headline h1 .accent{color:var(--mint);}
+  .hero-headline h1 .strike{
+    position:relative;display:inline-block;
+  }
+  .hero-headline h1 .strike::after{
+    content:"";position:absolute;left:-2%;right:-2%;top:54%;height:6px;background:var(--mint);transform:rotate(-2deg);
+  }
+  .hero-sub{
+    max-width:480px;color:var(--bone-dim);font-size:16px;line-height:1.85;margin-bottom:36px;
+  }
+  .hero-sub b{color:var(--bone);font-weight:500;}
+
+  /* Form */
+  .reg-form{
+    position:relative;
+    border:1px solid var(--line-strong);
+    border-radius:20px;
+    background:linear-gradient(180deg,#0f1d1799,#070b0877);
+    backdrop-filter:blur(6px);
+    padding:24px;
+    max-width:540px;
+  }
+  .reg-form .label{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--bone-mute);margin-bottom:14px;
+  }
+  .reg-form .label .live-tag{color:var(--mint);}
+  .reg-row{display:flex;gap:10px;align-items:stretch;}
+  @media (max-width:560px){ .reg-row{flex-direction:column;} }
+  .reg-row input{
+    flex:1;
+    background:var(--ink-3);
+    border:1px solid var(--line-strong);
+    border-radius:14px;
+    padding:18px 18px;
+    font-size:15px;color:var(--bone);
+    outline:none;
+    transition:border-color .2s ease;
+    min-width:0;
+  }
+  .reg-row input:focus{border-color:var(--mint);box-shadow:0 0 0 3px var(--mint-dim);}
+  .reg-row input::placeholder{color:var(--bone-mute);}
+  .reg-cta{
+    border-radius:14px;padding:18px 24px;background:var(--mint);color:var(--ink);
+    font-weight:900;font-size:15px;letter-spacing:.02em;white-space:nowrap;
+    transition:transform .2s ease;
+  }
+  .reg-cta:hover{transform:translateY(-1px);}
+  .reg-meta{
+    display:flex;justify-content:space-between;align-items:center;margin-top:14px;
+    font-family:var(--mono);font-size:11px;color:var(--bone-mute);letter-spacing:.06em;
+  }
+  .reg-success{
+    display:flex;align-items:center;gap:14px;padding:18px 18px;
+    background:var(--mint-dim);border:1px solid var(--mint);border-radius:14px;
+    color:var(--mint);font-family:var(--mono);font-size:13px;letter-spacing:.06em;
+  }
+
+  /* Hero stage / orb */
+  .hero-stage{
+    position:relative;
+    aspect-ratio:1/1;
+    width:100%;
+    min-height:480px;
+    border:1px solid var(--line-strong);
+    border-radius:24px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%,#0f1d1700,transparent 70%),
+      linear-gradient(180deg,#0f1d17,#070b08 70%);
+    box-shadow:inset 0 0 60px #00000080;
+    user-select:none;
+    touch-action:none;
+  }
+  .stage-coord{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(#E8F1EC08 1px,transparent 1px),
+      linear-gradient(90deg,#E8F1EC08 1px,transparent 1px);
+    background-size:32px 32px;
+  }
+  .stage-cross{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(transparent calc(50% - 0.5px),#3FE0A030 50%,transparent calc(50% + 0.5px)),
+      linear-gradient(90deg,transparent calc(50% - 0.5px),#3FE0A030 50%,transparent calc(50% + 0.5px));
+  }
+  .stage-circle{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    border:1px dashed #3FE0A035;border-radius:50%;
+  }
+  .sc-1{width:35%;height:35%;}
+  .sc-2{width:65%;height:65%;}
+  .sc-3{width:90%;height:90%;}
+  .stage-label{
+    position:absolute;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--bone-mute);
+  }
+  .sl-l{left:14px;top:50%;transform:translateY(-50%);}
+  .sl-r{right:14px;top:50%;transform:translateY(-50%);}
+  .sl-t{top:12px;left:50%;transform:translateX(-50%);}
+  .sl-b{bottom:12px;left:50%;transform:translateX(-50%);}
+
+  .ear{
+    position:absolute;width:14px;height:14px;
+    border:1px solid var(--mint);border-radius:50%;
+    background:var(--ink);
+    top:50%;transform:translateY(-50%);
+  }
+  .ear.l{left:14px;}
+  .ear.r{right:14px;}
+  .ear::after{
+    content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid #3FE0A040;
+  }
+
+  .orb{
+    position:absolute;
+    width:88px;height:88px;
+    transform:translate(-50%,-50%);
+    pointer-events:auto;
+    cursor:grab;
+    will-change:left,top;
+  }
+  .orb.dragging{cursor:grabbing;}
+  .orb-core{
+    position:absolute;inset:30%;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#aaffd9,#3FE0A0 40%,#0a3a26 90%);
+    box-shadow:0 0 40px var(--mint),0 0 100px #3FE0A055,inset 0 0 16px #ffffff44;
+  }
+  .orb-ring{
+    position:absolute;border-radius:50%;border:1px solid var(--mint);
+  }
+  .or-1{inset:18%;opacity:.85;}
+  .or-2{inset:6%;opacity:.55;}
+  .or-3{inset:-8%;opacity:.3;}
+  .orb::before{
+    content:"";position:absolute;left:50%;top:50%;width:200px;height:200px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle,#3FE0A040,transparent 60%);
+    filter:blur(8px);
+    pointer-events:none;
+  }
+
+  .orb-readout{
+    position:absolute;left:14px;bottom:14px;right:14px;
+    display:flex;justify-content:space-between;
+    font-family:var(--mono);font-size:10px;color:var(--mint);letter-spacing:.12em;
+    pointer-events:none;
+  }
+  .orb-readout span{color:var(--bone-mute);margin-right:6px;}
+  .stage-hint{
+    position:absolute;left:14px;top:14px;font-family:var(--mono);font-size:10px;color:var(--bone-mute);letter-spacing:.1em;
+    pointer-events:none;
+    display:flex;gap:6px;align-items:center;
+  }
+  .stage-hint .kbd{
+    border:1px solid var(--line-strong);padding:2px 6px;border-radius:4px;color:var(--bone-dim);
+  }
+
+  /* Audio bar (left ear / right ear meters) */
+  .meters{
+    position:absolute;left:36px;right:36px;top:50%;transform:translateY(-50%);
+    pointer-events:none;
+    display:flex;justify-content:space-between;
+    font-family:var(--mono);font-size:9px;color:var(--bone-mute);letter-spacing:.1em;
+  }
+  .meter{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+  }
+  .meter .bar{
+    width:3px;height:40px;background:#E8F1EC15;border-radius:2px;overflow:hidden;position:relative;
+  }
+  .meter .bar i{
+    position:absolute;left:0;right:0;bottom:0;background:var(--mint);box-shadow:0 0 8px var(--mint);
+    transition:height .08s ease-out;
+  }
+
+  /* Countdown */
+  .countdown{
+    margin-top:36px;
+    display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;
+  }
+  .cd-label{
+    font-family:var(--mono);font-size:11px;color:var(--bone-mute);letter-spacing:.18em;text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .cd-grid{
+    display:flex;gap:0;
+    border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;
+  }
+  .cd-cell{
+    padding:14px 18px;text-align:center;border-right:1px solid var(--line);
+    min-width:70px;
+  }
+  .cd-cell:last-child{border-right:none;}
+  .cd-cell .num{
+    font-family:var(--display);font-weight:900;font-size:28px;color:var(--bone);letter-spacing:-0.02em;line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .cd-cell .lbl{
+    font-family:var(--mono);font-size:9px;color:var(--bone-mute);letter-spacing:.18em;margin-top:6px;text-transform:uppercase;
+  }
+
+  /* hero ticker */
+  .ticker{
+    position:relative;z-index:3;
+    margin-top:80px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:18px 0;overflow:hidden;
+    font-family:var(--mono);font-size:13px;letter-spacing:.18em;color:var(--bone-dim);
+    white-space:nowrap;
+  }
+  .ticker-track{display:inline-flex;gap:36px;animation:tk 40s linear infinite;}
+  .ticker-track span{display:inline-flex;gap:36px;align-items:center;}
+  .ticker-track i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mint);}
+  @keyframes tk{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ===== EXPERIENCE ===== */
+  .experience{padding:160px 0;position:relative;}
+  .exp-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;gap:32px;flex-wrap:wrap;}
+  .exp-h1{max-width:900px;}
+  .exp-h1 .l1{display:block;}
+  .exp-h1 .l2{display:block;color:var(--mint);}
+  .exp-grid{
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:32px;align-items:stretch;
+  }
+  @media (max-width:980px){ .exp-grid{grid-template-columns:1fr;} }
+  .exp-vis{
+    border:1px solid var(--line-strong);border-radius:24px;
+    aspect-ratio:5/4;position:relative;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 50%,#0f1d17,#070b08);
+  }
+  .exp-vis svg{position:absolute;inset:0;width:100%;height:100%;}
+  .exp-text{
+    border:1px solid var(--line-strong);border-radius:24px;padding:36px;
+    display:flex;flex-direction:column;gap:24px;
+    background:linear-gradient(180deg,#0f1d1788,transparent 60%);
+  }
+  .exp-text h3{
+    font-family:var(--display);font-weight:900;font-size:clamp(22px,2.6vw,32px);letter-spacing:-0.02em;line-height:1.2;
+  }
+  .exp-text p{color:var(--bone-dim);font-size:15px;line-height:1.85;}
+  .exp-list{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:24px;}
+  .exp-list li{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:baseline;list-style:none;}
+  .exp-list .k{font-family:var(--mono);font-size:11px;color:var(--mint);letter-spacing:.1em;}
+  .exp-list .v{color:var(--bone);font-size:14px;}
+  .exp-list .t{font-family:var(--mono);font-size:10px;color:var(--bone-mute);letter-spacing:.1em;}
+  .exp-callout{
+    margin-top:auto;padding:16px 18px;border:1px dashed var(--mint);border-radius:14px;
+    color:var(--mint);font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+  }
+
+  /* ===== FEATURES bento ===== */
+  .features{padding:80px 0 160px;position:relative;}
+  .feat-head{margin-bottom:48px;}
+  .feat-h1{margin-top:18px;max-width:900px;}
+  .bento{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    grid-auto-rows:minmax(180px,auto);
+    gap:18px;
+  }
+  .b{
+    position:relative;border:1px solid var(--line-strong);border-radius:24px;
+    padding:28px;overflow:hidden;
+    background:linear-gradient(180deg,#0f1d1799,#070b0855);
+    display:flex;flex-direction:column;
+    min-height:220px;
+  }
+  .b .b-tag{font-family:var(--mono);font-size:10px;color:var(--mint);letter-spacing:.18em;}
+  .b h3{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.4vw,30px);letter-spacing:-0.02em;line-height:1.18;margin-top:10px;}
+  .b p{color:var(--bone-dim);font-size:14px;line-height:1.8;margin-top:auto;}
+  .b .b-num{position:absolute;right:24px;top:24px;font-family:var(--mono);font-size:11px;color:var(--bone-mute);letter-spacing:.1em;}
+
+  .b1{grid-column:span 4;grid-row:span 2;}
+  .b2{grid-column:span 2;grid-row:span 1;}
+  .b3{grid-column:span 2;grid-row:span 1;}
+  .b4{grid-column:span 3;grid-row:span 1;}
+  .b5{grid-column:span 3;grid-row:span 1;}
+  @media (max-width:980px){
+    .bento{grid-template-columns:repeat(2,1fr);}
+    .b1{grid-column:span 2;grid-row:span 2;}
+    .b2,.b3{grid-column:span 1;}
+    .b4,.b5{grid-column:span 2;}
+  }
+  @media (max-width:560px){
+    .bento{grid-template-columns:1fr;}
+    .b1,.b2,.b3,.b4,.b5{grid-column:span 1;grid-row:span 1;}
+  }
+
+  /* Bento decorations */
+  .b1-vis{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(#E8F1EC0a 1px,transparent 1px),
+      linear-gradient(90deg,#E8F1EC0a 1px,transparent 1px);
+    background-size:32px 32px;
+    mask-image:radial-gradient(ellipse 70% 60% at 70% 50%,#000 0%,transparent 70%);
+  }
+  .b1-orb{
+    position:absolute;right:8%;top:50%;transform:translateY(-50%);
+    width:160px;height:160px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#aaffd9,#3FE0A0 45%,#0a3a26 95%);
+    box-shadow:0 0 60px #3FE0A088,0 0 120px #3FE0A033;
+    animation:floaty 7s ease-in-out infinite;
+  }
+  .b1-orb::before,.b1-orb::after{content:"";position:absolute;border-radius:50%;border:1px solid #3FE0A055;}
+  .b1-orb::before{inset:-12%;}
+  .b1-orb::after{inset:-30%;border-color:#3FE0A030;}
+  .b1-trail{
+    position:absolute;left:0;right:0;top:50%;height:2px;
+    background:linear-gradient(90deg,transparent,#3FE0A055 40%,#3FE0A099 70%,transparent);
+    transform:translateY(-50%);
+    mask-image:linear-gradient(90deg,transparent,#000 50%,transparent);
+    pointer-events:none;
+  }
+  @keyframes floaty{
+    0%,100%{transform:translate(0,-50%);}
+    50%{transform:translate(-12%,-58%);}
+  }
+
+  .b2-coin{
+    width:80px;height:80px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff7c2,#3FE0A0 60%,#0a3a26);
+    border:1px solid var(--mint);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:900;font-size:24px;color:var(--ink);
+    box-shadow:0 0 30px #3FE0A055;
+    margin-bottom:8px;
+  }
+  .b2-stack{position:relative;}
+  .b2-stack i{position:absolute;border-radius:50%;border:1px solid var(--mint);opacity:.4;}
+  .b2-stack i:nth-child(1){left:8px;top:6px;width:80px;height:80px;}
+  .b2-stack i:nth-child(2){left:16px;top:12px;width:80px;height:80px;opacity:.2;}
+
+  .b3 .ratio{
+    font-family:var(--display);font-weight:900;font-size:clamp(56px,8vw,96px);
+    color:var(--mint);letter-spacing:-0.05em;line-height:0.9;
+  }
+  .b3 .ratio sup{font-size:0.4em;color:var(--bone-mute);font-weight:500;letter-spacing:0;margin-left:8px;vertical-align:super;}
+  .b3 .ratio-bar{
+    margin-top:14px;height:6px;border-radius:4px;background:#E8F1EC15;overflow:hidden;
+  }
+  .b3 .ratio-bar i{display:block;height:100%;width:60%;background:var(--mint);box-shadow:0 0 12px var(--mint);}
+  .b3 .ratio-leg{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--bone-mute);margin-top:6px;letter-spacing:.1em;}
+
+  .b4-wave{
+    position:absolute;left:0;right:0;bottom:0;height:60%;pointer-events:none;
+  }
+  .b4-wave svg{width:100%;height:100%;}
+
+  .b5{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;}
+  .b5-info{display:flex;flex-direction:column;gap:10px;}
+  .b5-spec{font-family:var(--mono);font-size:11px;color:var(--bone-dim);letter-spacing:.06em;}
+  .b5-spec b{color:var(--mint);font-weight:500;}
+  .b5-iphone{
+    position:relative;width:120px;height:200px;border-radius:24px;border:2px solid var(--line-strong);
+    background:linear-gradient(180deg,#0f1d17,#070b08);
+    overflow:hidden;
+    box-shadow:0 20px 60px -20px #00000099;
+  }
+  .b5-iphone::before{
+    content:"";position:absolute;left:50%;top:8px;transform:translateX(-50%);
+    width:36px;height:6px;background:#000;border-radius:4px;
+  }
+  .b5-iphone-screen{
+    position:absolute;inset:6px;border-radius:18px;
+    background:radial-gradient(ellipse at 50% 60%,#0f1d17,#070b08);
+    overflow:hidden;
+  }
+  .b5-iphone-orb{
+    position:absolute;left:30%;top:55%;width:36px;height:36px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#aaffd9,#3FE0A0 50%,#0a3a26);
+    box-shadow:0 0 20px var(--mint);
+  }
+  .b5-iphone-rings{
+    position:absolute;left:50%;top:50%;
+  }
+  .b5-iphone-rings i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid #3FE0A044;}
+  .b5-iphone-rings i:nth-child(1){width:50px;height:50px;}
+  .b5-iphone-rings i:nth-child(2){width:80px;height:80px;opacity:.7;}
+  .b5-iphone-rings i:nth-child(3){width:110px;height:110px;opacity:.4;}
+
+  /* ===== MAKER ===== */
+  .maker{padding:120px 0;position:relative;border-top:1px solid var(--line);}
+  .maker-grid{display:grid;grid-template-columns:auto 1fr auto;gap:48px;align-items:center;}
+  @media (max-width:980px){ .maker-grid{grid-template-columns:1fr;gap:24px;} }
+  .maker-portrait{
+    width:240px;height:300px;border-radius:18px;
+    border:1px solid var(--line-strong);
+    background:
+      linear-gradient(180deg,#0f1d1788,transparent 60%),
+      repeating-linear-gradient(45deg,#142922 0,#142922 2px,#0f1d17 2px,#0f1d17 4px);
+    position:relative;overflow:hidden;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  .maker-portrait::before{
+    content:"";position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
+    width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#3a4d44,#1a2a23 70%);
+    border:1px solid var(--line-strong);
+  }
+  .maker-portrait::after{
+    content:"";position:absolute;left:50%;top:62%;transform:translate(-50%,0);
+    width:180px;height:180px;border-radius:48% 48% 0 0;
+    background:linear-gradient(180deg,#1a2a23,#0f1d17);
+    border:1px solid var(--line-strong);
+  }
+  .maker-portrait .pc-tag{
+    position:absolute;left:14px;top:14px;
+    font-family:var(--mono);font-size:9px;color:var(--mint);letter-spacing:.18em;
+    z-index:2;
+  }
+  .maker-portrait .pc-name{
+    position:absolute;left:14px;bottom:14px;
+    font-family:var(--mono);font-size:10px;color:var(--bone-dim);letter-spacing:.12em;
+    z-index:2;
+  }
+  .maker-bio{max-width:640px;}
+  .maker-bio .quote{
+    font-family:var(--serif);font-weight:800;font-size:clamp(22px,2.8vw,34px);line-height:1.4;letter-spacing:-0.01em;color:var(--bone);
+    margin-bottom:24px;
+  }
+  .maker-bio .quote .accent{color:var(--mint);}
+  .maker-bio p{color:var(--bone-dim);font-size:15px;line-height:1.85;margin-bottom:14px;}
+  .maker-meta{display:flex;flex-direction:column;gap:12px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;}
+  .maker-meta .row{display:flex;justify-content:space-between;gap:24px;color:var(--bone-mute);}
+  .maker-meta .row b{color:var(--bone);font-weight:500;}
+
+  /* ===== JOIN ===== */
+  .join{padding:120px 0;position:relative;border-top:1px solid var(--line);}
+  .join-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-bottom:48px;}
+  .join-h{max-width:700px;}
+  .join-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:780px){ .join-grid{grid-template-columns:1fr;} }
+  .join-card{
+    border:1px solid var(--line-strong);border-radius:20px;padding:28px;
+    display:flex;flex-direction:column;gap:18px;
+    background:linear-gradient(180deg,#0f1d1788,transparent);
+    transition:border-color .2s ease,background .2s ease;
+    position:relative;overflow:hidden;
+  }
+  .join-card:hover{border-color:var(--mint);background:linear-gradient(180deg,#0f1d17aa,#3FE0A012);}
+  .join-card .top{display:flex;justify-content:space-between;align-items:center;}
+  .join-card .num{font-family:var(--mono);font-size:11px;color:var(--bone-mute);letter-spacing:.1em;}
+  .join-card .glyph{
+    width:48px;height:48px;border:1px solid var(--mint);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;color:var(--mint);
+    font-family:var(--display);font-weight:900;font-size:20px;
+  }
+  .join-card h4{font-family:var(--display);font-weight:900;font-size:28px;letter-spacing:-0.02em;}
+  .join-card p{color:var(--bone-dim);font-size:13px;line-height:1.7;}
+  .join-card .go{
+    margin-top:auto;display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:11px;color:var(--mint);letter-spacing:.1em;
+    border-top:1px solid var(--line);padding-top:16px;
+  }
+  .join-card .go .arr{font-size:18px;}
+
+  /* ===== CLOSING ===== */
+  .closing{padding:160px 0 120px;text-align:center;position:relative;border-top:1px solid var(--line);overflow:hidden;}
+  .closing-orb{
+    position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);
+    width:600px;height:600px;border-radius:50%;
+    background:radial-gradient(circle,#3FE0A055,transparent 60%);
+    filter:blur(40px);pointer-events:none;
+  }
+  .closing-tag{margin-bottom:32px;justify-content:center;display:inline-flex;}
+  .closing h2{position:relative;z-index:2;}
+  .closing h2 .l1{display:block;}
+  .closing h2 .l2{display:block;color:var(--mint);}
+  .closing-meta{
+    margin-top:48px;display:flex;justify-content:center;gap:36px;
+    font-family:var(--mono);font-size:12px;color:var(--bone-dim);letter-spacing:.12em;
+    flex-wrap:wrap;
+  }
+  .closing-meta b{color:var(--mint);font-weight:500;}
+  .closing .btn{margin-top:48px;position:relative;z-index:2;}
+
+  /* ===== Footer ===== */
+  footer{
+    border-top:1px solid var(--line);padding:48px 0 36px;
+    font-family:var(--mono);font-size:11px;color:var(--bone-mute);letter-spacing:.08em;
+  }
+  .ft-grid{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .ft-mark{display:flex;align-items:center;gap:10px;color:var(--bone);}
+  .ft-mark .dot{width:6px;height:6px;border-radius:50%;background:var(--mint);}
+  .ft-links{display:flex;gap:24px;}
+  .ft-legal{margin-top:14px;color:var(--bone-mute);}
+
+  /* utilities */
+  .row{display:flex;align-items:center;gap:12px;}
+  .col{display:flex;flex-direction:column;gap:12px;}
+  .spacer{flex:1;}
+
+  /* Reduce hero stage on small screens */
+  @media (max-width:980px){
+    .hero-stage{aspect-ratio:1/1;max-width:560px;margin:0 auto;}
+  }
+  @media (max-width:560px){
+    .hero{padding:96px 0 56px;}
+    .countdown{flex-direction:column;align-items:flex-start;}
+    .cd-cell{padding:12px 14px;min-width:60px;}
+    .cd-cell .num{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-grid-fine"></div>
+<div class="bg-noise"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-mark"><span class="dot"></span>VOIPOKE / ぼいポケ</div>
+    <div class="nav-meta">
+      <span class="hide-sm">v0.9 BETA</span>
+      <span class="hide-sm">iOS 17+</span>
+      <span class="live">● 事前登録</span>
+    </div>
+  </div>
+</nav>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// Tweak values baked in (production deploy — Tweaks panel disabled)
+const TW = {
+  accent: "#3FE0A0",
+  ink: "#070b08",
+  noise: 0.07,
+  orbSize: 88,
+  ringCount: 3,
+  showAxes: true,
+  showCoord: true,
+  headlineLine1: "あなたは\n癒す側？",
+  headlineLine2: "癒される側？",
+  ctaLabel: "メアドをおいておく",
+  releaseDate: "2026-06-30T10:00:00+09:00"
+};
+
+// ====== Countdown ======
+function useCountdown(target) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const i = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(i);
+  }, []);
+  const t = new Date(target).getTime();
+  const diff = Math.max(0, t - now);
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor(diff % 86400000 / 3600000);
+  const m = Math.floor(diff % 3600000 / 60000);
+  const s = Math.floor(diff % 60000 / 1000);
+  return { d, h, m, s, raw: diff };
+}
+
+// ====== Hero Orb (draggable) ======
+function HeroStage({ orbSize, ringCount, showCoord }) {
+  const stageRef = useRef(null);
+  const [pos, setPos] = useState({ x: 0.5, y: 0.5 });
+  const [drag, setDrag] = useState(false);
+  const [meters, setMeters] = useState({ l: 0, r: 0 });
+
+  const move = useCallback((clientX, clientY) => {
+    const el = stageRef.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    let x = (clientX - r.left) / r.width;
+    let y = (clientY - r.top) / r.height;
+    x = Math.max(0.04, Math.min(0.96, x));
+    y = Math.max(0.04, Math.min(0.96, y));
+    setPos({ x, y });
+  }, []);
+
+  useEffect(() => {
+    if (drag) return;
+    let raf, t0 = performance.now();
+    const tick = (t) => {
+      const dt = (t - t0) / 1000;
+      const cx = 0.5 + Math.cos(dt * 0.45) * 0.28;
+      const cy = 0.5 + Math.sin(dt * 0.6) * 0.22;
+      setPos({ x: cx, y: cy });
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [drag]);
+
+  useEffect(() => {
+    const lr = pos.x;
+    const dist = Math.abs(pos.y - 0.5) * 2;
+    const base = 0.6 - dist * 0.3;
+    const l = Math.max(0, Math.min(1, base * (1.4 - lr)));
+    const r = Math.max(0, Math.min(1, base * (lr + 0.4)));
+    setMeters({ l, r });
+  }, [pos]);
+
+  const onPointerDown = (e) => {
+    e.preventDefault();
+    setDrag(true);
+    e.target.setPointerCapture && e.target.setPointerCapture(e.pointerId);
+    move(e.clientX, e.clientY);
+  };
+  const onPointerMove = (e) => { if (!drag) return; move(e.clientX, e.clientY); };
+  const onPointerUp = () => setDrag(false);
+
+  const cx = ((pos.x - 0.5) * 2).toFixed(2);
+  const cy = ((0.5 - pos.y) * 2).toFixed(2);
+  const dist = Math.sqrt((pos.x - 0.5) ** 2 + (pos.y - 0.5) ** 2) * 2;
+  const distLbl = dist.toFixed(2);
+
+  const rings = [];
+  for (let i = 1; i <= ringCount; i++) {
+    rings.push(<div key={i} className={`orb-ring or-${i}`} style={{ inset: `${-8 + (ringCount - i) * 12}%`, opacity: 0.85 - (i - 1) * 0.25 }} />);
+  }
+
+  return (
+    <div ref={stageRef} className="hero-stage"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}>
+      {showCoord && <div className="stage-coord" />}
+      <div className="stage-cross" />
+      <div className="stage-circle sc-1" />
+      <div className="stage-circle sc-2" />
+      <div className="stage-circle sc-3" />
+      <div className="stage-label sl-l">L · 左耳</div>
+      <div className="stage-label sl-r">R · 右耳</div>
+      <div className="stage-label sl-t">FRONT · 正面</div>
+      <div className="stage-label sl-b">BACK · 背面</div>
+      <div className="ear l" />
+      <div className="ear r" />
+      <div className="stage-hint"><span>↳</span><span>ドラッグして、こえを動かす</span></div>
+      <div className={`orb${drag ? ' dragging' : ''}`}
+        style={{
+          left: `${pos.x * 100}%`,
+          top: `${pos.y * 100}%`,
+          width: orbSize, height: orbSize,
+          transition: drag ? 'none' : 'left .8s linear,top .8s linear'
+        }}>
+        <div className="orb-core" />
+        {rings}
       </div>
-    </header>
+      <div className="orb-readout">
+        <div><span>X</span>{cx}</div>
+        <div><span>Y</span>{cy}</div>
+        <div><span>DIST</span>{distLbl}</div>
+        <div><span>HRTF</span>ON</div>
+      </div>
+      <div className="meters">
+        <div className="meter">
+          <div className="bar"><i style={{ height: `${meters.l * 100}%` }} /></div>
+          <div>L</div>
+        </div>
+        <div className="meter">
+          <div className="bar"><i style={{ height: `${meters.r * 100}%` }} /></div>
+          <div>R</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-    <main>
-      <!-- ============== HERO ============== -->
-      <section class="hero" aria-labelledby="hero-heading">
-        <div class="hero-text">
-          <p class="hero-eyebrow">
-            <span class="eyebrow-dot" aria-hidden="true"></span>
-            PRE-REGISTRATION ／ 事前登録
-            <span class="eyebrow-mono">v0.9 · iOS 17+</span>
-          </p>
+// ====== Hero ======
+function Hero() {
+  const cd = useCountdown(TW.releaseDate);
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const submit = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSent(true);
+  };
+  const pad = (n) => String(n).padStart(2, "0");
 
-          <h1 id="hero-heading" class="hero-headline">
-            <span class="hero-line">
-              <span class="word" data-delay="0">あなたは癒す側？</span>
-            </span>
-            <span class="hero-line">
-              <span class="word headline-accent" data-delay="180">癒される側？</span>
-            </span>
+  return (
+    <section className="hero">
+      <div className="hero-grid" />
+      <div className="hero-axes" />
+      <div className="container hero-inner">
+        <div className="hero-headline">
+          <div className="pre">
+            <span className="pill"><span className="dot" />事前登録</span>
+            <span className="pill mono">v0.9 · iOS 17+</span>
+          </div>
+          <h1 className="display h-mega">
+            <span style={{ whiteSpace: 'pre-line' }}>{TW.headlineLine1}</span><br />
+            <span className="accent">{TW.headlineLine2}</span>
           </h1>
-
-          <p class="hero-sub">
-            VoiPoke は、指で <strong>こえ</strong> を動かす擬似ASMRアプリ。<br />
+          <p className="hero-sub">
+            <b>VoiPoke</b>は、指で<b>こえ</b>を動かす擬似ASMRアプリ。<br />
             レコーディングはシチュエーションボイス感覚。<br />
-            画面の <strong>オーブ</strong> をドラッグすると、声優のこえが3D空間を泳ぎます。
+            画面の<b>オーブ</b>をドラッグすると声優のこえが3D空間を泳ぎます。<br />
           </p>
 
-          <!-- フォーム -->
-          <form
-            class="signup"
-            id="signup-form"
-            action="https://formspree.io/f/REPLACE_ME"
-            method="POST"
-            novalidate
-          >
-            <div class="signup-meta">
-              <span class="signup-id">先着500名 ／ Eメール</span>
-              <span class="signup-status"><span class="status-dot" aria-hidden="true"></span>受付中</span>
+          <form className="reg-form" onSubmit={submit}>
+            <div className="label">
+              <span>先着500名 / Eメール</span>
+              <span className="live-tag">● 受付中</span>
             </div>
-            <div class="signup-row">
-              <label for="email" class="sr-only">メールアドレス</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                autocomplete="email"
-                inputmode="email"
-                placeholder="your.name@example.com"
-                class="signup-input"
-              />
-              <button type="submit" class="signup-btn">
-                <span>メアドをおいておく</span>
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
-            <div class="signup-bonus-row">
-              <span>登録だけで、リリース時に専用通貨 <strong>100ポケ銭</strong> を先行受取</span>
-              <span class="signup-counter" aria-hidden="true">0 ／ 500</span>
-            </div>
+            {!sent ? (
+              <>
+                <div className="reg-row">
+                  <input type="email" required value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.name@example.com" />
+                  <button type="submit" className="reg-cta">{TW.ctaLabel} →</button>
+                </div>
+                <div className="reg-meta">
+                  <span>登録で、リリース時に専用通貨 <b style={{ color: 'var(--mint)' }}>100ポケ銭</b> を先行受取</span>
+                  <span>0 / 500</span>
+                </div>
+              </>
+            ) : (
+              <div className="reg-success">
+                ◇ 受け取りました ─ 6月30日に、もういちど会いましょう
+              </div>
+            )}
           </form>
-          <div id="signup-result" class="signup-result" role="status" aria-live="polite"></div>
 
-          <!-- カウントダウン 4セル -->
-          <div class="countdown" role="timer" aria-live="polite">
-            <span class="countdown-label">カウントダウン ／ 06.30 まで</span>
-            <div class="countdown-cells">
-              <div class="countdown-cell">
-                <span id="cd-days" class="countdown-num">--</span>
-                <span class="countdown-unit">DAYS</span>
-              </div>
-              <div class="countdown-cell">
-                <span id="cd-hours" class="countdown-num">--</span>
-                <span class="countdown-unit">HRS</span>
-              </div>
-              <div class="countdown-cell">
-                <span id="cd-mins" class="countdown-num">--</span>
-                <span class="countdown-unit">MIN</span>
-              </div>
-              <div class="countdown-cell">
-                <span id="cd-secs" class="countdown-num">--</span>
-                <span class="countdown-unit">SEC</span>
+          <div className="countdown">
+            <div>
+              <div className="cd-label">カウントダウン / 06.30 まで</div>
+              <div className="cd-grid">
+                <div className="cd-cell"><div className="num">{pad(cd.d)}</div><div className="lbl">DAYS</div></div>
+                <div className="cd-cell"><div className="num">{pad(cd.h)}</div><div className="lbl">HRS</div></div>
+                <div className="cd-cell"><div className="num">{pad(cd.m)}</div><div className="lbl">MIN</div></div>
+                <div className="cd-cell"><div className="num">{pad(cd.s)}</div><div className="lbl">SEC</div></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- HERO STAGE：右側 計器ビジュアライザ -->
-        <div class="hero-stage" id="hero-stage" aria-label="ドラッグできるオーブ">
-          <div class="stage-frame" aria-hidden="true"></div>
-          <div class="stage-axis stage-axis-h" aria-hidden="true"></div>
-          <div class="stage-axis stage-axis-v" aria-hidden="true"></div>
-
-          <span class="stage-label stage-label-top">↘ ドラッグして、こえを動かす</span>
-          <span class="stage-label stage-label-front">FRONT ・ 正面</span>
-
-          <!-- L チャンネル メーター -->
-          <div class="meter meter-l" aria-hidden="true">
-            <span class="meter-label">L 左耳</span>
-            <div class="meter-bar"><div class="meter-fill" id="meter-l-fill"></div></div>
-          </div>
-
-          <!-- R チャンネル メーター -->
-          <div class="meter meter-r" aria-hidden="true">
-            <span class="meter-label">R 右耳</span>
-            <div class="meter-bar"><div class="meter-fill" id="meter-r-fill"></div></div>
-          </div>
-
-          <!-- リング -->
-          <div class="orb-rings" aria-hidden="true">
-            <span class="orb-ring orb-ring-1"></span>
-            <span class="orb-ring orb-ring-2"></span>
-            <span class="orb-ring orb-ring-3"></span>
-          </div>
-
-          <!-- オーブ -->
-          <div
-            class="orb"
-            id="orb"
-            role="slider"
-            aria-label="オーブの位置（左右の音響パン）"
-            aria-valuemin="-100"
-            aria-valuemax="100"
-            aria-valuenow="0"
-            tabindex="0"
-          >
-            <div class="orb-core" aria-hidden="true"></div>
-            <div class="orb-glow" aria-hidden="true"></div>
-          </div>
-
-          <!-- 座標表示 -->
-          <div class="stage-coords" aria-hidden="true">
-            <span>X <span id="coord-x" class="coord-num">+0.00</span></span>
-            <span>Y <span id="coord-y" class="coord-num">+0.00</span></span>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============== TICKER（マーキー） ============== -->
-      <div class="ticker" aria-hidden="true">
-        <div class="ticker-track">
-          <span class="ticker-item">RELEASE</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">VOIPOKE BETA</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">声優還元率 60%</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">100ポケ銭 PRESENT</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">ボイポケ</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">HRTF binaural</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">3D AUDIO ENVIRONMENT</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">iOS 17+</span><span class="ticker-dot">•</span>
-          <!-- ループ用に同じ内容を2セット並べる -->
-          <span class="ticker-item">RELEASE</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">VOIPOKE BETA</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">声優還元率 60%</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">100ポケ銭 PRESENT</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">ボイポケ</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">HRTF binaural</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">3D AUDIO ENVIRONMENT</span><span class="ticker-dot">•</span>
-          <span class="ticker-item">iOS 17+</span><span class="ticker-dot">•</span>
+        <div style={{ position: 'sticky', top: 100, alignSelf: 'end', width: '100%' }}>
+          <HeroStage orbSize={TW.orbSize} ringCount={TW.ringCount} showCoord={TW.showCoord} />
         </div>
       </div>
 
-      <!-- ============== EXPERIENCE ============== -->
-      <section id="exp" class="exp" aria-labelledby="exp-heading">
-        <p class="section-tag">01 ／ EXPERIENCE</p>
+      <div className="ticker">
+        <div className="ticker-track">
+          <span><i />HRTF binaural<i />3D AUDIO ENVIRONMENT<i />iOS 17+ ONLY<i />06.30 RELEASE<i />VOIPOKE BETA<i />声優還元率 60%<i />100ポケ銭 PRESENT<i />ぼいポケ</span>
+          <span><i />HRTF binaural<i />3D AUDIO ENVIRONMENT<i />iOS 17+ ONLY<i />06.30 RELEASE<i />VOIPOKE BETA<i />声優還元率 60%<i />100ポケ銭 PRESENT<i />ボイポケ</span>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-        <h2 id="exp-heading" class="exp-heading">
-          <span>指で動かす。</span><br />
-          <span class="exp-heading-accent">耳でうけとめる。</span>
-        </h2>
+// ====== EXPERIENCE ======
+function ExperienceVis() {
+  const [t, setT] = useState(0);
+  useEffect(() => {
+    let raf, s = performance.now();
+    const tick = (now) => { setT((now - s) / 1000); raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf);
+  }, []);
+  const cx = 250 + Math.cos(t * 0.7) * 180;
+  const cy = 200 + Math.sin(t * 0.9) * 80;
+  const r = 22 + Math.sin(t * 1.4) * 4;
+  return (
+    <svg viewBox="0 0 500 400">
+      <defs>
+        <radialGradient id="orbg" cx="40%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#aaffd9" />
+          <stop offset="40%" stopColor="#3FE0A0" />
+          <stop offset="100%" stopColor="#0a3a26" />
+        </radialGradient>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#3FE0A0" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#3FE0A0" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <g opacity="0.5">
+        {Array.from({ length: 11 }).map((_, i) =>
+          <line key={"v" + i} x1={i * 50} y1={0} x2={i * 50} y2={400} stroke="#E8F1EC" strokeOpacity="0.05" />
+        )}
+        {Array.from({ length: 9 }).map((_, i) =>
+          <line key={"h" + i} x1={0} y1={i * 50} x2={500} y2={i * 50} stroke="#E8F1EC" strokeOpacity="0.05" />
+        )}
+      </g>
+      {[60, 120, 180].map((rr) =>
+        <circle key={rr} cx="250" cy="200" r={rr} fill="none" stroke="#3FE0A0" strokeOpacity="0.18" strokeDasharray="3 5" />
+      )}
+      <line x1="50" y1="200" x2="450" y2="200" stroke="#3FE0A0" strokeOpacity="0.25" />
+      <line x1="250" y1="40" x2="250" y2="360" stroke="#3FE0A0" strokeOpacity="0.25" />
+      <g>
+        <circle cx="250" cy="200" r="40" fill="#0f1d17" stroke="#3FE0A0" strokeOpacity="0.5" />
+        <circle cx="250" cy="200" r="40" fill="url(#glow)" opacity="0.4" />
+        <circle cx="212" cy="200" r="6" fill="none" stroke="#3FE0A0" />
+        <circle cx="288" cy="200" r="6" fill="none" stroke="#3FE0A0" />
+        <path d="M250 168 L246 158 L254 158 Z" fill="#3FE0A0" />
+      </g>
+      <path d={`M${cx} ${cy} Q ${250 + Math.cos(t * 0.7 - 0.3) * 180} ${200 + Math.sin(t * 0.9 - 0.3) * 80} ${250 + Math.cos(t * 0.7 - 0.6) * 180} ${200 + Math.sin(t * 0.9 - 0.6) * 80}`}
+        fill="none" stroke="#3FE0A0" strokeOpacity="0.4" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r={r + 20} fill="url(#glow)" />
+      <circle cx={cx} cy={cy} r={r} fill="url(#orbg)" stroke="#3FE0A0" strokeOpacity="0.6" />
+      <g fontFamily="JetBrains Mono, monospace" fontSize="9" fill="#E8F1EC" opacity="0.5" letterSpacing="1.5">
+        <text x="20" y="200" dy="-6">L</text>
+        <text x="478" y="200" dy="-6" textAnchor="end">R</text>
+        <text x="250" y="34" textAnchor="middle">FRONT</text>
+        <text x="250" y="380" textAnchor="middle">BACK</text>
+        <text x={cx + r + 8} y={cy} fill="#3FE0A0">VOICE_001</text>
+      </g>
+    </svg>
+  );
+}
 
-        <p class="exp-lead">
-          HRTF（頭部伝達関数）と AVAudioEnvironmentNode を使って、<br />
-          こえが「どこから来たか」を iPhone だけで再現します。
-        </p>
+function Experience() {
+  return (
+    <section className="experience">
+      <div className="container">
+        <div className="exp-head">
+          <div>
+            <div className="sect-tag">02 // EXPERIENCE</div>
+            <h2 className="display h-xl exp-h1" style={{ marginTop: 24 }}>
+              <span className="l1">指であやつる。</span>
+              <span className="l2">耳がよろこぶ。</span>
+            </h2>
+          </div>
+          <div className="small" style={{ maxWidth: 340 }}></div>
+        </div>
 
-        <div class="process">
-          <div class="process-head">
-            <p class="process-tag">PROCESS ／／ 03 STEPS</p>
-            <h3 class="process-heading">こえが、空間にとどまる仕組み</h3>
-            <p class="process-lead">
-              声優の音声を点音源として配置し、リスナーの頭の周りを移動。<br />
-              左右の耳に届くタイミングと音量、周波数のわずかな差が、脳に「方向」を伝えます。<br />
+        <div className="exp-grid">
+          <div className="exp-vis">
+            <ExperienceVis />
+          </div>
+          <div className="exp-text">
+            <div className="sect-num">PROCESS // 03 STEPS</div>
+            <h3>こえが、空間にとどまる仕組み</h3>
+            <p>
+              声優の音声を点音源として配置し、リスナーの頭の周りを移動。左右の耳に届くタイミングと音量、周波数のわずかな差が、脳に「方向」を伝えます。<br />
               ドラッグはそのまま、空間の座標になります。
             </p>
+            <ul className="exp-list">
+              <li><span className="k">01</span><span className="v">指の位置を3次元座標に変換</span><span className="t">touch → vec3</span></li>
+              <li><span className="k">02</span><span className="v">HRTFで左右耳の波形を合成</span><span className="t">binaural mix</span></li>
+              <li><span className="k">03</span><span className="v">距離・反響・方向感を再構成</span><span className="t">env node</span></li>
+            </ul>
+            <div className="exp-callout">
+              ※ イヤホン推奨 ─ スピーカーだと、立体感はうすれます
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ====== FEATURES ======
+function Features() {
+  return (
+    <section className="features">
+      <div className="container">
+        <div className="feat-head">
+          <div className="sect-tag">03 // FEATURES</div>
+          <h2 className="display h-xl feat-h1">
+            ３つの<span style={{ color: 'var(--mint)' }}>あたらしさ</span>
+          </h2>
+        </div>
+
+        <div className="bento">
+          <div className="b b1">
+            <div className="b1-vis" />
+            <div className="b1-trail" />
+            <div className="b1-orb" />
+            <div className="b-num">01 / 03</div>
+            <div className="b-tag">DRAG · 3D AUDIO</div>
+            <h3>ドラッグすると、<br />声が動く。</h3>
+            <p>画面のオーブをドラッグして耳もとへ近づけたり、ひだり耳で聴きたくなったり自由自在。
+さらに業界初！？ぼいポケ固有の"スタジオ機能"を実装。</p>
           </div>
 
-          <ol class="process-steps">
-            <li class="process-step">
-              <span class="step-num">01</span>
-              <span class="step-title">指の位置を3次元座標に変換</span>
-              <span class="step-mono">touch → vec3</span>
-            </li>
-            <li class="process-step">
-              <span class="step-num">02</span>
-              <span class="step-title">HRTF で左右耳の波形を合成</span>
-              <span class="step-mono">binaural mix</span>
-            </li>
-            <li class="process-step">
-              <span class="step-num">03</span>
-              <span class="step-title">距離・反響・方向感を再構成</span>
-              <span class="step-mono">env node</span>
-            </li>
-          </ol>
-        </div>
-      </section>
+          <div className="b b2">
+            <div className="b-num">02 / 03</div>
+            <div className="b-tag">PRESENT</div>
+            <div className="b2-stack"><i></i><i></i></div>
+            <div className="b2-coin">¥</div>
+            <h3>100ポケ銭、<br />はじめに、ぜんぶ。</h3>
+            <p>事前登録するだけで、アプリ内で使える <b style={{ color: 'var(--mint)' }}>100ポケ銭</b> をプレゼント。リリース当日から、すきなボイスにつかえます。</p>
+          </div>
 
-      <!-- ============== BENTO（FEATURES） ============== -->
-      <section id="bento" class="bento" aria-labelledby="bento-heading">
-        <p class="section-tag">02 ／ FEATURES</p>
-        <h2 id="bento-heading" class="bento-heading">
-          ３つの、<span class="accent">あたらしさ</span>
-        </h2>
+          <div className="b b3">
+            <div className="b-num">03 / 03</div>
+            <div className="b-tag">CREATOR FIRST</div>
+            <div className="ratio">60<sup>%</sup></div>
+            <div className="ratio-bar"><i /></div>
+            <div className="ratio-leg"><span>声優還元</span><span>業界平均 45%</span></div>
+            <h3 style={{ marginTop: 14 }}>声優への還元率、<br />60%。</h3>
+            <p>送る側にも、受け取る側にも嬉しい業界最高水準。趣味で終わらせない「声優活動」をここで構築しよう。</p>
+          </div>
 
-        <div class="bento-grid">
-          <article class="bento-card bento-main">
-            <div class="bento-card-icon">🎧</div>
-            <h3 class="bento-card-title">ドラッグで、声が動く</h3>
-            <p class="bento-card-text">
-              指で音源をドラッグ。<br />
-              右耳から左耳へ、耳元へ、遠くへ。<br />
-              頭の中に声優を召喚する、新しい体験。
-            </p>
-            <div class="bento-card-tag">CORE EXPERIENCE</div>
-          </article>
-
-          <article class="bento-card bento-sub-1">
-            <div class="bento-card-icon">🎁</div>
-            <h3 class="bento-card-title">100ポケ銭、もらえる</h3>
-            <p class="bento-card-text">
-              事前登録した人にだけ、リリース当日プレゼント。<br />
-              好きな声優に投げ銭できる、アプリ内通貨。
-            </p>
-          </article>
-
-          <article class="bento-card bento-sub-2">
-            <div class="bento-card-icon">🎙</div>
-            <h3 class="bento-card-title">声優は、収益化できる</h3>
-            <p class="bento-card-text">
-              還元率は <strong>業界最高水準60%</strong>。<br />
-              月3-5本でも、生活の足しになる設計。
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <!-- ============== DEV（MAKER） ============== -->
-      <section id="dev" class="dev" aria-labelledby="dev-heading">
-        <p class="section-tag">03 ／ MAKER</p>
-        <div class="dev-card">
-          <div class="dev-meta">
-            <div class="dev-avatar" aria-hidden="true">E</div>
-            <div>
-              <h2 id="dev-heading" class="dev-name">エイト</h2>
-              <p class="dev-role">現役声優 ／ 個人開発者</p>
+          <div className="b b4">
+            <div className="b-tag">WAVEFORM</div>
+            <h3>アプリひとつで完結する<br />本格直感型レコーディングUI/UX</h3>
+            <p></p>
+            <div className="b4-wave">
+              <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="wg" x1="0" x2="1">
+                    <stop offset="0%" stopColor="#3FE0A000" />
+                    <stop offset="50%" stopColor="#3FE0A0" />
+                    <stop offset="100%" stopColor="#3FE0A000" />
+                  </linearGradient>
+                </defs>
+                {Array.from({ length: 60 }).map((_, i) => {
+                  const h = 20 + Math.abs(Math.sin(i * 0.4) * Math.cos(i * 0.13)) * 60 + i % 7 * 4;
+                  return <rect key={i} x={i * 10 + 4} y={80 - h / 2} width="3" height={h} fill="url(#wg)" />;
+                })}
+              </svg>
             </div>
           </div>
 
-          <blockquote class="dev-quote">
-            <p>
-              「声優のための声活アプリが、ない。」<br />
-              じゃあ、自分で作ろう。
-            </p>
-          </blockquote>
-
-          <p class="dev-text">
-            養成所5年、フリーランス声優3年目、事務所所属2年目。<br />
-            得意はシチュエーションボイスと吹き替え。<br />
-            「続かない声活」を、技術で解決したい。
-          </p>
-
-          <a href="https://note.com/tachibana_voice" target="_blank" rel="noopener noreferrer" class="dev-link">
-            <span>開発の理由を読む</span>
-            <span class="dev-link-meta">note ／ 3,000字</span>
-            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+          <div className="b b5">
+            <div className="b5-info">
+              <div className="b-tag">DEVICE</div>
+              <h3 style={{ fontSize: '27px' }}>iPhoneだけで、<br />立体音響。</h3>
+              <div className="b5-spec">対応: <b>iOS 17+</b> / iPhone 11以降</div>
+              <div className="b5-spec">推奨: <b>有線・無線イヤホン</b></div>
+              <div className="b5-spec">技術: <b>HRTF + AVAudioEnvironmentNode</b></div>
+            </div>
+            <div className="b5-iphone">
+              <div className="b5-iphone-screen">
+                <div className="b5-iphone-rings"><i /><i /><i /></div>
+                <div className="b5-iphone-orb" />
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
-
-      <!-- ============== SNS（JOIN） ============== -->
-      <section id="sns" class="sns" aria-labelledby="sns-heading">
-        <p class="section-tag">04 ／ JOIN</p>
-        <h2 id="sns-heading" class="sns-heading">
-          並走、<span class="accent">してください</span>
-        </h2>
-        <p class="sns-sub">
-          毎日、開発進捗ぜんぶ公開してます。<br />
-          失敗も、数字も、つまずきも、ぜんぶ。
-        </p>
-
-        <div class="sns-grid">
-          <a href="https://x.com/itty_voice" target="_blank" rel="noopener noreferrer" class="sns-link" data-net="x">
-            <span class="sns-link-row">
-              <span class="sns-icon" aria-hidden="true">𝕏</span>
-              <span class="sns-link-arrow" aria-hidden="true">→</span>
-            </span>
-            <span class="sns-name">X（旧Twitter）</span>
-            <span class="sns-handle">@itty_voice</span>
-          </a>
-
-          <a href="https://discord.gg/FYdyCQgztg" target="_blank" rel="noopener noreferrer" class="sns-link" data-net="discord">
-            <span class="sns-link-row">
-              <span class="sns-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                  <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12z"/>
-                </svg>
-              </span>
-              <span class="sns-link-arrow" aria-hidden="true">→</span>
-            </span>
-            <span class="sns-name">ぼいラボ</span>
-            <span class="sns-handle">声優のコミュニティ ／ 無料</span>
-          </a>
-
-          <a href="https://note.com/tachibana_voice" target="_blank" rel="noopener noreferrer" class="sns-link" data-net="note">
-            <span class="sns-link-row">
-              <span class="sns-icon" aria-hidden="true">📝</span>
-              <span class="sns-link-arrow" aria-hidden="true">→</span>
-            </span>
-            <span class="sns-name">note</span>
-            <span class="sns-handle">開発の裏話・つまずき・数字</span>
-          </a>
-        </div>
-      </section>
-
-      <!-- ============== CLOSING ============== -->
-      <section class="closing" aria-labelledby="closing-heading">
-        <h2 id="closing-heading" class="closing-headline">
-          6月30日、<br />
-          App Store で、<br />
-          <span class="accent">会いましょう。</span>
-        </h2>
-        <a href="#hero-heading" class="closing-back">
-          ↑ 上にもどって、事前登録する
-        </a>
-      </section>
-    </main>
-
-    <!-- ============== FOOTER ============== -->
-    <footer class="footer">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <span class="footer-logo">◉ VoiPoke</span>
-          <span class="footer-tag">a product of reverb-lab ／ developed by エイト</span>
-        </div>
-        <nav class="footer-links" aria-label="法務・サポート">
-          <a href="/privacy">プライバシーポリシー</a>
-          <a href="/terms">利用規約</a>
-          <a href="/tokushoho">特商法表記</a>
-          <a href="/creator-terms">クリエイター規約</a>
-          <a href="/support">サポート</a>
-        </nav>
       </div>
-      <p class="footer-copy">© 2026 reverb-lab</p>
-    </footer>
+    </section>
+  );
+}
 
-    <script src="/script.js" defer></script>
-  </body>
+// ====== MAKER ======
+function Maker() {
+  return (
+    <section className="maker">
+      <div className="container">
+        <div className="sect-tag" style={{ marginBottom: 36 }}>04 // MAKER</div>
+        <div className="maker-grid">
+          <div className="maker-portrait">
+            <div className="pc-tag">DEVELOPER · 開発者</div>
+            <div className="pc-name"></div>
+          </div>
+          <div className="maker-bio">
+            <div className="quote">
+              「<span className="accent">こえ</span>って、<br />
+              ほんとうは<br />
+              <span className="accent">環境</span>のなかにある。」
+            </div>
+            <p>
+              はじめまして。Reverb Labの <b style={{ color: 'var(--bone)' }}>たちばな</b>です。<br />
+              現役声優として活動しながら、開発者として声活アプリの開発を<br />
+              はじめました。<br />
+              シチュエーションボイスやボイスドラマを聴いていて感じた<br />
+              "物足りなさ"。<br />
+              それをとどけたくて、VoiPoke をはじめました。
+            </p>
+            <p>
+              声優としての知見や苦労をもとに、<br />従来とは比べものにならないアプリを開発します。
+            </p>
+          </div>
+          <div className="maker-meta" style={{ fontSize: "14px" }}>
+            <div className="row"><span>ROLE</span><b>声優 / 開発</b></div>
+            <div className="row"><span>YEARS</span><b>VA 5年</b></div>
+            <div className="row"><span>NOTE</span><b>note.com/tachibanavoice</b></div>
+            <a href="#" className="btn-ghost" style={{ marginTop: 12, fontSize: "14px", justifyContent: "center", textAlign: "center" }}>note を読む →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ====== JOIN ======
+function Join() {
+  const cards = [
+    { n: "01", g: "X", title: "X (旧Twitter)", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "@voipoke_app をフォロー", href: "#" },
+    { n: "02", g: "D", title: "Discord", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "招待リンクをひらく", href: "#" },
+    { n: "03", g: "N", title: "note", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "note を購読する", href: "#" }
+  ];
+  return (
+    <section className="join">
+      <div className="container">
+        <div className="join-head">
+          <div className="join-h">
+            <div className="sect-tag">05 // JOIN</div>
+            <h2 className="display h-xl" style={{ marginTop: 24 }}>
+              リリースへの<br /><span style={{ color: 'var(--mint)' }}>道のり</span>
+            </h2>
+          </div>
+          <div className="small" style={{ maxWidth: 300 }}>
+            ベータの抽選、ボイス収録の裏側、不具合の話 ── ぜんぶオープンに置いていきます。
+          </div>
+        </div>
+        <div className="join-grid">
+          {cards.map((c) => (
+            <a key={c.n} href={c.href} className="join-card">
+              <div className="top">
+                <span className="num">{c.n}</span>
+                <span className="glyph">{c.g}</span>
+              </div>
+              <h4>{c.title}</h4>
+              <p>{c.body}</p>
+              <div className="go"><span>{c.cta}</span><span className="arr">→</span></div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ====== CLOSING ======
+function Closing() {
+  return (
+    <section className="closing">
+      <div className="closing-orb" />
+      <div className="container">
+        <div className="closing-tag pill"><span className="dot" />2026.06.30 / App Store</div>
+        <h2 className="display h-mega">
+          <span className="l1" style={{ fontSize: "120px" }}>6月30日</span>
+          <span className="l1">App Store で</span>
+          <span className="l2">会いましょう。</span>
+        </h2>
+        <div className="closing-meta">
+          <span>RELEASE / <b>2026.06.30</b></span>
+          <span>PLATFORM / <b>iOS 17+</b></span>
+          <span>PRICE / <b>無料DL</b></span>
+        </div>
+        <a href="#top" className="btn">事前登録に戻る ↑</a>
+      </div>
+    </section>
+  );
+}
+
+// ====== Footer ======
+function Footer() {
+  return (
+    <footer>
+      <div className="container">
+        <div className="ft-grid">
+          <div className="ft-mark"><span className="dot" />VOIPOKE / ぼいポケ © 2026</div>
+          <div className="ft-links">
+            <a href="#">プライバシー</a>
+            <a href="#">特商法</a>
+            <a href="#">お問い合わせ</a>
+            <a href="#">プレスキット</a>
+          </div>
+          <div>made by Reverb Lab · in Tokyo</div>
+        </div>
+        <div className="ft-legal">App Store® および iPhone® は Apple Inc. の商標です。
+VoiPoke は Apple Inc. と提携、後援、または関連していません。
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <div className="wrap" id="top">
+      <Hero />
+      <Experience />
+      <Features />
+      <Maker />
+      <Join />
+      <Closing />
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
 </html>
+<script type="application/json" id="__om_srcmap">{"gen":"7f195f75","entries":[{"id":"7f195f75:0","tag":"html","openStart":16,"attrEnd":31,"openEnd":32,"closeEnd":53883,"textRuns":[[32,33],[29857,29858],[53875,53876]],"parentId":null,"childIds":["7f195f75:1","7f195f75:19"]},{"id":"7f195f75:1","tag":"head","openStart":33,"attrEnd":38,"openEnd":39,"closeEnd":29857,"textRuns":[[39,40],[64,65],[155,156],[225,226],[494,495],[561,562],[607,608],[701,702],[877,878],[949,950],[1000,1001],[1046,1047],[1105,1106],[1200,1201],[1332,1333],[1378,1379],[1440,1441],[1511,1512],[1762,1763],[29849,29850]],"parentId":"7f195f75:0","childIds":["7f195f75:2","7f195f75:3","7f195f75:4","7f195f75:5","7f195f75:6","7f195f75:7","7f195f75:8","7f195f75:9","7f195f75:10","7f195f75:11","7f195f75:12","7f195f75:13","7f195f75:14","7f195f75:15","7f195f75:16","7f195f75:17","7f195f75:18"]},{"id":"7f195f75:2","tag":"meta","openStart":40,"attrEnd":61,"openEnd":64,"closeEnd":64,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:3","tag":"meta","openStart":65,"attrEnd":152,"openEnd":155,"closeEnd":155,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:4","tag":"meta","openStart":226,"attrEnd":491,"openEnd":494,"closeEnd":494,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:5","tag":"link","openStart":495,"attrEnd":558,"openEnd":561,"closeEnd":561,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:6","tag":"meta","openStart":562,"attrEnd":604,"openEnd":607,"closeEnd":607,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:7","tag":"meta","openStart":608,"attrEnd":698,"openEnd":701,"closeEnd":701,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:8","tag":"meta","openStart":702,"attrEnd":874,"openEnd":877,"closeEnd":877,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:9","tag":"meta","openStart":878,"attrEnd":946,"openEnd":949,"closeEnd":949,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:10","tag":"meta","openStart":950,"attrEnd":997,"openEnd":1000,"closeEnd":1000,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:11","tag":"meta","openStart":1001,"attrEnd":1043,"openEnd":1046,"closeEnd":1046,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:12","tag":"meta","openStart":1047,"attrEnd":1102,"openEnd":1105,"closeEnd":1105,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:13","tag":"meta","openStart":1106,"attrEnd":1197,"openEnd":1200,"closeEnd":1200,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:14","tag":"meta","openStart":1201,"attrEnd":1329,"openEnd":1332,"closeEnd":1332,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:15","tag":"meta","openStart":1333,"attrEnd":1375,"openEnd":1378,"closeEnd":1378,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:16","tag":"link","openStart":1379,"attrEnd":1437,"openEnd":1440,"closeEnd":1440,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:17","tag":"link","openStart":1441,"attrEnd":1508,"openEnd":1511,"closeEnd":1511,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:18","tag":"link","openStart":1512,"attrEnd":1759,"openEnd":1762,"closeEnd":1762,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:19","tag":"body","openStart":29858,"attrEnd":29863,"openEnd":29864,"closeEnd":53875,"textRuns":[[29864,29865],[29892,29893],[29925,29926],[29954,29956],[30270,30272],[30293,30295],[30482,30483],[30678,30679],[30866,30868],[53867,53868]],"parentId":"7f195f75:0","childIds":["7f195f75:20","7f195f75:21","7f195f75:22","7f195f75:23","7f195f75:31"]},{"id":"7f195f75:20","tag":"div","openStart":29865,"attrEnd":29885,"openEnd":29886,"closeEnd":29892,"textRuns":[],"parentId":"7f195f75:19","childIds":[]},{"id":"7f195f75:21","tag":"div","openStart":29893,"attrEnd":29918,"openEnd":29919,"closeEnd":29925,"textRuns":[],"parentId":"7f195f75:19","childIds":[]},{"id":"7f195f75:22","tag":"div","openStart":29926,"attrEnd":29947,"openEnd":29948,"closeEnd":29954,"textRuns":[],"parentId":"7f195f75:19","childIds":[]},{"id":"7f195f75:23","tag":"nav","openStart":29956,"attrEnd":29972,"openEnd":29973,"closeEnd":30270,"textRuns":[[29973,29976],[30263,30264]],"parentId":"7f195f75:19","childIds":["7f195f75:24"]},{"id":"7f195f75:24","tag":"div","openStart":29976,"attrEnd":29998,"openEnd":29999,"closeEnd":30263,"textRuns":[[29999,30004],[30079,30084],[30254,30257]],"parentId":"7f195f75:23","childIds":["7f195f75:25","7f195f75:27"]},{"id":"7f195f75:25","tag":"div","openStart":30004,"attrEnd":30025,"openEnd":30026,"closeEnd":30079,"textRuns":[[30051,30073]],"parentId":"7f195f75:24","childIds":["7f195f75:26"]},{"id":"7f195f75:26","tag":"span","openStart":30026,"attrEnd":30043,"openEnd":30044,"closeEnd":30051,"textRuns":[],"parentId":"7f195f75:25","childIds":[]},{"id":"7f195f75:27","tag":"div","openStart":30084,"attrEnd":30105,"openEnd":30106,"closeEnd":30254,"textRuns":[[30106,30113],[30151,30158],[30194,30201],[30243,30248]],"parentId":"7f195f75:24","childIds":["7f195f75:28","7f195f75:29","7f195f75:30"]},{"id":"7f195f75:28","tag":"span","openStart":30113,"attrEnd":30134,"openEnd":30135,"closeEnd":30151,"textRuns":[[30135,30144]],"parentId":"7f195f75:27","childIds":[]},{"id":"7f195f75:29","tag":"span","openStart":30158,"attrEnd":30179,"openEnd":30180,"closeEnd":30194,"textRuns":[[30180,30187]],"parentId":"7f195f75:27","childIds":[]},{"id":"7f195f75:30","tag":"span","openStart":30201,"attrEnd":30219,"openEnd":30220,"closeEnd":30243,"textRuns":[[30220,30236]],"parentId":"7f195f75:27","childIds":[]},{"id":"7f195f75:31","tag":"div","openStart":30272,"attrEnd":30286,"openEnd":30287,"closeEnd":30293,"textRuns":[],"parentId":"7f195f75:19","childIds":[]}]}</script>
