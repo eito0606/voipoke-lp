@@ -1284,6 +1284,174 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
+
+<!-- ================================================================
+     LP 事前登録 連携 script（Supabase Edge Function）
+     - GET  /functions/v1/pre-registration-count → 「○ ／ 500」更新
+     - POST /functions/v1/signup-lp           → メアド保存 + count 反映
+     - 500到達時：CTA を「受付終了」に切替・disable
+     - React アプリの DOM 変動に追従するため interval で reapply
+     ================================================================ -->
+<script>
+(() => {
+  'use strict';
+  // ★ VoiPoke 本番 Supabase（公開可能な anon key）
+  const SB_URL  = 'https://ykmerwuwehgjdyfhpeiy.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrbWVyd3V3ZWhnamR5ZmhwZWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzQ3MDAsImV4cCI6MjA5MjMxMDcwMH0.WzUhUR2-NXcNlD9ZihwkTlSOTuLzYk-Mje9W2WC8Dkw';
+  const COUNT_URL  = SB_URL + '/functions/v1/pre-registration-count';
+  const SIGNUP_URL = SB_URL + '/functions/v1/signup-lp';
+  const LIMIT = 500;
+
+  let currentCount = 0;
+  let isClosed = false;
+
+  // 「○ ／ 500」「○ / 500」「○ ／ ∞」等のテキストノードを検出
+  const counterRe = /^\s*\d+\s*[／\/\\]\s*(?:500|∞|infinity)\s*$/i;
+  function findCounterTextNode() {
+    if (!document.body) return null;
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = w.nextNode())) {
+      if (counterRe.test(node.textContent)) return node;
+    }
+    return null;
+  }
+
+  function applyToDOM() {
+    const node = findCounterTextNode();
+    if (node) {
+      const next = currentCount + ' ／ ' + LIMIT;
+      if (node.textContent !== next) node.textContent = next;
+    }
+    if (isClosed) {
+      const btn = document.querySelector('form button[type="submit"]') || document.querySelector('form button');
+      if (btn && !btn.dataset.lpClosed) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+        const span = btn.querySelector('span') || btn;
+        span.textContent = '受付終了（先着500名）';
+        btn.dataset.lpClosed = '1';
+      }
+    }
+  }
+
+  function showResult(msg, kind) {
+    let el = document.getElementById('lp-signup-result');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'lp-signup-result';
+      el.style.cssText =
+        'margin-top:0.75rem;font-size:0.875rem;font-weight:600;letter-spacing:0.02em;min-height:1.4em;';
+      const form = document.querySelector('form');
+      if (form && form.parentElement) {
+        form.parentElement.insertBefore(el, form.nextSibling);
+      }
+    }
+    el.textContent = msg;
+    el.style.color = kind === 'success' ? '#3fe0a0'
+                   : kind === 'error'   ? '#ff6b6b'
+                   : 'rgba(240,250,243,0.7)';
+  }
+
+  function getQuery(key) {
+    try { return new URLSearchParams(location.search).get(key) || null; } catch { return null; }
+  }
+
+  async function fetchCount() {
+    try {
+      const res = await fetch(COUNT_URL, {
+        method: 'GET',
+        headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON },
+      });
+      if (!res.ok) throw new Error('status ' + res.status);
+      const data = await res.json();
+      currentCount = Number.isFinite(data.count) ? data.count : 0;
+      isClosed = currentCount >= (data.limit ?? LIMIT);
+      applyToDOM();
+    } catch (e) {
+      console.warn('[lp-signup] count fetch failed:', e);
+    }
+  }
+
+  async function submitSignup(email) {
+    try {
+      const res = await fetch(SIGNUP_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SB_ANON,
+          'Authorization': 'Bearer ' + SB_ANON,
+        },
+        body: JSON.stringify({
+          email,
+          utm_source: getQuery('utm_source'),
+          utm_medium: getQuery('utm_medium'),
+          utm_campaign: getQuery('utm_campaign'),
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        currentCount = Number.isFinite(data.count) ? data.count : currentCount + 1;
+        isClosed = currentCount >= (data.limit ?? LIMIT);
+        applyToDOM();
+        showResult(
+          data.already_registered
+            ? '✓ すでに登録済みです。リリース日（6/30）にお知らせします。'
+            : '✓ 登録完了。リリース日（6/30）にお知らせします。',
+          'success',
+        );
+      } else if (data.error === 'closed') {
+        isClosed = true;
+        applyToDOM();
+        showResult('✗ 受付は終了しました（先着 500名）。', 'error');
+      } else if (data.error === 'invalid_email') {
+        showResult('✗ メアドの形式を確認してください。', 'error');
+      } else {
+        showResult('✗ 送信に失敗しました。少し時間をおいて再度お試しください。', 'error');
+      }
+    } catch (e) {
+      console.warn('[lp-signup] signup failed:', e);
+      showResult('✗ ネットワークエラー。あとで試してください。', 'error');
+    }
+  }
+
+  // form submit を capture phase で先取り（React の onSubmit より先に走る）
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    const emailInput = form.querySelector('input[type="email"]');
+    if (!emailInput) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+
+    const email = (emailInput.value || '').trim();
+    if (!email || !email.includes('@')) {
+      showResult('✗ メアドの形式を確認してください。', 'error');
+      return;
+    }
+    if (isClosed) {
+      showResult('✗ 受付は終了しました（先着 500名）。', 'error');
+      return;
+    }
+    showResult('送信中…', 'info');
+    submitSignup(email);
+  }, true);
+
+  function start() {
+    fetchCount();
+    setInterval(applyToDOM, 1500);
+    setInterval(fetchCount, 60_000);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+</script>
+
 </body>
 </html>
-<script type="application/json" id="__om_srcmap">{"gen":"7f195f75","entries":[{"id":"7f195f75:0","tag":"html","openStart":16,"attrEnd":31,"openEnd":32,"closeEnd":53883,"textRuns":[[32,33],[29857,29858],[53875,53876]],"parentId":null,"childIds":["7f195f75:1","7f195f75:19"]},{"id":"7f195f75:1","tag":"head","openStart":33,"attrEnd":38,"openEnd":39,"closeEnd":29857,"textRuns":[[39,40],[64,65],[155,156],[225,226],[494,495],[561,562],[607,608],[701,702],[877,878],[949,950],[1000,1001],[1046,1047],[1105,1106],[1200,1201],[1332,1333],[1378,1379],[1440,1441],[1511,1512],[1762,1763],[29849,29850]],"parentId":"7f195f75:0","childIds":["7f195f75:2","7f195f75:3","7f195f75:4","7f195f75:5","7f195f75:6","7f195f75:7","7f195f75:8","7f195f75:9","7f195f75:10","7f195f75:11","7f195f75:12","7f195f75:13","7f195f75:14","7f195f75:15","7f195f75:16","7f195f75:17","7f195f75:18"]},{"id":"7f195f75:2","tag":"meta","openStart":40,"attrEnd":61,"openEnd":64,"closeEnd":64,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:3","tag":"meta","openStart":65,"attrEnd":152,"openEnd":155,"closeEnd":155,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:4","tag":"meta","openStart":226,"attrEnd":491,"openEnd":494,"closeEnd":494,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:5","tag":"link","openStart":495,"attrEnd":558,"openEnd":561,"closeEnd":561,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:6","tag":"meta","openStart":562,"attrEnd":604,"openEnd":607,"closeEnd":607,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:7","tag":"meta","openStart":608,"attrEnd":698,"openEnd":701,"closeEnd":701,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:8","tag":"meta","openStart":702,"attrEnd":874,"openEnd":877,"closeEnd":877,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:9","tag":"meta","openStart":878,"attrEnd":946,"openEnd":949,"closeEnd":949,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:10","tag":"meta","openStart":950,"attrEnd":997,"openEnd":1000,"closeEnd":1000,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:11","tag":"meta","openStart":1001,"attrEnd":1043,"openEnd":1046,"closeEnd":1046,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:12","tag":"meta","openStart":1047,"attrEnd":1102,"openEnd":1105,"closeEnd":1105,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:13","tag":"meta","openStart":1106,"attrEnd":1197,"openEnd":1200,"closeEnd":1200,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:14","tag":"meta","openStart":1201,"attrEnd":1329,"openEnd":1332,"closeEnd":1332,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:15","tag":"meta","openStart":1333,"attrEnd":1375,"openEnd":1378,"closeEnd":1378,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:16","tag":"link","openStart":1379,"attrEnd":1437,"openEnd":1440,"closeEnd":1440,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:17","tag":"link","openStart":1441,"attrEnd":1508,"openEnd":1511,"closeEnd":1511,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:18","tag":"link","openStart":1512,"attrEnd":1759,"openEnd":1762,"closeEnd":1762,"textRuns":[],"parentId":"7f195f75:1","childIds":[]},{"id":"7f195f75:19","tag":"body","openStart":29858,"attrEnd":29863,"openEnd":29864,"closeEnd":53875,"textRuns":[[29864,29865],[29892,29893],[29925,29926],[29954,29956],[30270,30272],[30293,30295],[30482,30483],[30678,30679],[30866,30868],[53867,53868]],"parentId":"7f195f75:0","childIds":["7f195f75:20","7f195f75:21","7f195f75:22","7f195f75:23","7f195f75:31"]},{"id":"7f195f75:20","tag":"div","openStart":29865,"attrEnd":29885,"openEnd":29886,"closeEnd":29892,"textRuns":[],"parentId":"7f195f75:19","childIds":[]},{"id":"7f195f75:21","tag":"div","openStart":29893,"attrEnd":29918,"openEnd":29919,"closeEnd":29925,"textRuns":[],"parentId":"7f195f75:19","childIds":[]},{"id":"7f195f75:22","tag":"div","openStart":29926,"attrEnd":29947,"openEnd":29948,"closeEnd":29954,"textRuns":[],"parentId":"7f195f75:19","childIds":[]},{"id":"7f195f75:23","tag":"nav","openStart":29956,"attrEnd":29972,"openEnd":29973,"closeEnd":30270,"textRuns":[[29973,29976],[30263,30264]],"parentId":"7f195f75:19","childIds":["7f195f75:24"]},{"id":"7f195f75:24","tag":"div","openStart":29976,"attrEnd":29998,"openEnd":29999,"closeEnd":30263,"textRuns":[[29999,30004],[30079,30084],[30254,30257]],"parentId":"7f195f75:23","childIds":["7f195f75:25","7f195f75:27"]},{"id":"7f195f75:25","tag":"div","openStart":30004,"attrEnd":30025,"openEnd":30026,"closeEnd":30079,"textRuns":[[30051,30073]],"parentId":"7f195f75:24","childIds":["7f195f75:26"]},{"id":"7f195f75:26","tag":"span","openStart":30026,"attrEnd":30043,"openEnd":30044,"closeEnd":30051,"textRuns":[],"parentId":"7f195f75:25","childIds":[]},{"id":"7f195f75:27","tag":"div","openStart":30084,"attrEnd":30105,"openEnd":30106,"closeEnd":30254,"textRuns":[[30106,30113],[30151,30158],[30194,30201],[30243,30248]],"parentId":"7f195f75:24","childIds":["7f195f75:28","7f195f75:29","7f195f75:30"]},{"id":"7f195f75:28","tag":"span","openStart":30113,"attrEnd":30134,"openEnd":30135,"closeEnd":30151,"textRuns":[[30135,30144]],"parentId":"7f195f75:27","childIds":[]},{"id":"7f195f75:29","tag":"span","openStart":30158,"attrEnd":30179,"openEnd":30180,"closeEnd":30194,"textRuns":[[30180,30187]],"parentId":"7f195f75:27","childIds":[]},{"id":"7f195f75:30","tag":"span","openStart":30201,"attrEnd":30219,"openEnd":30220,"closeEnd":30243,"textRuns":[[30220,30236]],"parentId":"7f195f75:27","childIds":[]},{"id":"7f195f75:31","tag":"div","openStart":30272,"attrEnd":30286,"openEnd":30287,"closeEnd":30293,"textRuns":[],"parentId":"7f195f75:19","childIds":[]}]}</script>
