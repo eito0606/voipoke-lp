@@ -1,15 +1,15 @@
-// script.js — VoiPoke 事前登録 LP のクライアント側ロジック（v0.2 design-led）
+// script.js — VoiPoke 事前登録 LP のクライアント側ロジック（v0.4 instrument）
 //
 // 役割:
-//   1. リリース日（2026/06/30 09:00 JST）までのカウントダウン
-//   2. 事前登録フォームの送信ハンドリング
-//   3. オーブのマウス追従パララックス（ヒーロー視線誘導）
-//   4. スクロール連動で各セクションをフェードアップ
+//   1. リリース日（2026/06/30 09:00 JST）までのカウントダウン（4セル：D/H/M/S）
+//   2. 事前登録フォーム送信
+//   3. オーブの実ドラッグ（座標表示・L/R メーター連動）
+//   4. スクロール連動 reveal
 //
 // 設計方針:
 //   - 外部依存ゼロ（CDN なし、ライブラリなし）
 //   - prefers-reduced-motion を尊重
-//   - すべての処理は IIFE で隔離、グローバル汚染なし
+//   - すべての処理は IIFE で隔離
 
 (() => {
   'use strict';
@@ -17,17 +17,16 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ========================================
-  // 1. カウントダウン
+  // 1. カウントダウン（D/H/M/S 4セル）
   // ========================================
-
-  // リリース日：2026年6月30日 09:00 JST
   const RELEASE_AT = new Date('2026-06-30T09:00:00+09:00').getTime();
-  const TICK_MS = 30_000; // 30秒間隔（分単位の表示で十分）
+  const TICK_MS = 1000; // 秒単位更新
 
   const cd = {
     days: document.getElementById('cd-days'),
     hours: document.getElementById('cd-hours'),
     mins: document.getElementById('cd-mins'),
+    secs: document.getElementById('cd-secs'),
   };
 
   const pad2 = (n) => String(Math.max(0, Math.floor(n))).padStart(2, '0');
@@ -38,26 +37,34 @@
       cd.days && (cd.days.textContent = '00');
       cd.hours && (cd.hours.textContent = '00');
       cd.mins && (cd.mins.textContent = '00');
+      cd.secs && (cd.secs.textContent = '00');
       return false;
     }
     const days = Math.floor(diff / 86_400_000);
     const hours = Math.floor((diff / 3_600_000) % 24);
     const mins = Math.floor((diff / 60_000) % 60);
+    const secs = Math.floor((diff / 1_000) % 60);
     cd.days && (cd.days.textContent = pad2(days));
     cd.hours && (cd.hours.textContent = pad2(hours));
     cd.mins && (cd.mins.textContent = pad2(mins));
+    cd.secs && (cd.secs.textContent = pad2(secs));
     return true;
   }
 
-  if (cd.days && cd.hours && cd.mins) {
+  if (cd.days && cd.hours && cd.mins && cd.secs) {
     updateCountdown();
-    const timer = setInterval(() => {
+    let timer = setInterval(() => {
       if (!updateCountdown()) clearInterval(timer);
     }, TICK_MS);
 
-    // タブが見えるようになったら即同期
+    // タブ切替時の同期＋一時停止（バッテリー優しく）
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') updateCountdown();
+      if (document.visibilityState === 'visible') {
+        updateCountdown();
+        if (!timer) timer = setInterval(updateCountdown, TICK_MS);
+      } else {
+        clearInterval(timer); timer = null;
+      }
     });
   }
 
@@ -114,78 +121,140 @@
   }
 
   // ========================================
-  // 3. オーブのマウス追従パララックス
+  // 3. オーブの実ドラッグ（座標 + L/R メーター連動）
   // ========================================
-  // ヒーロー右側のオーブが、マウス位置に追従して微妙に動く。
-  // 「ドラッグで動く」体験を予告する視覚的フック。
+  // ヒーロー右側のオーブをドラッグすると、X/Y 座標が更新され、
+  // L/R チャネルメーターが声の左右配置を視覚化する。
+  // 「ドラッグで声が動く」を体験前に予告する触感的フック。
 
-  if (!reduceMotion) {
-    const orb = document.getElementById('orb');
-    const stage = document.getElementById('orb-stage');
+  const orb = document.getElementById('orb');
+  const stage = document.getElementById('hero-stage');
 
-    if (orb && stage) {
-      let targetX = 0, targetY = 0;
-      let currentX = 0, currentY = 0;
-      let rafId = null;
+  if (orb && stage) {
+    const coordX = document.getElementById('coord-x');
+    const coordY = document.getElementById('coord-y');
+    const meterLFill = document.getElementById('meter-l-fill');
+    const meterRFill = document.getElementById('meter-r-fill');
 
-      // 実装ノート：
-      //   - マウス位置を stage 中心からの相対座標で正規化（-1.0 ~ 1.0）
-      //   - オーブの最大移動量は ±18px（控えめ）
-      //   - ease-out で追従（直接代入だとカクつく）
+    let dragging = false;
+    let posX = 0; // -1.0 ~ 1.0
+    let posY = 0;
 
-      const MAX_OFFSET = 18;
-      const EASE = 0.085;
+    // 自動軌道（ユーザーがドラッグしてないとき、ゆっくり旋回）
+    let auto = !reduceMotion;
+    let autoT = 0;
 
-      function tick() {
-        const dx = targetX - currentX;
-        const dy = targetY - currentY;
-        if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
-          rafId = null;
-          return;
-        }
-        currentX += dx * EASE;
-        currentY += dy * EASE;
-        orb.style.transform = `translate(${currentX.toFixed(2)}px, ${currentY.toFixed(2)}px)`;
-        rafId = requestAnimationFrame(tick);
-      }
+    const fmt = (n) => (n >= 0 ? '+' : '') + n.toFixed(2);
 
-      // ステージ全体ではなくページ全体のマウスを追う（より自然）
-      window.addEventListener('mousemove', (e) => {
-        const rect = stage.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        // 中心からの相対距離を正規化（画面端で ±1 になる）
-        const nx = (e.clientX - cx) / window.innerWidth;
-        const ny = (e.clientY - cy) / window.innerHeight;
-        targetX = nx * MAX_OFFSET * 2;
-        targetY = ny * MAX_OFFSET * 2;
-        if (!rafId) rafId = requestAnimationFrame(tick);
-      }, { passive: true });
+    function applyPos(nx, ny) {
+      // クランプ
+      posX = Math.max(-1, Math.min(1, nx));
+      posY = Math.max(-1, Math.min(1, ny));
 
-      // タッチデバイス：タップで波紋風に小さく弾ませる
-      orb.addEventListener('pointerdown', () => {
-        orb.animate(
-          [
-            { transform: orb.style.transform + ' scale(1)' },
-            { transform: orb.style.transform + ' scale(0.92)' },
-            { transform: orb.style.transform + ' scale(1)' },
-          ],
-          { duration: 360, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
-        );
-      });
+      // オーブを中心からの相対位置で配置（半径の70%以内に制限）
+      const rect = stage.getBoundingClientRect();
+      const r = Math.min(rect.width, rect.height) * 0.35;
+      orb.style.transform = `translate(${(posX * r).toFixed(1)}px, ${(posY * r).toFixed(1)}px)`;
+
+      // 座標表示
+      if (coordX) coordX.textContent = fmt(posX);
+      if (coordY) coordY.textContent = fmt(-posY); // 上が +Y
+
+      // L/R メーター（左に行くほど L が強く、右に行くほど R が強く）
+      // ベース 30% + 左右オフセット
+      const lLevel = 30 + Math.max(0, -posX) * 60;
+      const rLevel = 30 + Math.max(0, posX) * 60;
+      if (meterLFill) meterLFill.style.height = `${lLevel.toFixed(0)}%`;
+      if (meterRFill) meterRFill.style.height = `${rLevel.toFixed(0)}%`;
+
+      // ARIA
+      orb.setAttribute('aria-valuenow', String(Math.round(posX * 100)));
     }
+
+    // 初期位置
+    applyPos(0, 0);
+
+    function pointerToPos(clientX, clientY) {
+      const rect = stage.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const r = Math.min(rect.width, rect.height) * 0.35;
+      return {
+        nx: (clientX - cx) / r,
+        ny: (clientY - cy) / r,
+      };
+    }
+
+    function onDown(e) {
+      dragging = true;
+      auto = false;
+      orb.setPointerCapture && orb.setPointerCapture(e.pointerId);
+      const { nx, ny } = pointerToPos(e.clientX, e.clientY);
+      applyPos(nx, ny);
+      e.preventDefault();
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      const { nx, ny } = pointerToPos(e.clientX, e.clientY);
+      applyPos(nx, ny);
+    }
+    function onUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      orb.releasePointerCapture && orb.releasePointerCapture(e.pointerId);
+      // 5秒後に自動軌道再開
+      setTimeout(() => { if (!dragging) auto = !reduceMotion; }, 5000);
+    }
+
+    orb.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+
+    // キーボード操作（アクセシビリティ）
+    orb.addEventListener('keydown', (e) => {
+      auto = false;
+      const step = 0.1;
+      let nx = posX, ny = posY;
+      switch (e.key) {
+        case 'ArrowLeft': nx -= step; break;
+        case 'ArrowRight': nx += step; break;
+        case 'ArrowUp': ny -= step; break;
+        case 'ArrowDown': ny += step; break;
+        case 'Home': nx = 0; ny = 0; break;
+        default: return;
+      }
+      e.preventDefault();
+      applyPos(nx, ny);
+    });
+
+    // 自動軌道（reduce-motion では無効）
+    if (!reduceMotion) {
+      let lastT = performance.now();
+      function tick(now) {
+        const dt = (now - lastT) / 1000;
+        lastT = now;
+        if (auto && !dragging) {
+          autoT += dt * 0.5; // 旋回速度
+          const nx = Math.cos(autoT) * 0.55;
+          const ny = Math.sin(autoT * 1.3) * 0.35;
+          applyPos(nx, ny);
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ウィンドウリサイズで位置再計算
+    window.addEventListener('resize', () => applyPos(posX, posY), { passive: true });
   }
 
   // ========================================
-  // 4. スクロール連動 reveal
+  // 4. Scroll-driven reveal
   // ========================================
-  // セクション/カードに .reveal を付与し、視界に入ったら .is-in を追加。
-  // 各セクションが下から fade-up で現れる。
-
   if (!reduceMotion && 'IntersectionObserver' in window) {
-    // 対象を自動付与（HTML を汚さない）
     const targets = document.querySelectorAll(
-      '.exp, .bento-heading, .bento-card, .dev-card, .sns-heading, .sns-link, .closing-headline'
+      '.exp, .bento-heading, .bento-card, .dev-card, .sns-heading, .sns-link, .closing-headline, .ticker'
     );
     targets.forEach((el) => el.classList.add('reveal'));
 
@@ -198,7 +267,7 @@
           }
         }
       },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.1 }
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.1 }
     );
 
     targets.forEach((el) => io.observe(el));
