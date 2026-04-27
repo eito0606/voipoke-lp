@@ -2,7 +2,7 @@
 
 VoiPoke の事前登録ランディングページ。
 
-- **公開 URL**：https://voipoke.reverb-lab.com
+- **公開 URL**：https://voipoke-lp.reverb-lab.com
 - **配信**：Vercel
 - **ドメイン**：Cloudflare Registrar `reverb-lab.com` のサブドメイン
 - **テーマ**：ダークグリーンテック近未来（エイト・カンパニー統一ブランド）
@@ -66,10 +66,10 @@ gh repo create voipoke-lp --public --source=. --push
 5. Output Directory：`./`
 6. 「Deploy」をクリック → 5秒で完了
 
-### 3. カスタムドメイン voipoke.reverb-lab.com 接続
+### 3. カスタムドメイン voipoke-lp.reverb-lab.com 接続
 
 1. Vercel プロジェクト → Settings → Domains → Add
-2. `voipoke.reverb-lab.com` を入力
+2. `voipoke-lp.reverb-lab.com` を入力
 3. 表示された CNAME 値をコピー（通常 `cname.vercel-dns.com`）
 4. Cloudflare DNS（reverb-lab.com）に CNAME 追加：
    - Type: CNAME / Name: voipoke / Target: cname.vercel-dns.com
