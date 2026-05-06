@@ -1311,5 +1311,175 @@ function App() {
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
 </script>
+<!-- ================================================================
+     LP 事前登録 連携 script（Supabase Edge Function）
+     - GET  /functions/v1/pre-registration-count → 「○ ／ 500」更新
+     - POST /functions/v1/signup-lp           → メアド保存 + count 反映
+     - 500到達時：CTA を「受付終了」に切替・disable
+     - React アプリの DOM 変動に追従するため interval で reapply
+     ================================================================ -->
+<script>
+(() => {
+  'use strict';
+  // ★ VoiPoke 本番 Supabase（公開可能な anon key）
+  const SB_URL  = 'https://ykmerwuwehgjdyfhpeiy.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrbWVyd3V3ZWhnamR5ZmhwZWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzQ3MDAsImV4cCI6MjA5MjMxMDcwMH0.WzUhUR2-NXcNlD9ZihwkTlSOTuLzYk-Mje9W2WC8Dkw';
+  const COUNT_URL  = SB_URL + '/functions/v1/pre-registration-count';
+  const SIGNUP_URL = SB_URL + '/functions/v1/signup-lp';
+  const LIMIT = 500;
+
+  let currentCount = 0;
+  let isClosed = false;
+
+  // 「○ ／ 500」「○ / 500」「○ ／ ∞」等のテキストノードを検出
+  const counterRe = /^\s*\d+\s*[／\/\\]\s*(?:500|∞|infinity)\s*$/i;
+  function findCounterTextNode() {
+    if (!document.body) return null;
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = w.nextNode())) {
+      if (counterRe.test(node.textContent)) return node;
+    }
+    return null;
+  }
+
+  function applyToDOM() {
+    const node = findCounterTextNode();
+    if (node) {
+      const next = currentCount + ' ／ ' + LIMIT;
+      if (node.textContent !== next) node.textContent = next;
+    }
+    if (isClosed) {
+      const btn = document.querySelector('form button[type="submit"]') || document.querySelector('form button');
+      if (btn && !btn.dataset.lpClosed) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+        const span = btn.querySelector('span') || btn;
+        span.textContent = '受付終了（先着500名）';
+        btn.dataset.lpClosed = '1';
+      }
+    }
+  }
+
+  function showResult(msg, kind) {
+    let el = document.getElementById('lp-signup-result');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'lp-signup-result';
+      el.style.cssText =
+        'margin-top:0.75rem;font-size:0.875rem;font-weight:600;letter-spacing:0.02em;min-height:1.4em;';
+      const form = document.querySelector('form');
+      if (form && form.parentElement) {
+        form.parentElement.insertBefore(el, form.nextSibling);
+      }
+    }
+    el.textContent = msg;
+    el.style.color = kind === 'success' ? '#3fe0a0'
+                   : kind === 'error'   ? '#ff6b6b'
+                   : 'rgba(240,250,243,0.7)';
+  }
+
+  function getQuery(key) {
+    try { return new URLSearchParams(location.search).get(key) || null; } catch { return null; }
+  }
+
+  async function fetchCount() {
+    try {
+      const res = await fetch(COUNT_URL, {
+        method: 'GET',
+        headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON },
+      });
+      if (!res.ok) throw new Error('status ' + res.status);
+      const data = await res.json();
+      currentCount = Number.isFinite(data.count) ? data.count : 0;
+      isClosed = currentCount >= (data.limit ?? LIMIT);
+      applyToDOM();
+    } catch (e) {
+      console.warn('[lp-signup] count fetch failed:', e);
+    }
+  }
+
+  async function submitSignup(email) {
+    try {
+      const res = await fetch(SIGNUP_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SB_ANON,
+          'Authorization': 'Bearer ' + SB_ANON,
+        },
+        body: JSON.stringify({
+          email,
+          utm_source: getQuery('utm_source'),
+          utm_medium: getQuery('utm_medium'),
+          utm_campaign: getQuery('utm_campaign'),
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        currentCount = Number.isFinite(data.count) ? data.count : currentCount + 1;
+        isClosed = currentCount >= (data.limit ?? LIMIT);
+        applyToDOM();
+        showResult(
+          data.already_registered
+            ? '✓ すでに登録済みです。リリース日（6/30）にお知らせします。'
+            : '✓ 登録完了。リリース日（6/30）にお知らせします。',
+          'success',
+        );
+      } else if (data.error === 'closed') {
+        isClosed = true;
+        applyToDOM();
+        showResult('✗ 受付は終了しました（先着 500名）。', 'error');
+      } else if (data.error === 'invalid_email') {
+        showResult('✗ メアドの形式を確認してください。', 'error');
+      } else {
+        showResult('✗ 送信に失敗しました。少し時間をおいて再度お試しください。', 'error');
+      }
+    } catch (e) {
+      console.warn('[lp-signup] signup failed:', e);
+      showResult('✗ ネットワークエラー。あとで試してください。', 'error');
+    }
+  }
+
+  // form submit を capture phase で先取り（React の onSubmit より先に走る）
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    const emailInput = form.querySelector('input[type="email"]');
+    if (!emailInput) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+
+    const email = (emailInput.value || '').trim();
+    if (!email || !email.includes('@')) {
+      showResult('✗ メアドの形式を確認してください。', 'error');
+      return;
+    }
+    if (isClosed) {
+      showResult('✗ 受付は終了しました（先着 500名）。', 'error');
+      return;
+    }
+    showResult('送信中…', 'info');
+    submitSignup(email);
+  }, true);
+
+  function start() {
+    fetchCount();
+    setInterval(applyToDOM, 1500);
+    setInterval(fetchCount, 60_000);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+</script>
+
+</body>
+</html>
 </body>
 </html>
