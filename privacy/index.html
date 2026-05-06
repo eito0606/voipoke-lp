@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>プライバシーポリシー | VoiPoke</title>
+<meta name="description" content="VoiPoke のプライバシーポリシー。取得情報、利用目的、第三者提供、安全管理措置等。" />
+<link rel="canonical" href="https://voipoke-lp.reverb-lab.com/privacy" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png" />
+<meta name="theme-color" content="#0A1410" />
+<meta name="robots" content="index,follow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#070b08;--ink-2:#0f1d17;--ink-3:#142922;
+    --mint:#3FE0A0;--bone:#E8F1EC;--bone-dim:#E8F1EC99;--bone-mute:#E8F1EC55;
+    --line:#E8F1EC15;--line-strong:#E8F1EC30;
+    --display:'Zen Kaku Gothic New',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+  html,body{background:var(--ink);color:var(--bone);font-family:var(--display);}
+  body{line-height:1.85;font-feature-settings:"palt" 1;}
+  a{color:var(--mint);text-decoration:none;}
+  a:hover{opacity:.7;}
+  .container{max-width:780px;margin:0 auto;padding:0 28px;}
+  @media (max-width:720px){.container{padding:0 20px;}}
+
+  nav.top{
+    position:sticky;top:0;z-index:10;
+    background:rgba(7,11,8,.85);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);padding:18px 0;
+  }
+  nav.top .inner{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  nav.top .mark{font-family:var(--mono);font-size:13px;letter-spacing:.08em;display:flex;align-items:center;gap:10px;}
+  nav.top .mark .dot{width:7px;height:7px;background:var(--mint);border-radius:50%;display:inline-block;}
+  nav.top .back{font-family:var(--mono);font-size:12px;color:var(--bone-dim);}
+
+  header.h{padding:64px 0 32px;border-bottom:1px solid var(--line);}
+  header.h .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--bone-mute);margin-bottom:18px;}
+  header.h .tag::before{content:"";width:24px;height:1px;background:var(--mint);}
+  h1{font-size:clamp(28px,5vw,44px);font-weight:900;letter-spacing:-.01em;margin-bottom:14px;line-height:1.2;}
+  header.h .meta{font-family:var(--mono);font-size:12px;color:var(--bone-mute);}
+
+  main{padding:48px 0 64px;font-size:15px;color:var(--bone-dim);}
+  main h2{
+    color:var(--bone);font-size:18px;font-weight:700;margin-top:40px;margin-bottom:14px;
+    padding-top:14px;border-top:1px solid var(--line);
+  }
+  main h2:first-child{border-top:none;padding-top:0;margin-top:0;}
+  main h3{color:var(--bone);font-size:15px;font-weight:600;margin-top:24px;margin-bottom:8px;}
+  main p{margin-bottom:14px;}
+  main ul,main ol{margin:0 0 14px 24px;}
+  main li{margin-bottom:6px;}
+  main table{
+    width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:13px;
+    background:var(--ink-2);border-radius:10px;overflow:hidden;
+  }
+  main th,main td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;}
+  main th{background:var(--ink-3);color:var(--bone);font-weight:500;font-size:12px;letter-spacing:.04em;}
+  main td:first-child{color:var(--bone);font-weight:500;}
+  main strong, main b{color:var(--bone);}
+  main hr{border:none;border-top:1px solid var(--line);margin:32px 0;}
+  main .note{
+    background:var(--ink-2);border:1px solid var(--line);border-radius:12px;
+    padding:18px 22px;font-size:13px;color:var(--bone-dim);margin:18px 0;
+  }
+  main .note b{color:var(--mint);}
+
+  footer{padding:32px 0 64px;border-top:1px solid var(--line);color:var(--bone-mute);font-size:12px;font-family:var(--mono);text-align:center;}
+  footer a{color:var(--bone-dim);}
+  @media (max-width:560px){
+    main table{font-size:12px;}
+    main th,main td{padding:8px 10px;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="container inner">
+    <div class="mark"><span class="dot"></span>VOIPOKE / プライバシーポリシー</div>
+    <a class="back" href="/">← ホームへ</a>
+  </div>
+</nav>
+
+<header class="h">
+  <div class="container">
+    <div class="tag">PRIVACY POLICY</div>
+    <h1>プライバシーポリシー</h1>
+    <div class="meta">最終更新日：2026年6月30日（リリース日に確定）／ 施行日：同上</div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <h2>第1条（基本方針）</h2>
+    <p>佐藤英斗（以下「当方」）は、本アプリ「VoiPoke」（以下「本サービス」）の提供にあたり、利用者（以下「ユーザー」）のプライバシーを尊重し、個人情報の保護に関する法律（個人情報保護法）その他関連法令を遵守します。</p>
+    <p>本ポリシーは、本サービスにおいて収集する情報の種類、利用目的、第三者提供、安全管理措置等について定めるものです。</p>
+
+    <h2>第2条（取得する情報の項目）</h2>
+    <h3>(1) ユーザーが直接提供する情報</h3>
+    <table>
+      <thead><tr><th>項目</th><th>取得方法</th><th>取得タイミング</th></tr></thead>
+      <tbody>
+        <tr><td>メールアドレス</td><td>Sign in with Apple、Sign in with Google または直接入力</td><td>アカウント登録時</td></tr>
+        <tr><td>Apple ID（メールリレー含む）</td><td>Sign in with Apple</td><td>Sign in with Apple 利用時</td></tr>
+        <tr><td>Google アカウント情報（メール、表示名、Google User ID）</td><td>Sign in with Google</td><td>Sign in with Google 利用時</td></tr>
+        <tr><td>ユーザー名（表示名）</td><td>直接入力</td><td>プロフィール作成時</td></tr>
+        <tr><td>プロフィール画像</td><td>アップロード</td><td>任意</td></tr>
+        <tr><td>Discord ユーザーID および 表示名</td><td>Discord OAuth 連携</td><td>ぼいラボ Discord 連携時のみ（任意）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>(2) サービス利用に伴い自動取得する情報</h3>
+    <table>
+      <thead><tr><th>項目</th><th>利用目的</th><th>保管期間</th></tr></thead>
+      <tbody>
+        <tr><td>購入履歴（StoreKit 2 経由）</td><td>サービス提供、クリエイター分配計算</td><td>アカウント有効期間中</td></tr>
+        <tr><td>再生履歴（再生作品ID、再生時刻、再生長さ）</td><td>レコメンド、利用統計</td><td>アカウント有効期間中</td></tr>
+        <tr><td>お気に入り作品</td><td>サービス提供</td><td>アカウント有効期間中</td></tr>
+        <tr><td>プレイリスト</td><td>サービス提供</td><td>アカウント有効期間中</td></tr>
+        <tr><td>ポケ銭残高・取引履歴</td><td>サービス提供、会計記録</td><td>法定保存期間に従う</td></tr>
+        <tr><td>端末情報（OSバージョン、デバイスモデル、アプリバージョン）</td><td>クラッシュ解析、動作確認</td><td>90日</td></tr>
+        <tr><td>IPアドレス</td><td>不正アクセス検知のみ</td><td>30日（その後自動削除）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>(3) クリエイターから取得する情報（クリエイター登録時のみ）</h3>
+    <table>
+      <thead><tr><th>項目</th><th>利用目的</th><th>保管</th></tr></thead>
+      <tbody>
+        <tr><td>本名</td><td>法的書類作成、源泉徴収</td><td>アカウント有効期間中</td></tr>
+        <tr><td>銀行口座情報</td><td>換金時の振込</td><td>振込完了後7年（法定保存）</td></tr>
+        <tr><td>マイナンバー</td><td>支払調書作成（年5万円超の支払い時のみ収集）</td><td>freee人事労務 経由で外部管理（当方サーバーには保存しない）</td></tr>
+        <tr><td>インボイス登録番号（任意）</td><td>適格請求書発行事業者の確認</td><td>アカウント有効期間中</td></tr>
+      </tbody>
+    </table>
+
+    <h3>(4) 取得しない情報</h3>
+    <ul>
+      <li>位置情報</li>
+      <li>連絡先（電話帳）</li>
+      <li>カメラ・マイクへの常時アクセス（録音時のみ一時的に使用、データはクリエイター本人のみ保有）</li>
+      <li>IDFA（広告識別子）</li>
+      <li>顔認証データ</li>
+      <li>健康データ</li>
+      <li>第三者の SNS アカウント（Discord OAuth 連携時のユーザーIDを除く）</li>
+    </ul>
+
+    <h2>第3条（情報の利用目的）</h2>
+    <ol>
+      <li>本サービスの提供、維持、改善</li>
+      <li>ユーザー認証およびアカウント管理</li>
+      <li>課金、決済処理、クリエイターへの分配</li>
+      <li>クリエイターからの報酬支払いに関する法定書類（支払調書等）の作成</li>
+      <li>レコメンド、検索、ユーザー体験のパーソナライズ</li>
+      <li>クラッシュ解析、不具合対応</li>
+      <li>不正アクセス、不正利用の検知および防止</li>
+      <li>統計データの作成（個人を特定しない形式に加工）</li>
+      <li>お問い合わせへの対応</li>
+      <li>重要なお知らせ、利用規約改定の通知</li>
+      <li>法令に基づく対応</li>
+    </ol>
+
+    <h2>第4条（第三者提供）</h2>
+    <p>当方は、以下の場合を除き、ユーザーの同意なく個人情報を第三者に提供しません。</p>
+    <ol>
+      <li>法令に基づく場合</li>
+      <li>人の生命、身体または財産の保護のために必要であって、ユーザーの同意を得ることが困難な場合</li>
+      <li>国の機関若しくは地方公共団体またはその委託を受けた者が法令の定める事務を遂行することに対して協力する必要がある場合</li>
+      <li>クリエイターへの報酬支払いに関連し、税務署等の行政機関から法令に基づく開示要請があった場合</li>
+    </ol>
+
+    <h2>第5条（業務委託先・外部サービス連携）</h2>
+    <h3>(1) 必須利用サービス</h3>
+    <table>
+      <thead><tr><th>サービス</th><th>提供事業者</th><th>取扱情報</th><th>所在国</th></tr></thead>
+      <tbody>
+        <tr><td>Supabase</td><td>Supabase Inc.</td><td>アカウント、購入履歴、再生履歴、音声ファイル</td><td>米国</td></tr>
+        <tr><td>Apple App Store / StoreKit 2</td><td>Apple Inc.</td><td>課金、サブスクリプション管理</td><td>米国</td></tr>
+        <tr><td>Sign in with Apple</td><td>Apple Inc.</td><td>認証情報、メールリレー</td><td>米国</td></tr>
+        <tr><td>Google Sign-In</td><td>Google LLC</td><td>Google アカウント認証情報、メール、表示名</td><td>米国</td></tr>
+        <tr><td>Firebase Crashlytics</td><td>Google LLC</td><td>端末情報、クラッシュログ</td><td>米国</td></tr>
+        <tr><td>Firebase Analytics</td><td>Google LLC</td><td>利用統計（IDFA は取得しない設定）</td><td>米国</td></tr>
+      </tbody>
+    </table>
+
+    <h3>(2) 条件付き利用サービス</h3>
+    <table>
+      <thead><tr><th>サービス</th><th>提供事業者</th><th>取扱情報</th><th>利用条件</th></tr></thead>
+      <tbody>
+        <tr><td>Discord</td><td>Discord Inc.</td><td>Discord ユーザーID、表示名</td><td>ユーザーが Discord 連携を行った場合のみ</td></tr>
+        <tr><td>freee人事労務</td><td>フリー株式会社</td><td>クリエイターの本名、マイナンバー、銀行口座</td><td>報酬支払いが年5万円を超える場合のみ</td></tr>
+      </tbody>
+    </table>
+
+    <h2>第6条（個人情報の海外移転）</h2>
+    <p>本サービスでは、Supabase（米国）、Apple App Store（米国）、Google（米国）、Firebase（米国）、Discord（米国）への情報移転が発生します。各サービス事業者は、適切な保護措置を講じており、欧州一般データ保護規則（GDPR）相当の保護水準を確保しています。</p>
+
+    <h2>第7条（安全管理措置）</h2>
+    <ul>
+      <li>アクセス制御：ユーザーアカウントは個別の認証により保護</li>
+      <li>通信の暗号化：HTTPS / TLS による通信暗号化</li>
+      <li>保存時の暗号化：機密情報（マイナンバー等）は暗号化して保管</li>
+      <li>不正アクセス対策：IPアドレスベースの不正検知</li>
+      <li>アクセスログの記録および定期的な確認</li>
+      <li>業務委託先の監督：外部サービス事業者のセキュリティ水準を確認</li>
+    </ul>
+
+    <h2>第8条（ユーザーの権利）</h2>
+    <p>ユーザーは、当方が保有する自己の個人情報について、以下の権利を有します。</p>
+    <ol>
+      <li><b>開示請求権</b>：自己の個人情報の開示を求めることができます</li>
+      <li><b>訂正・追加・削除請求権</b>：内容に誤りがある場合、訂正、追加または削除を求めることができます</li>
+      <li><b>利用停止請求権</b>：個人情報の利用停止を求めることができます</li>
+      <li><b>第三者提供の停止請求権</b>：第三者提供の停止を求めることができます</li>
+      <li><b>アカウント削除権</b>：本サービスのアカウント削除をいつでも求めることができます</li>
+    </ol>
+    <p>これらの請求は、第13条記載の問い合わせ窓口までお願いします。</p>
+
+    <h3>アカウント削除に伴うデータの取扱い</h3>
+    <p>ユーザーがアカウント削除を求めた場合、原則として全ての個人情報を削除いたします。ただし、以下の情報は法令上の義務により保管を継続する場合があります。</p>
+    <ul>
+      <li>会計帳簿関連情報（法人税法）：7年</li>
+      <li>クリエイター報酬支払い記録（所得税法）：7年</li>
+      <li>取引履歴（資金決済法）：法定期間</li>
+      <li>不正利用の証拠保全に必要な情報：必要な期間</li>
+    </ul>
+
+    <h2>第9条（再生履歴・購入履歴の取扱い）</h2>
+    <p>本サービスはユーザー体験向上のため、再生履歴・購入履歴を収集し、以下の目的で利用します。</p>
+    <ul>
+      <li>「あなたへのおすすめ」機能でのレコメンド</li>
+      <li>検索結果の最適化</li>
+      <li>新作通知の対象選定</li>
+      <li>クリエイター向け分析画面（クリエイターが自作品の統計を見られる機能。個人を特定する情報は表示しません）</li>
+    </ul>
+    <p>ユーザーは「マイページ」→「履歴管理」より、再生履歴・購入履歴を確認・削除することができます（実装時期はリリース後を予定）。</p>
+
+    <h2>第10条（Cookie・類似技術）</h2>
+    <p>本サービスはネイティブアプリのため、Webブラウザ用のCookieは使用しません。ただし、アプリ内で以下の類似技術を使用します。</p>
+    <ul>
+      <li><b>UserDefaults / Keychain</b>：認証トークン、設定情報の保存（端末内のみ）</li>
+      <li><b>キャッシュ</b>：再生済み音声ファイルの一時保存（端末内のみ）</li>
+    </ul>
+    <p>これらはユーザーの端末内に保存され、外部送信されません。</p>
+
+    <h2>第11条（年齢制限）</h2>
+    <p>本サービスは <b>18歳以上の方</b> のみご利用いただけます。18歳未満の方が本サービスを利用していることが判明した場合、当該アカウントを停止し、関連する個人情報を削除します。</p>
+
+    <h2>第12条（プッシュ通知）</h2>
+    <p>ユーザーは、以下の通知を受け取ることができます。</p>
+    <ul>
+      <li>新作音声コンテンツの通知（フォロー中クリエイター・おすすめ）</li>
+      <li>ぼいラボ Discord 連携イベントの通知（連携済みユーザーのみ）</li>
+      <li>サブスクリプション更新の通知</li>
+      <li>重要なお知らせ</li>
+    </ul>
+    <p>通知の有効・無効は、iPhoneの「設定」→「通知」→「VoiPoke」より変更できます。</p>
+
+    <h2>第13条（お問い合わせ窓口）</h2>
+    <div class="note">
+      <p><b>個人情報取扱事業者</b>：佐藤英斗（個人事業主・屋号 Reverb Lab）</p>
+      <p><b>メールアドレス</b>：<a href="mailto:eitosato0818@gmail.com">eitosato0818@gmail.com</a></p>
+      <p><b>対応窓口</b>：上記メールアドレス（電話受付なし）</p>
+      <p>所在地・電話番号は、ご請求があれば遅滞なく開示いたします。</p>
+    </div>
+
+    <h2>第14条（改定）</h2>
+    <p>当方は、必要に応じて本ポリシーを改定することがあります。重要な変更がある場合は、施行日の30日前までに本アプリ内および当方サイト上で告知します。改定後のポリシーは、告知された施行日より効力を生じます。</p>
+
+    <h2>第15条（準拠法）</h2>
+    <p>本ポリシーの解釈および適用は、日本法に準拠します。</p>
+
+    <hr />
+
+    <h3>改定履歴</h3>
+    <ul>
+      <li>2026年6月30日：初版（リリース時）</li>
+    </ul>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    VOIPOKE / ぼいポケ © 2026 · made by Reverb Lab · in Tokyo · <a href="/">ホーム</a> · <a href="/tokushoho">特商法</a> · <a href="/press">プレス</a>
+  </div>
+</footer>
+
+</body>
+</html>

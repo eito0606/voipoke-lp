@@ -26,3 +26,8 @@ Thumbs.db
 node_modules/
 dist/
 .cache/
+
+# intermediate workspace files (commit only optimized assets)
+icon-source-1024.png
+voipoke-lp-raw.html
+voipoke-appicon.html

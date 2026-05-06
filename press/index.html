@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>VoiPoke プレスキット ─ メディア・取材・配信者向け</title>
+<meta name="description" content="VoiPoke（ぼいポケ）の公式プレスキット。アプリアイコン、スクリーンショット、ファクトシート、ロゴ素材をダウンロードできます。" />
+<link rel="canonical" href="https://voipoke-lp.reverb-lab.com/press" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png" />
+<meta property="og:title" content="VoiPoke プレスキット" />
+<meta property="og:description" content="アプリアイコン、スクリーンショット、ファクトシート、ロゴ素材をダウンロードできます。" />
+<meta property="og:url" content="https://voipoke-lp.reverb-lab.com/press" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0A1410" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#070b08;
+    --ink-2:#0f1d17;
+    --ink-3:#142922;
+    --mint:#3FE0A0;
+    --mint-soft:#3FE0A055;
+    --bone:#E8F1EC;
+    --bone-dim:#E8F1EC99;
+    --bone-mute:#E8F1EC55;
+    --line:#E8F1EC15;
+    --line-strong:#E8F1EC30;
+    --display:'Zen Kaku Gothic New',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+  html,body{background:var(--ink);color:var(--bone);font-family:var(--display);}
+  body{overflow-x:hidden;line-height:1.7;font-feature-settings:"palt" 1;}
+  a{color:var(--mint);text-decoration:none;transition:opacity .2s;}
+  a:hover{opacity:.7;}
+  .container{max-width:920px;margin:0 auto;padding:0 28px;}
+  @media (max-width:720px){.container{padding:0 20px;}}
+
+  nav.top{
+    position:sticky;top:0;z-index:10;
+    background:rgba(7,11,8,.85);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    padding:18px 0;
+  }
+  nav.top .inner{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  nav.top .mark{font-family:var(--mono);font-size:13px;letter-spacing:.08em;display:flex;align-items:center;gap:10px;}
+  nav.top .mark .dot{width:7px;height:7px;background:var(--mint);border-radius:50%;display:inline-block;}
+  nav.top .back{font-family:var(--mono);font-size:12px;color:var(--bone-dim);}
+
+  header.hero{
+    padding:80px 0 56px;border-bottom:1px solid var(--line);
+  }
+  .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--bone-mute);margin-bottom:20px;}
+  .tag::before{content:"";width:24px;height:1px;background:var(--mint);}
+  h1{
+    font-size:clamp(36px,7vw,72px);font-weight:900;line-height:1.1;letter-spacing:-.02em;
+    margin-bottom:24px;
+  }
+  h1 .accent{color:var(--mint);}
+  header.hero p{font-size:16px;color:var(--bone-dim);max-width:640px;}
+
+  section{padding:56px 0;border-bottom:1px solid var(--line);}
+  h2{
+    font-size:clamp(22px,3.5vw,32px);font-weight:700;letter-spacing:-.01em;
+    margin-bottom:24px;display:flex;align-items:baseline;gap:14px;
+  }
+  h2 .num{font-family:var(--mono);font-size:13px;color:var(--mint);letter-spacing:.08em;}
+  @media (max-width:560px){
+    h2{flex-direction:column;align-items:flex-start;gap:6px;}
+  }
+
+  /* Fact sheet */
+  .facts{
+    display:grid;grid-template-columns:max-content 1fr;gap:14px 28px;
+    background:var(--ink-2);border:1px solid var(--line);border-radius:16px;padding:28px;
+    font-size:15px;
+  }
+  .facts dt{color:var(--bone-mute);font-family:var(--mono);font-size:12px;letter-spacing:.06em;align-self:center;}
+  .facts dd{color:var(--bone);}
+  .facts dd b{color:var(--mint);font-weight:500;}
+  @media (max-width:560px){
+    .facts{grid-template-columns:1fr;gap:6px 0;padding:20px;}
+    .facts dt{margin-top:14px;}
+    .facts dt:first-child{margin-top:0;}
+  }
+
+  /* Asset cards */
+  .assets{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  @media (max-width:640px){.assets{grid-template-columns:1fr;}}
+  .asset{
+    background:var(--ink-2);border:1px solid var(--line);border-radius:16px;
+    padding:24px;display:flex;flex-direction:column;gap:14px;
+    transition:border-color .2s, transform .2s;
+  }
+  .asset:hover{border-color:var(--mint-soft);transform:translateY(-2px);}
+  .asset-thumb{
+    aspect-ratio:1/1;background:var(--ink-3);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .asset-thumb img{width:100%;height:100%;object-fit:contain;padding:18%;}
+  .asset h3{font-size:16px;font-weight:600;}
+  .asset .meta{font-family:var(--mono);font-size:11px;color:var(--bone-mute);letter-spacing:.04em;}
+  .asset .dl{
+    margin-top:auto;display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:12px;color:var(--mint);
+  }
+
+  /* Boilerplate */
+  .boil{
+    background:var(--ink-2);border:1px solid var(--line);border-radius:16px;
+    padding:24px;font-size:14px;color:var(--bone-dim);line-height:1.85;
+  }
+  .boil h4{color:var(--bone);font-size:13px;font-weight:500;margin-bottom:8px;font-family:var(--mono);letter-spacing:.06em;}
+  .boil + .boil{margin-top:14px;}
+
+  /* Contact */
+  .contact{
+    background:linear-gradient(180deg,#0f1d17,#070b08);
+    border:1px solid var(--line-strong);border-radius:20px;
+    padding:32px;
+  }
+  .contact h2{margin-bottom:14px;}
+  .contact p{color:var(--bone-dim);margin-bottom:18px;}
+  .contact a.btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 22px;border-radius:12px;
+    background:var(--mint);color:var(--ink);font-weight:700;font-size:14px;
+  }
+
+  footer{padding:40px 0 64px;color:var(--bone-mute);font-size:12px;font-family:var(--mono);text-align:center;}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="container inner">
+    <div class="mark"><span class="dot"></span>VOIPOKE / プレスキット</div>
+    <a class="back" href="/">← ホームへ</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="tag">PRESS KIT / 報道・配信者向け</div>
+    <h1>VoiPoke の<br /><span class="accent">取材素材</span>ぜんぶ。</h1>
+    <p>VoiPoke（ぼいポケ）は、画面のオーブをドラッグするとこえが3D空間を泳ぐ擬似ASMR×立体音響アプリです。記事執筆・YouTube レビュー・ポッドキャスト出演依頼などにご利用ください。素材は商用利用可。改変・トリミング可。クレジット表記任意。</p>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2><span class="num">01</span>ファクトシート</h2>
+    <dl class="facts">
+      <dt>名称</dt><dd><b>VoiPoke</b>（ぼいポケ）</dd>
+      <dt>カテゴリ</dt><dd>擬似ASMR × 立体音響アプリ（iOS）</dd>
+      <dt>リリース予定</dt><dd>2026年6月30日 App Store</dd>
+      <dt>対応OS</dt><dd>iOS 17 以降 / iPhone 11 以降</dd>
+      <dt>価格</dt><dd>無料DL（アプリ内課金あり：ポケ銭）</dd>
+      <dt>主要技術</dt><dd>HRTF + AVAudioEnvironmentNode による3D立体音響</dd>
+      <dt>開発元</dt><dd>Reverb Lab（個人事業主）</dd>
+      <dt>開発者</dt><dd>たちばな（現役声優・声優歴5年）</dd>
+      <dt>所在地</dt><dd>東京</dd>
+      <dt>事前登録</dt><dd>500名限定（特典：100ポケ銭プレゼント）</dd>
+    </dl>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="num">02</span>ダウンロード素材</h2>
+    <div class="assets">
+      <a class="asset" href="/icon-1024.png" download>
+        <div class="asset-thumb"><img src="/icon-1024.png" alt="VoiPoke アプリアイコン" /></div>
+        <h3>アプリアイコン（1024×1024）</h3>
+        <div class="meta">PNG / 1024×1024 / 991KB</div>
+        <div class="dl">ダウンロード →</div>
+      </a>
+      <a class="asset" href="/icon-512.png" download>
+        <div class="asset-thumb"><img src="/icon-512.png" alt="VoiPoke アプリアイコン 512" /></div>
+        <h3>アプリアイコン（512×512）</h3>
+        <div class="meta">PNG / 512×512 / 260KB</div>
+        <div class="dl">ダウンロード →</div>
+      </a>
+      <a class="asset" href="/icon-192.png" download>
+        <div class="asset-thumb"><img src="/icon-192.png" alt="VoiPoke アプリアイコン 192" /></div>
+        <h3>アプリアイコン（192×192）</h3>
+        <div class="meta">PNG / 192×192 / 34KB</div>
+        <div class="dl">ダウンロード →</div>
+      </a>
+      <a class="asset" href="/ogp.png" download>
+        <div class="asset-thumb"><img src="/ogp.png" alt="VoiPoke OGP 画像" /></div>
+        <h3>OGP / 記事サムネイル</h3>
+        <div class="meta">PNG / 1200×630 / 384KB</div>
+        <div class="dl">ダウンロード →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="num">03</span>定型紹介文（コピペ可）</h2>
+    <div class="boil">
+      <h4>SHORT / 50字</h4>
+      VoiPoke は、こえが3D空間を泳ぐ擬似ASMR×立体音響アプリ。2026.06.30 App Store。
+    </div>
+    <div class="boil">
+      <h4>MEDIUM / 100字</h4>
+      VoiPoke（ぼいポケ）は、画面のオーブを指でドラッグすると、こえが3D空間を立体的に泳ぐ擬似ASMR×立体音響アプリ。声優活動を続ける開発者がつくる、音響体験そのものを操作できる新しいリスニングUI。2026.06.30 App Store。
+    </div>
+    <div class="boil">
+      <h4>LONG / 200字</h4>
+      VoiPoke（ぼいポケ）は、画面のオーブを指でドラッグすると、こえが3D空間を立体的に泳ぐ擬似ASMR×立体音響アプリ。HRTF と AVAudioEnvironmentNode を活用し、シチュエーションボイスやボイスドラマで物足りなさを感じていた "音場の自由度" をユーザーの手にゆだねる。開発するのは現役声優のたちばな。声優としての知見を実装に翻訳した、新しいこえの体験を 2026年6月30日に App Store でリリース予定。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="num">04</span>よくある質問</h2>
+    <div class="boil">
+      <h4>Q. 開発者の本名は？</h4>
+      たちばなは活動名です。本名公開・顔出し取材は応相談。声出し（収録ボイス含む）はOK。
+    </div>
+    <div class="boil">
+      <h4>Q. 声優としての実績を教えてください。</h4>
+      声優歴5年。シチュエーションボイス・吹き替えを中心に活動。詳細は <a href="https://note.com/Tachibanavoice" target="_blank" rel="noopener noreferrer">note</a> または <a href="https://x.com/Tachibanavoice" target="_blank" rel="noopener noreferrer">X (旧Twitter)</a> をご参照ください。
+    </div>
+    <div class="boil">
+      <h4>Q. アプリ画面のスクリーンショットは？</h4>
+      App Store 公開時に追加予定。事前提供を希望される場合は下記メールへご連絡ください。
+    </div>
+    <div class="boil">
+      <h4>Q. 取材・出演のリードタイムは？</h4>
+      平均1週間程度（声優稼働の都合で前後します）。お早めにご連絡を。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="contact">
+      <h2><span class="num">05</span>お問い合わせ</h2>
+      <p>取材依頼・YouTube レビュー・ポッドキャスト出演・ベータ先行レビューなど、お気軽にどうぞ。原則48時間以内にご返信します。</p>
+      <a class="btn" href="mailto:eitosato0818@gmail.com?subject=%5BVoiPoke%5D%20%E3%83%97%E3%83%AC%E3%82%B9%E5%8F%96%E6%9D%90%E3%81%AE%E3%81%94%E4%BE%9D%E9%A0%BC">取材依頼メールを書く →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    VOIPOKE / ぼいポケ © 2026 · made by Reverb Lab · in Tokyo
+  </div>
+</footer>
+
+</body>
+</html>

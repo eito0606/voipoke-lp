@@ -7,6 +7,10 @@
 <title>VoiPoke ─ あなたは癒す側？癒される側？</title>
 <meta name="description" content="VoiPoke（ボイポケ）は、画面のオーブをドラッグするとこえが3D空間を泳ぐ擬似ASMR×立体音響アプリ。2026年6月30日 App Store リリース予定。事前登録で 100ポケ銭 を先行受取。" />
 <link rel="canonical" href="https://voipoke-lp.reverb-lab.com/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="VoiPoke ─ あなたは癒す側？癒される側？" />
 <meta property="og:description" content="指でこえを動かす擬似ASMR×3D立体音響アプリ。2026.06.30 App Store。事前登録で100ポケ銭プレゼント。" />
@@ -706,6 +710,23 @@
     .countdown{flex-direction:column;align-items:flex-start;}
     .cd-cell{padding:12px 14px;min-width:60px;}
     .cd-cell .num{font-size:24px;}
+    .hero-headline{margin-top:24px;}
+    .hero-headline h1{margin-bottom:24px;}
+    .hero-sub{font-size:14px;line-height:1.75;margin-bottom:24px;}
+    .h-mega{font-size:clamp(44px,10vw,120px);line-height:1.05;}
+    .h-xl{font-size:clamp(32px,8vw,80px);line-height:1.1;}
+    .h-l{font-size:clamp(28px,6vw,56px);line-height:1.15;}
+    .closing h2 .l1[style]{font-size:64px !important;}
+    nav .nav-meta .live{font-size:11px;}
+    .b5-info h3{font-size:22px !important;}
+    .b1-app, .b2-mosaic, .b4-wave{max-width:100%;}
+    img,svg,video{max-width:100%;height:auto;}
+    section{overflow-x:hidden;}
+  }
+  @media (max-width:380px){
+    .container{padding:0 16px;}
+    .hero{padding:80px 0 48px;}
+    .h-mega{font-size:clamp(40px,9.5vw,96px);}
   }
 </style>
 </head>
@@ -727,8 +748,8 @@
 
 <div id="root"></div>
 
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel">
@@ -1175,7 +1196,7 @@ function Maker() {
             <div className="row"><span>ROLE</span><b>声優 / 開発</b></div>
             <div className="row"><span>YEARS</span><b>VA 5年</b></div>
             <div className="row"><span>NOTE</span><b>note.com/tachibanavoice</b></div>
-            <a href="#" className="btn-ghost" style={{ marginTop: 12, fontSize: "14px", justifyContent: "center", textAlign: "center" }}>note を読む →</a>
+            <a href="https://note.com/Tachibanavoice" target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ marginTop: 12, fontSize: "14px", justifyContent: "center", textAlign: "center" }}>note を読む →</a>
           </div>
         </div>
       </div>
@@ -1186,9 +1207,9 @@ function Maker() {
 // ====== JOIN ======
 function Join() {
   const cards = [
-    { n: "01", g: "X", title: "X (旧Twitter)", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "@voipoke_app をフォロー", href: "#" },
-    { n: "02", g: "D", title: "Discord", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "招待リンクをひらく", href: "#" },
-    { n: "03", g: "N", title: "note", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "note を購読する", href: "#" }
+    { n: "01", g: "X", title: "X (旧Twitter)", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "@Tachibanavoice をフォロー", href: "https://x.com/Tachibanavoice" },
+    { n: "02", g: "D", title: "Discord", body: "声活コミュニティ「ぼいラボ」。事前登録者限定のベータ告知、収録の裏側、ペルソナ調査もここで。", cta: "招待リンクをひらく", href: "https://discord.gg/FYdyCQgztg" },
+    { n: "03", g: "N", title: "note", body: "声優×個人開発の長文記事。VoiPokeの設計思想、ASMRの音響理論、開発日記をここで連載。", cta: "note を購読する", href: "https://note.com/Tachibanavoice" }
   ];
   return (
     <section className="join">
@@ -1253,10 +1274,10 @@ function Footer() {
         <div className="ft-grid">
           <div className="ft-mark"><span className="dot" />VOIPOKE / ぼいポケ © 2026</div>
           <div className="ft-links">
-            <a href="#">プライバシー</a>
-            <a href="#">特商法</a>
-            <a href="#">お問い合わせ</a>
-            <a href="#">プレスキット</a>
+            <a href="/privacy">プライバシー</a>
+            <a href="/tokushoho">特商法</a>
+            <a href="mailto:eitosato0818@gmail.com">お問い合わせ</a>
+            <a href="/press">プレスキット</a>
           </div>
           <div>made by Reverb Lab · in Tokyo</div>
         </div>
