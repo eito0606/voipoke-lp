@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /icon-source-1024.png
+
+Sitemap: https://voipoke-lp.reverb-lab.com/sitemap.xml

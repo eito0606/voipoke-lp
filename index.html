@@ -25,6 +25,78 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Zen+Kaku+Gothic+Antique:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://voipoke-lp.reverb-lab.com/#voipoke",
+      "name": "VoiPoke",
+      "alternateName": ["ボイポケ", "ぼいポケ"],
+      "description": "VoiPoke（ボイポケ）は、画面のオーブをドラッグするとこえが3D空間を泳ぐ擬似ASMR×立体音響アプリ。シチュエーションボイス感覚でレコーディングできる、声優のための音声体験プラットフォーム。",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "iOS 17+",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY",
+        "availability": "https://schema.org/PreOrder",
+        "validFrom": "2026-06-30"
+      },
+      "datePublished": "2026-06-30",
+      "image": "https://voipoke-lp.reverb-lab.com/icon-1024.png",
+      "url": "https://voipoke-lp.reverb-lab.com/",
+      "keywords": "擬似ASMR, 立体音響, シチュエーションボイス, 声優, ASMR, 3Dオーディオ, HRTF",
+      "creator": {
+        "@id": "https://voipoke-lp.reverb-lab.com/#tachibana"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://voipoke-lp.reverb-lab.com/#tachibana",
+      "name": "たちばな",
+      "alternateName": "Tachibanavoice",
+      "jobTitle": "声優 / 個人開発者",
+      "url": "https://note.com/Tachibanavoice",
+      "sameAs": [
+        "https://x.com/Tachibanavoice",
+        "https://note.com/Tachibanavoice",
+        "https://discord.gg/FYdyCQgztg"
+      ],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Reverb Lab",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Tokyo",
+          "addressCountry": "JP"
+        }
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://voipoke-lp.reverb-lab.com/#reverblab",
+      "name": "Reverb Lab",
+      "url": "https://voipoke-lp.reverb-lab.com/",
+      "logo": "https://voipoke-lp.reverb-lab.com/icon-512.png",
+      "founder": {
+        "@id": "https://voipoke-lp.reverb-lab.com/#tachibana"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://voipoke-lp.reverb-lab.com/#website",
+      "url": "https://voipoke-lp.reverb-lab.com/",
+      "name": "VoiPoke ─ あなたは癒す側？癒される側？",
+      "inLanguage": "ja",
+      "publisher": {
+        "@id": "https://voipoke-lp.reverb-lab.com/#reverblab"
+      }
+    }
+  ]
+}
+</script>
 <style>
   :root{
     --ink:#070b08;
@@ -161,6 +233,12 @@
     font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--bone-dim);
   }
   .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint);}
+  .pill-bonus{
+    border-color:var(--mint);
+    background:linear-gradient(90deg,var(--mint-dim),transparent);
+    color:var(--bone);
+    font-family:var(--display);font-weight:500;letter-spacing:.02em;
+  }
 
   /* ===== Hero ===== */
   .hero{
@@ -917,6 +995,7 @@ function Hero() {
         <div className="hero-headline">
           <div className="pre">
             <span className="pill"><span className="dot" />事前登録</span>
+            <span className="pill pill-bonus"><span className="dot" />登録で 100 ポケ銭プレゼント</span>
             <span className="pill mono">v0.9 · iOS 17+</span>
           </div>
           <h1 className="display h-mega">
@@ -944,7 +1023,7 @@ function Hero() {
                 </div>
                 <div className="reg-meta">
                   <span>登録で、リリース時に専用通貨 <b style={{ color: 'var(--mint)' }}>100ポケ銭</b> を先行受取</span>
-                  <span>0 / 500</span>
+                  <span data-lp-slots-remaining>あと 500 枠</span>
                 </div>
               </> :
 
@@ -1200,6 +1279,7 @@ function Maker() {
           <div className="maker-meta" style={{ fontSize: "14px" }}>
             <div className="row"><span>ROLE</span><b>声優 / 開発</b></div>
             <div className="row"><span>YEARS</span><b>VA 5年</b></div>
+            <div className="row"><span>BOILAB</span><b>声活コミュニティ 20名</b></div>
             <div className="row"><span>NOTE</span><b>note.com/tachibanavoice</b></div>
             <a href="https://note.com/Tachibanavoice" target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ marginTop: 12, fontSize: "14px", justifyContent: "center", textAlign: "center" }}>note を読む →</a>
           </div>
@@ -1213,7 +1293,8 @@ function Maker() {
 function Join() {
   const cards = [
   { n: "01", g: "X", title: "X (旧Twitter)", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "@Tachibanavoice をフォロー", href: "https://x.com/Tachibanavoice" },
-    { n: "02", g: "D", title: "Discord", body: "声活コミュニティ「ぼいラボ」。事前登録者限定のベータ告知、収録の裏側、ペルソナ調査もここで。", cta: "招待リンクをひらく", href: "https://discord.gg/FYdyCQgztg" },
+    // M-5: Discord は OAuth 自動招待。invite="voipoke-lp" を data 属性で渡す（クリック時に discord-invite.js が乗っ取り）
+    { n: "02", g: "D", title: "Discord", body: "声活コミュニティ「ぼいラボ」（現在 20 名）。事前登録者限定のベータ告知、収録の裏側、ペルソナ調査もここで。", cta: "招待リンクをひらく", href: "https://discord.gg/FYdyCQgztg", invite: "voipoke-lp" },
     { n: "03", g: "N", title: "note", body: "声優×個人開発の長文記事。VoiPokeの設計思想、ASMRの音響理論、開発日記をここで連載。", cta: "note を購読する", href: "https://note.com/Tachibanavoice" }];
 
   return (
@@ -1232,7 +1313,8 @@ function Join() {
         </div>
         <div className="join-grid">
           {cards.map((c) =>
-          <a key={c.n} href={c.href} className="join-card">
+          <a key={c.n} href={c.href} className="join-card"
+             {...(c.invite ? { 'data-discord-invite': c.invite } : {})}>
               <div className="top">
                 <span className="num">{c.n}</span>
                 <span className="glyph">{c.g}</span>
@@ -1331,14 +1413,31 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   let currentCount = 0;
   let isClosed = false;
 
-  // 「○ ／ 500」「○ / 500」「○ ／ ∞」等のテキストノードを検出
+  // 1) 「あと N 枠」表記の data-lp-slots-remaining 属性ノードを優先
+  // 2) フォールバック：「○ ／ 500」「○ / 500」「○ ／ ∞」等の旧テキスト
   const counterRe = /^\s*\d+\s*[／\/\\]\s*(?:500|∞|infinity)\s*$/i;
+  const slotsRe   = /^\s*あと\s*\d+\s*枠\s*$/;
   function findCounterTextNode() {
     if (!document.body) return null;
+    // 優先: data-lp-slots-remaining の中のテキストノード
+    const slotEl = document.querySelector('[data-lp-slots-remaining]');
+    if (slotEl) {
+      // 直下の最初のテキストノードを取得（無ければ作成）
+      let textNode = null;
+      for (const n of slotEl.childNodes) {
+        if (n.nodeType === 3) { textNode = n; break; }
+      }
+      if (!textNode) {
+        textNode = document.createTextNode('あと 500 枠');
+        slotEl.appendChild(textNode);
+      }
+      return textNode;
+    }
+    // Fallback: 旧表記の検索
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = w.nextNode())) {
-      if (counterRe.test(node.textContent)) return node;
+      if (counterRe.test(node.textContent) || slotsRe.test(node.textContent)) return node;
     }
     return null;
   }
@@ -1346,7 +1445,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   function applyToDOM() {
     const node = findCounterTextNode();
     if (node) {
-      const next = currentCount + ' ／ ' + LIMIT;
+      const remaining = Math.max(0, LIMIT - currentCount);
+      // data-lp-slots-remaining 配下なら「あと N 枠」表記
+      const inSlotEl = node.parentElement && node.parentElement.hasAttribute('data-lp-slots-remaining');
+      const next = inSlotEl
+        ? (remaining > 0 ? `あと ${remaining} 枠` : '受付終了')
+        : `${currentCount} ／ ${LIMIT}`;
       if (node.textContent !== next) node.textContent = next;
     }
     if (isClosed) {
@@ -1478,6 +1582,20 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   }
 })();
 </script>
+
+<!-- ================================================================
+     M-5: Discord 自動招待スクリプト
+     React 描画後に DOM へ data-discord-invite が現れるため、
+     MutationObserver で動的に bind する設計。
+     ================================================================ -->
+<script>
+  window.DISCORD_INVITE_CONFIG = {
+    supabaseUrl:  'https://ykmerwuwehgjdyfhpeiy.supabase.co',
+    supabaseAnon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrbWVyd3V3ZWhnamR5ZmhwZWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzQ3MDAsImV4cCI6MjA5MjMxMDcwMH0.WzUhUR2-NXcNlD9ZihwkTlSOTuLzYk-Mje9W2WC8Dkw',
+    fallbackUrl:  'https://discord.gg/FYdyCQgztg',
+  };
+</script>
+<script src="/discord-invite.js" defer></script>
 
 </body>
 </html>
