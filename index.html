@@ -808,6 +808,26 @@
     .h-mega{font-size:clamp(40px,9.5vw,96px);}
   }
 </style>
+
+<!-- ================================================================
+     M-5: Google Analytics 4
+     エイトの作業: GA4 プロパティを作成して測定 ID（G-XXXXXXXXXX）を発行 → ↓を置換
+     ================================================================ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VOIPOKE-LP-PLACEHOLDER"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VOIPOKE-LP-PLACEHOLDER', { send_page_view: true });
+
+  // M-5: Discord 招待クリックを GA4 イベントとして送る
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('[data-discord-invite]');
+    if (!el) return;
+    var source = el.getAttribute('data-discord-invite') || 'organic';
+    gtag('event', 'discord_invite_click', { source: source });
+  });
+</script>
 </head>
 <body>
 <div class="bg-grid"></div>
