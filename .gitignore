@@ -32,3 +32,13 @@ icon-source-1024.png
 voipoke-lp-raw.html
 voipoke-lp-raw-v2.html
 voipoke-appicon.html
+
+# === Security: 認証ファイル拡張 (SEC-6) ===
+*.p8
+*.p12
+*.pem
+AuthKey_*
+firebase-adminsdk*.json
+service-account*.json
+GoogleService-Info.plist
+credentials.json
