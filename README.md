@@ -118,7 +118,7 @@ gh repo create voipoke-lp --public --source=. --push
 
 ## ぼいラボ Discord との関係
 
-ぼいラボの招待 URL は変更不可：`https://discord.gg/FYdyCQgztg`。
+ぼいラボの招待 URL は変更不可：`https://discord.gg/dkSvcxbFwe`。
 voilab.reverb-lab.com のような Web ページは作らない（Discord 直リンクで誘導）。
 
 ---

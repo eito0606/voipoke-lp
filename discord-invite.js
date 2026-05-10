@@ -6,7 +6,7 @@
  *   全部「Edge Function /discord-oauth-callback (init) -> authorize_url」フローに置換する。
  *
  * 使い方:
- *   <a href="https://discord.gg/FYdyCQgztg"
+ *   <a href="https://discord.gg/dkSvcxbFwe"
  *      data-discord-invite="voilab-lp"
  *      data-color-code="">
  *     Discordに参加する
@@ -25,7 +25,7 @@
  *   window.DISCORD_INVITE_CONFIG = {
  *     supabaseUrl:   '...',
  *     supabaseAnon:  '...',
- *     fallbackUrl:   'https://discord.gg/FYdyCQgztg',
+ *     fallbackUrl:   'https://discord.gg/dkSvcxbFwe',
  *   }
  *   をこのスクリプト読み込みより前に定義しておく。
  */
@@ -36,7 +36,7 @@
   var cfg = (window.DISCORD_INVITE_CONFIG || {});
   var SUPABASE_URL  = cfg.supabaseUrl  || '';
   var SUPABASE_ANON = cfg.supabaseAnon || '';
-  var FALLBACK_URL  = cfg.fallbackUrl  || 'https://discord.gg/FYdyCQgztg';
+  var FALLBACK_URL  = cfg.fallbackUrl  || 'https://discord.gg/dkSvcxbFwe';
   var INIT_URL      = SUPABASE_URL + '/functions/v1/discord-oauth-callback';
 
   // ────────────────────────────────────────────
