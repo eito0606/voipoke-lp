@@ -275,7 +275,35 @@
     gap:48px;
     align-items:stretch;
   }
-  @media (max-width:980px){ .hero-inner{grid-template-columns:1fr;gap:24px;} }
+  @media (max-width:980px){
+    /* HERO をコンテンツの実高さに収める（min-height:100vh / padding 120/80 / inline align-self:end による空白を解消） */
+    .hero{ min-height:auto; padding:88px 0 48px; }
+    .hero-inner{ grid-template-columns:1fr; gap:28px; }
+    /* HeroStage を包む inline-style 付き div を打ち消す（position:sticky / align-self:end / top:100 を解除） */
+    .hero-inner > div[style*="sticky"]{
+      position:static !important;
+      align-self:auto !important;
+      top:auto !important;
+    }
+    .hero-headline{ margin-top:0; }
+    .hero-headline h1{ margin-bottom:24px; }
+    .hero-sub{ margin-bottom:28px; }
+    .hero-stage{ min-height:0; aspect-ratio:1/1; }
+    /* countdown：4 セル横並びを iPhone SE(375px) でも収める */
+    .countdown{ margin-top:28px; gap:12px; }
+    .cd-cell{ min-width:0; flex:1; padding:12px 6px; }
+    .cd-cell .num{ font-size:24px; }
+    .cd-cell .lbl{ font-size:8px; margin-top:4px; }
+    /* HERO ticker のマージンを縮める */
+    .ticker{ margin-top:48px; }
+    /* reg-form のはみ出し保険 */
+    .reg-form{ max-width:none; padding:20px; }
+  }
+  @media (max-width:380px){
+    .hero{ padding:84px 0 40px; }
+    .cd-cell{ padding:10px 4px; }
+    .cd-cell .num{ font-size:22px; }
+  }
 
   .hero-headline{
     margin-top:40px;
