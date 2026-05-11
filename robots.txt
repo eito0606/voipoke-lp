@@ -1,5 +1,15 @@
 User-agent: *
 Allow: /
+
+# === 素材・アイコン（SEO-2 で 410 化済み）===
 Disallow: /icon-source-1024.png
+Disallow: /ogp.html
+Disallow: /ogp
+Disallow: /voipoke-lp-raw.html
+Disallow: /voipoke-lp-raw
+Disallow: /voipoke-lp-raw-v2.html
+Disallow: /voipoke-lp-raw-v2
+Disallow: /voipoke-appicon.html
+Disallow: /voipoke-appicon
 
 Sitemap: https://voipoke-lp.reverb-lab.com/sitemap.xml
