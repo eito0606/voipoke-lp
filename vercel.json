@@ -2,6 +2,16 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/ogp.html",                 "destination": "/", "statusCode": 410 },
+    { "source": "/ogp",                      "destination": "/", "statusCode": 410 },
+    { "source": "/voipoke-lp-raw.html",      "destination": "/", "statusCode": 410 },
+    { "source": "/voipoke-lp-raw",           "destination": "/", "statusCode": 410 },
+    { "source": "/voipoke-lp-raw-v2.html",   "destination": "/", "statusCode": 410 },
+    { "source": "/voipoke-lp-raw-v2",        "destination": "/", "statusCode": 410 },
+    { "source": "/voipoke-appicon.html",     "destination": "/", "statusCode": 410 },
+    { "source": "/voipoke-appicon",          "destination": "/", "statusCode": 410 }
+  ],
   "headers": [
     {
       "source": "/(.*)",

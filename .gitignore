@@ -38,7 +38,7 @@ voipoke-appicon.html
 *.p12
 *.pem
 AuthKey_*
-firebase-adminsdk*.json
-service-account*.json
+*firebase-adminsdk*
+*service-account*
 GoogleService-Info.plist
 credentials.json
