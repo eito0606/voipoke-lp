@@ -283,14 +283,27 @@
     .hero-grid{ display:none; }
     .hero-axes{ display:none; }
     .hero-axes::before, .hero-axes::after{ display:none; }
-    .hero-inner{ grid-template-columns:1fr; gap:28px; align-items:start; }
-    /* HeroStage を包む inline-style div を確実に打ち消す（nth-of-type で当てる方が Babel JIT 後の class/style 順序に依存しない） */
+    /* ⚠️ モバイルでは Hero の表示順序を以下に再構成：
+         1. headline + hero-sub（つかみ）
+         2. HeroStage オーブ（インパクト・商品の顔）
+         3. reg-form（メアド登録）
+         4. countdown（締切表示）
+       PC では grid 2 列のままだが、mobile では 1 列にして order で並び替え。
+       第 1 子の包み div の中に headline/form/countdown が入っているので、
+       `display:contents` で透過させて flex 直下に展開、order で並べ替える。 */
+    .hero-inner{ display:flex !important; flex-direction:column; gap:28px; align-items:stretch; }
+    .hero-inner > div:nth-of-type(1){ display:contents; }
+    /* HeroStage を包む inline-style div を確実に打ち消す */
     .hero-inner > div:nth-of-type(2){
       position:static !important;
       align-self:auto !important;
       top:auto !important;
       width:100% !important;
+      order:2; /* headline の直後 */
     }
+    .hero-headline{ order:1; }
+    .reg-form{ order:3; }
+    .countdown{ order:4; }
     .hero-headline{ margin-top:0; max-width:100%; overflow-wrap:anywhere; word-break:break-word; }
     .hero-headline h1{ margin-bottom:24px; }
     .hero-sub{ margin-bottom:28px; }
@@ -390,13 +403,16 @@
   /* 560px 以下：bento の装飾オーブ・iPhone モック・スタック類は
      カード幅 < 装飾サイズになって overflow するため、潔く非表示にする。
      カード本体（テキスト）はそのまま読める。
-     iOS Safari の overflow 貫通バグへの最終手段。 */
+     iOS Safari の overflow 貫通バグへの最終手段。
+     ⚠️ .b4-wave（波形 SVG）は WAVEFORM カードの「中身そのもの」で、
+       これを消すと WAVEFORM カードが空になりエイトの「波形 UI 消えてる」
+       バグを誘発する。preserveAspectRatio="none" で SVG はカード幅に追従
+       するので overflow しない。display:none 対象から外す。 */
   @media (max-width:560px){
     .b1-vis, .b1-orb, .b1-trail,
     .b2-stack, .b2-stack i,
     .b5-iphone, .b5-iphone-screen, .b5-iphone-orb,
-    .b5-iphone-rings, .b5-iphone-rings i,
-    .b4-wave {
+    .b5-iphone-rings, .b5-iphone-rings i {
       display: none !important;
     }
     /* .b5 は元々 grid-template-columns:1fr auto だが、iPhone モック非表示で
