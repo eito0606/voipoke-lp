@@ -101,7 +101,15 @@
     let posY = 0;
 
     // 自動軌道（ユーザーがドラッグしてないとき、ゆっくり旋回）
-    let auto = !reduceMotion;
+    // ⚠️ モバイル（max-width:980px）では orb を完全中央固定にする。
+    //   理由：モバイルだと stage の物理サイズが小さく、auto orbit の振幅
+    //   (±0.55 × 35% = ±19%) でも orb 本体 + 発光（::before 200x200）が
+    //   stage 中央軸から大きく外れて見える＝「中央配置されてない」と感じる。
+    //   生きてる感は orb-core の発光と ::before のグロウだけで十分。
+    //   touchscreen には hover/cursor の概念も無く、ユーザーが触ったら反応する
+    //   のが mobile UX の素直な形（voilab-lp も同様）。
+    const isMobile = window.matchMedia('(max-width: 980px)').matches;
+    let auto = !reduceMotion && !isMobile;
     let autoT = 0;
 
     const fmt = (n) => (n >= 0 ? '+' : '') + n.toFixed(2);
@@ -169,8 +177,10 @@
       if (!dragging) return;
       dragging = false;
       orb.releasePointerCapture && orb.releasePointerCapture(e.pointerId);
-      // 5秒後に自動軌道再開
-      setTimeout(() => { if (!dragging) auto = !reduceMotion; }, 5000);
+      // 5秒後に自動軌道再開（モバイルでは元から auto=false なので再開しない）
+      setTimeout(() => {
+        if (!dragging) auto = !reduceMotion && !isMobile;
+      }, 5000);
     }
 
     orb.addEventListener('pointerdown', onDown);

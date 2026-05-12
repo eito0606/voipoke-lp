@@ -294,7 +294,13 @@
     .hero-headline{ margin-top:0; max-width:100%; overflow-wrap:anywhere; word-break:break-word; }
     .hero-headline h1{ margin-bottom:24px; }
     .hero-sub{ margin-bottom:28px; }
-    .hero-stage{ min-height:0; aspect-ratio:1/1; max-width:560px; margin:0 auto; }
+    /* ⚠️ CSS source order：この media query block は line ~297 にあり、
+       base の .hero-stage（line ~466）より前。同じ specificity だと後勝ち＝
+       base の min-height:480px が勝って stage が 480x480 で固定 → viewport
+       393 にはみ出して stage center が viewport の右寄りになり、
+       orb が中央軸に乗っていても「右上にズレて見える」事象が発生していた。
+       !important で確実に base を上書きする。 */
+    .hero-stage{ min-height:0 !important; aspect-ratio:1/1; max-width:560px; margin:0 auto; }
     /* stage 内 hint「ドラッグして、こえを動かす」を非表示：オーブが自動旋回してテキストに重なる問題を解消 */
     .stage-hint{ display:none !important; }
     /* L 左耳 / R 右耳 / FRONT / BACK は orb と被らない位置のため残す（計器メタファー維持） */
@@ -309,6 +315,16 @@
     .reg-form{ max-width:none; padding:20px; }
     /* h-mega が想定外に膨らんで横スクロールにならないよう保険 */
     .h-mega{ word-break:keep-all; }
+    /* モバイルでは orb を完全中央固定（JS の auto orbit は停止済み）
+       発光（::before）と orb 自身のサイズも縮めて stage 中央軸に
+       しっかり収まるようにする。PC の派手なグロウより「品のある中央発光」を優先。 */
+    .orb{ width:64px !important; height:64px !important; }
+    .orb::before{ width:120px !important; height:120px !important; }
+    /* FRONT / BACK が orb-readout (X/Y) と重なる問題：
+       orb-readout の中央セル「Y」位置を sl-b と被らせないため、
+       メーターと共に縦に分離する。fontsize も小さく。 */
+    .orb-readout{ font-size:9px; }
+    .stage-label{ font-size:9px; }
   }
   @media (max-width:480px){
     /* 480px 以下：headline と本文サイズを実機で確実に収まる範囲に絞る */
