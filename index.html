@@ -1136,10 +1136,17 @@
               <circle cx="288" cy="200" r="6" fill="none" stroke="#3FE0A0"/>
               <path d="M250 168 L246 158 L254 158 Z" fill="#3FE0A0"/>
             </g>
-            <!-- exp-vis-orbit は CSS animation で円軌道を描く -->
+            <!-- exp-vis-orbit：声の音源が listener (250,200) の周りを 120px 半径で円軌道
+                 ⚠️ 以前は CSS animation 前提だったが CSS 本体が未定義で <g> に transform も
+                 cx/cy も無いため、circles が SVG 原点(0,0)=左上に描画されてバグっていた。
+                 iOS Safari でも確実に動く SMIL <animateTransform> で確定動作させる。
+                 (370,200) = 中心(250,200) から右 +120px 出発、12 秒で 1 周。 -->
             <g class="exp-vis-orbit">
-              <circle r="34" fill="url(#glow)"/>
-              <circle r="22" fill="url(#orbg)" stroke="#3FE0A0" stroke-opacity="0.6"/>
+              <circle cx="370" cy="200" r="34" fill="url(#glow)"/>
+              <circle cx="370" cy="200" r="22" fill="url(#orbg)" stroke="#3FE0A0" stroke-opacity="0.6"/>
+              <animateTransform attributeName="transform" attributeType="XML"
+                                type="rotate" from="0 250 200" to="360 250 200"
+                                dur="12s" repeatCount="indefinite"/>
             </g>
             <g font-family="JetBrains Mono, monospace" font-size="9" fill="#E8F1EC" opacity="0.5" letter-spacing="1.5">
               <text x="20"  y="200" dy="-6">L</text>
