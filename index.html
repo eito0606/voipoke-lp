@@ -1086,7 +1086,8 @@ function Hero() {
           <div className="pre">
             <span className="pill"><span className="dot" />事前登録</span>
             <span className="pill pill-bonus"><span className="dot" />登録で 100 ポケ銭プレゼント</span>
-            <span className="pill mono">v0.9 · iOS 17+</span>
+            {/* v0.9 · iOS 17+ pill は情報優先度が低く、モバイルで画面右端で
+                切れる原因になっていたため完全削除。バージョンは nav バーに表示済み。 */}
           </div>
           <h1 className="display h-mega">
             <span style={{ whiteSpace: 'pre-line' }}>{TW.headlineLine1}</span><br />
