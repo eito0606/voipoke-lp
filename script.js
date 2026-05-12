@@ -112,9 +112,16 @@
       posY = Math.max(-1, Math.min(1, ny));
 
       // オーブを中心からの相対位置で配置（半径の70%以内に制限）
+      // ⚠️ オーブの base CSS は `.orb { transform: translate(-50%, -50%) }` で
+      //   inline style の left:50%/top:50% に対して自身の中心を合わせている。
+      //   ここで単純に `translate(x, y)` を書くと base 中央オフセットを潰してしまい
+      //   オーブの左上角が stage 中央に来る＝ orb と発光（::before 200x200）が
+      //   右下にズレて overflow:hidden で見切れる（モバイルで顕著）。
+      //   transform は後勝ちなので両方残すには 1 つの transform 内で 2 段に合成する。
       const rect = stage.getBoundingClientRect();
       const r = Math.min(rect.width, rect.height) * 0.35;
-      orb.style.transform = `translate(${(posX * r).toFixed(1)}px, ${(posY * r).toFixed(1)}px)`;
+      orb.style.transform =
+        `translate(-50%, -50%) translate(${(posX * r).toFixed(1)}px, ${(posY * r).toFixed(1)}px)`;
 
       // 座標表示
       if (coordX) coordX.textContent = fmt(posX);
