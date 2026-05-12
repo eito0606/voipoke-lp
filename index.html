@@ -400,31 +400,39 @@
       max-height: 100%;
     }
   }
-  /* 560px 以下：bento の装飾オーブ・iPhone モック・スタック類は
-     カード幅 < 装飾サイズになって overflow するため、潔く非表示にする。
-     カード本体（テキスト）はそのまま読める。
-     iOS Safari の overflow 貫通バグへの最終手段。
-     ⚠️ .b4-wave（波形 SVG）は WAVEFORM カードの「中身そのもの」で、
-       これを消すと WAVEFORM カードが空になりエイトの「波形 UI 消えてる」
-       バグを誘発する。preserveAspectRatio="none" で SVG はカード幅に追従
-       するので overflow しない。display:none 対象から外す。 */
+  /* 560px 以下：bento カード自体の min-height をモバイルで縮める
+     （テキストだけだとカードが間延びして見える）
+     ⚠️ 旧版では .b1-vis / .b1-orb / .b1-trail / .b2-stack / .b5-iphone* を
+       display:none にしていたが、それは React/Babel JIT 環境で bento カードが
+       計算ミスで意図せぬ幅になり overflow したから。React 排除後 + clip-path:
+       inset(0) + contain:paint で抑制済みなので、各装飾を復活させても card 内に
+       クリップされる。 */
   @media (max-width:560px){
-    .b1-vis, .b1-orb, .b1-trail,
-    .b2-stack, .b2-stack i,
-    .b5-iphone, .b5-iphone-screen, .b5-iphone-orb,
-    .b5-iphone-rings, .b5-iphone-rings i {
-      display: none !important;
-    }
-    /* .b5 は元々 grid-template-columns:1fr auto だが、iPhone モック非表示で
-       1 列になるよう調整 */
-    .b5 {
-      grid-template-columns: 1fr !important;
-    }
-    /* bento カード自体の min-height をモバイルで縮める（テキストだけだと
-       カードが間延びして見える） */
     .b {
       min-height: 140px !important;
     }
+    /* .b1 オーブ装飾：PC では右側 160x160 で大きく見せるが、mobile では
+       card 幅 347px に対して大きすぎてテキストを侵食する。右下に 64x64 に
+       縮小して floaty animation も止める（静かな点としてテキストの邪魔をしない）。 */
+    .b1-orb{
+      width:64px !important; height:64px !important;
+      right:16px !important; bottom:16px !important;
+      top:auto !important; transform:none !important;
+      animation:none !important;
+    }
+    .b1-orb::before, .b1-orb::after { display:none; }
+    .b1-trail { display:none; }
+    /* .b1-vis (背景 grid) のマスクを右下に寄せる */
+    .b1-vis{
+      mask-image:radial-gradient(ellipse 50% 50% at 80% 80%,#000 0%,transparent 70%);
+    }
+    /* .b5 iPhone モックは mobile では card 幅をフルに使ってテキストと並べる */
+    .b5{ grid-template-columns:1fr auto !important; gap:16px !important; }
+    .b5-iphone{ width:96px !important; height:160px !important; }
+    .b5-iphone-rings i:nth-child(1){ width:40px; height:40px; }
+    .b5-iphone-rings i:nth-child(2){ width:64px; height:64px; }
+    .b5-iphone-rings i:nth-child(3){ width:88px; height:88px; }
+    .b5-iphone-orb{ width:28px; height:28px; }
   }
 
   .hero-headline{
@@ -1314,7 +1322,7 @@
           </div>
         </div>
 
-        <div class="b b5">
+        <div id="card-b5" class="b b5">
           <div class="b5-info">
             <div class="b-tag">DEVICE</div>
             <h3 style="font-size:27px">iPhoneだけで<br>立体音響</h3>
