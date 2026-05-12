@@ -963,578 +963,458 @@
   </div>
 </nav>
 
-<div id="root"></div>
+<!-- ===========================================================
+     React + Babel JIT 排除 後の純粋 HTML 版（voilab-lp と同方針）
+     iOS Safari でのロード遅延・JIT 失敗を排除して即時レンダリング保証。
+     動的処理は /script.js（カウントダウン / フォーム / オーブドラッグ）
+     と inline script（事前登録カウンタ / Discord 招待）が担う。
+     =========================================================== -->
 
-<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<div class="wrap" id="top">
 
-<script type="text/babel">
-
-
-
-const { useState, useEffect, useRef, useCallback } = React;
-
-// Tweak values baked in (production deploy — Tweaks panel disabled)
-const TW = {
-  accent: "#3FE0A0",
-  ink: "#070b08",
-  noise: 0.07,
-  orbSize: 88,
-  ringCount: 3,
-  showAxes: true,
-  showCoord: true,
-  headlineLine1: "あなたは\n癒す側？",
-  headlineLine2: "癒される側？",
-  ctaLabel: "メアドをおいておく",
-  releaseDate: "2026-06-30T10:00:00+09:00"
-};
-
-// ====== Countdown ======
-function useCountdown(target) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const i = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(i);
-  }, []);
-  const t = new Date(target).getTime();
-  const diff = Math.max(0, t - now);
-  const d = Math.floor(diff / 86400000);
-  const h = Math.floor(diff % 86400000 / 3600000);
-  const m = Math.floor(diff % 3600000 / 60000);
-  const s = Math.floor(diff % 60000 / 1000);
-  return { d, h, m, s, raw: diff };
-}
-
-// ====== Hero Orb (draggable) ======
-function HeroStage({ orbSize, ringCount, showCoord }) {
-  const stageRef = useRef(null);
-  const [pos, setPos] = useState({ x: 0.5, y: 0.5 });
-  const [drag, setDrag] = useState(false);
-  const [meters, setMeters] = useState({ l: 0, r: 0 });
-
-  const move = useCallback((clientX, clientY) => {
-    const el = stageRef.current;if (!el) return;
-    const r = el.getBoundingClientRect();
-    let x = (clientX - r.left) / r.width;
-    let y = (clientY - r.top) / r.height;
-    x = Math.max(0.04, Math.min(0.96, x));
-    y = Math.max(0.04, Math.min(0.96, y));
-    setPos({ x, y });
-  }, []);
-
-  useEffect(() => {
-    if (drag) return;
-    let raf,t0 = performance.now();
-    const tick = (t) => {
-      const dt = (t - t0) / 1000;
-      // 自動軌道：エイト指摘「中央軸に配置されてない」対応で振幅を縮小
-      //   旧 0.28 / 0.22 → モバイルでオーブが画面右下に張り付いて見えた
-      //   新 0.12 / 0.10 で常に中央軸付近を滞在する穏やかな漂い
-      const cx = 0.5 + Math.cos(dt * 0.45) * 0.12;
-      const cy = 0.5 + Math.sin(dt * 0.6) * 0.10;
-      setPos({ x: cx, y: cy });
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [drag]);
-
-  useEffect(() => {
-    const lr = pos.x;
-    const dist = Math.abs(pos.y - 0.5) * 2;
-    const base = 0.6 - dist * 0.3;
-    const l = Math.max(0, Math.min(1, base * (1.4 - lr)));
-    const r = Math.max(0, Math.min(1, base * (lr + 0.4)));
-    setMeters({ l, r });
-  }, [pos]);
-
-  const onPointerDown = (e) => {
-    e.preventDefault();
-    setDrag(true);
-    e.target.setPointerCapture && e.target.setPointerCapture(e.pointerId);
-    move(e.clientX, e.clientY);
-  };
-  const onPointerMove = (e) => {if (!drag) return;move(e.clientX, e.clientY);};
-  const onPointerUp = () => setDrag(false);
-
-  const cx = ((pos.x - 0.5) * 2).toFixed(2);
-  const cy = ((0.5 - pos.y) * 2).toFixed(2);
-  const dist = Math.sqrt((pos.x - 0.5) ** 2 + (pos.y - 0.5) ** 2) * 2;
-  const distLbl = dist.toFixed(2);
-
-  const rings = [];
-  for (let i = 1; i <= ringCount; i++) {
-    rings.push(<div key={i} className={`orb-ring or-${i}`} style={{ inset: `${-8 + (ringCount - i) * 12}%`, opacity: 0.85 - (i - 1) * 0.25 }} />);
-  }
-
-  return (
-    <div ref={stageRef} className="hero-stage"
-    onPointerDown={onPointerDown}
-    onPointerMove={onPointerMove}
-    onPointerUp={onPointerUp}
-    onPointerCancel={onPointerUp}>
-      {showCoord && <div className="stage-coord" />}
-      <div className="stage-cross" />
-      <div className="stage-circle sc-1" />
-      <div className="stage-circle sc-2" />
-      <div className="stage-circle sc-3" />
-      <div className="stage-label sl-l">L · 左耳</div>
-      <div className="stage-label sl-r">R · 右耳</div>
-      <div className="stage-label sl-t">FRONT · 正面</div>
-      <div className="stage-label sl-b">BACK · 背面</div>
-      <div className="ear l" />
-      <div className="ear r" />
-      <div className="stage-hint"><span>↳</span><span>ドラッグして、こえを動かす</span></div>
-      <div className={`orb${drag ? ' dragging' : ''}`}
-      style={{
-        left: `${pos.x * 100}%`,
-        top: `${pos.y * 100}%`,
-        width: orbSize, height: orbSize,
-        transition: drag ? 'none' : 'left .8s linear,top .8s linear'
-      }}>
-        <div className="orb-core" />
-        {rings}
-      </div>
-      <div className="orb-readout">
-        <div><span>X</span>{cx}</div>
-        <div><span>Y</span>{cy}</div>
-        <div><span>DIST</span>{distLbl}</div>
-        <div><span>HRTF</span>ON</div>
-      </div>
-      <div className="meters">
-        <div className="meter">
-          <div className="bar"><i style={{ height: `${meters.l * 100}%` }} /></div>
-          <div>L</div>
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-axes"></div>
+    <div class="container hero-inner">
+      <div class="hero-headline">
+        <div class="pre">
+          <span class="pill"><span class="dot"></span>事前登録</span>
+          <span class="pill pill-bonus"><span class="dot"></span>登録で 100 ポケ銭プレゼント</span>
         </div>
-        <div className="meter">
-          <div className="bar"><i style={{ height: `${meters.r * 100}%` }} /></div>
-          <div>R</div>
-        </div>
-      </div>
-    </div>);
+        <h1 class="display h-mega">
+          <span style="white-space:pre-line">あなたは
+癒す側？</span><br>
+          <span class="accent">癒される側？</span>
+        </h1>
+        <p class="hero-sub">
+          指で<b>こえ</b>を動かす<br>
+          立体音響アプリ。<br>
+          ドラッグで声が泳ぐ。
+        </p>
 
-}
-
-// ====== Hero ======
-function Hero() {
-  const cd = useCountdown(TW.releaseDate);
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const submit = (e) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setSent(true);
-  };
-  const pad = (n) => String(n).padStart(2, "0");
-
-  return (
-    <section className="hero">
-      <div className="hero-grid" />
-      <div className="hero-axes" />
-      <div className="container hero-inner">
-        <div className="hero-headline">
-          <div className="pre">
-            <span className="pill"><span className="dot" />事前登録</span>
-            <span className="pill pill-bonus"><span className="dot" />登録で 100 ポケ銭プレゼント</span>
-            {/* v0.9 · iOS 17+ pill は情報優先度が低く、モバイルで画面右端で
-                切れる原因になっていたため完全削除。バージョンは nav バーに表示済み。 */}
+        <form id="signup-form" class="reg-form" action="https://ykmerwuwehgjdyfhpeiy.supabase.co/functions/v1/signup-lp" method="post">
+          <div class="label">
+            <span>先着500名 / Eメール</span>
+            <span class="live-tag">● 受付中</span>
           </div>
-          <h1 className="display h-mega">
-            <span style={{ whiteSpace: 'pre-line' }}>{TW.headlineLine1}</span><br />
-            <span className="accent">{TW.headlineLine2}</span>
-          </h1>
-          <p className="hero-sub">
-            指で<b>こえ</b>を動かす<br />
-            立体音響アプリ。<br />
-            ドラッグで声が泳ぐ。
-          </p>
-
-          <form className="reg-form" onSubmit={submit}>
-            <div className="label">
-              <span>先着500名 / Eメール</span>
-              <span className="live-tag">● 受付中</span>
-            </div>
-            {!sent ?
-            <>
-                <div className="reg-row">
-                  <input type="email" required value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.name@example.com" />
-                  <button type="submit" className="reg-cta">{TW.ctaLabel} →</button>
-                </div>
-                <div className="reg-meta">
-                  <span>登録で、リリース時に専用通貨 <b style={{ color: 'var(--mint)' }}>100ポケ銭</b> を先行受取</span>
-                  <span data-lp-slots-remaining>あと 500 枠</span>
-                </div>
-              </> :
-
-            <div className="reg-success">
-                ◇ 受け取りました ─ 6月30日に、もういちど会いましょう
-              </div>
-            }
-          </form>
-
-          <div className="countdown">
-            <div>
-              <div className="cd-label">カウントダウン / 06.30 まで</div>
-              <div className="cd-grid">
-                <div className="cd-cell"><div className="num">{pad(cd.d)}</div><div className="lbl">DAYS</div></div>
-                <div className="cd-cell"><div className="num">{pad(cd.h)}</div><div className="lbl">HRS</div></div>
-                <div className="cd-cell"><div className="num">{pad(cd.m)}</div><div className="lbl">MIN</div></div>
-                <div className="cd-cell"><div className="num">{pad(cd.s)}</div><div className="lbl">SEC</div></div>
-              </div>
-            </div>
+          <div class="reg-row">
+            <input type="email" name="email" required placeholder="your.name@example.com">
+            <button type="submit" class="reg-cta">メアドをおいておく →</button>
           </div>
-        </div>
+          <div class="reg-meta">
+            <span>登録で、リリース時に専用通貨 <b style="color:var(--mint)">100ポケ銭</b> を先行受取</span>
+            <span data-lp-slots-remaining>あと 500 枠</span>
+          </div>
+          <div id="signup-result" class="signup-result"></div>
+        </form>
 
-        <div style={{ position: 'sticky', top: 100, alignSelf: 'end', width: '100%' }}>
-          <HeroStage orbSize={TW.orbSize} ringCount={TW.ringCount} showCoord={TW.showCoord} />
-        </div>
-      </div>
-
-      <div className="ticker">
-        <div className="ticker-track">
-          <span><i />HRTF binaural<i />3D AUDIO ENVIRONMENT<i />iOS 17+ ONLY<i />06.30 RELEASE<i />VOIPOKE BETA<i />声優還元率 60%<i />100ポケ銭 PRESENT<i />ぼいポケ</span>
-          <span><i />HRTF binaural<i />3D AUDIO ENVIRONMENT<i />iOS 17+ ONLY<i />06.30 RELEASE<i />VOIPOKE BETA<i />声優還元率 60%<i />100ポケ銭 PRESENT<i />ボイポケ</span>
-        </div>
-      </div>
-    </section>);
-
-}
-
-// ====== EXPERIENCE ======
-function ExperienceVis() {
-  const [t, setT] = useState(0);
-  useEffect(() => {
-    let raf,s = performance.now();
-    const tick = (now) => {setT((now - s) / 1000);raf = requestAnimationFrame(tick);};
-    raf = requestAnimationFrame(tick);return () => cancelAnimationFrame(raf);
-  }, []);
-  const cx = 250 + Math.cos(t * 0.7) * 180;
-  const cy = 200 + Math.sin(t * 0.9) * 80;
-  const r = 22 + Math.sin(t * 1.4) * 4;
-  return (
-    <svg viewBox="0 0 500 400">
-      <defs>
-        <radialGradient id="orbg" cx="40%" cy="35%" r="70%">
-          <stop offset="0%" stopColor="#aaffd9" />
-          <stop offset="40%" stopColor="#3FE0A0" />
-          <stop offset="100%" stopColor="#0a3a26" />
-        </radialGradient>
-        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#3FE0A0" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#3FE0A0" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <g opacity="0.5">
-        {Array.from({ length: 11 }).map((_, i) =>
-        <line key={"v" + i} x1={i * 50} y1={0} x2={i * 50} y2={400} stroke="#E8F1EC" strokeOpacity="0.05" />
-        )}
-        {Array.from({ length: 9 }).map((_, i) =>
-        <line key={"h" + i} x1={0} y1={i * 50} x2={500} y2={i * 50} stroke="#E8F1EC" strokeOpacity="0.05" />
-        )}
-      </g>
-      {[60, 120, 180].map((rr) =>
-      <circle key={rr} cx="250" cy="200" r={rr} fill="none" stroke="#3FE0A0" strokeOpacity="0.18" strokeDasharray="3 5" />
-      )}
-      <line x1="50" y1="200" x2="450" y2="200" stroke="#3FE0A0" strokeOpacity="0.25" />
-      <line x1="250" y1="40" x2="250" y2="360" stroke="#3FE0A0" strokeOpacity="0.25" />
-      <g>
-        <circle cx="250" cy="200" r="40" fill="#0f1d17" stroke="#3FE0A0" strokeOpacity="0.5" />
-        <circle cx="250" cy="200" r="40" fill="url(#glow)" opacity="0.4" />
-        <circle cx="212" cy="200" r="6" fill="none" stroke="#3FE0A0" />
-        <circle cx="288" cy="200" r="6" fill="none" stroke="#3FE0A0" />
-        <path d="M250 168 L246 158 L254 158 Z" fill="#3FE0A0" />
-      </g>
-      <path d={`M${cx} ${cy} Q ${250 + Math.cos(t * 0.7 - 0.3) * 180} ${200 + Math.sin(t * 0.9 - 0.3) * 80} ${250 + Math.cos(t * 0.7 - 0.6) * 180} ${200 + Math.sin(t * 0.9 - 0.6) * 80}`}
-      fill="none" stroke="#3FE0A0" strokeOpacity="0.4" strokeWidth="1" />
-      <circle cx={cx} cy={cy} r={r + 20} fill="url(#glow)" />
-      <circle cx={cx} cy={cy} r={r} fill="url(#orbg)" stroke="#3FE0A0" strokeOpacity="0.6" />
-      <g fontFamily="JetBrains Mono, monospace" fontSize="9" fill="#E8F1EC" opacity="0.5" letterSpacing="1.5">
-        <text x="20" y="200" dy="-6">L</text>
-        <text x="478" y="200" dy="-6" textAnchor="end">R</text>
-        <text x="250" y="34" textAnchor="middle">FRONT</text>
-        <text x="250" y="380" textAnchor="middle">BACK</text>
-        <text x={cx + r + 8} y={cy} fill="#3FE0A0">VOICE_001</text>
-      </g>
-    </svg>);
-
-}
-
-function Experience() {
-  return (
-    <section className="experience">
-      <div className="container">
-        <div className="exp-head">
+        <div class="countdown">
           <div>
-            <div className="sect-tag">02 // EXPERIENCE</div>
-            <h2 className="display h-xl exp-h1" style={{ marginTop: 24 }}>
-              <span className="l1">指であやつる</span>
-              <span className="l2">耳がよろこぶ</span>
-            </h2>
-          </div>
-          <div className="small" style={{ maxWidth: 340 }}></div>
-        </div>
-
-        <div className="exp-grid">
-          <div className="exp-vis">
-            <ExperienceVis />
-          </div>
-          <div className="exp-text">
-            <div className="sect-num">PROCESS // 03 STEPS</div>
-            <h3>こえを、あやつる時代</h3>
-            <p>
-              声優のこえを点として配置し、リスナーのまわりを移動。
-左右の耳に届くタイミングと音量、周波数のわずかな差が、脳に「方向」を伝えます。<br />
-              ドラッグはそのまま、こえの座標になります。
-            </p>
-            <ul className="exp-list">
-              <li><span className="k">01</span><span className="v">指の位置から3次元座標を検出</span><span className="t">touch → vec3</span></li>
-              <li><span className="k">02</span><span className="v">HRTFで左右耳の波形を合成</span><span className="t">binaural mix</span></li>
-              <li><span className="k">03</span><span className="v">距離・反響・方向感をつくる</span><span className="t">env node</span></li>
-            </ul>
-            <div className="exp-callout">
-              ※ イヤホン推奨 ─ スピーカーだと、立体感はうすれます
+            <div class="cd-label">カウントダウン / 06.30 まで</div>
+            <div class="cd-grid">
+              <div class="cd-cell"><div class="num" id="cd-days">--</div><div class="lbl">DAYS</div></div>
+              <div class="cd-cell"><div class="num" id="cd-hours">--</div><div class="lbl">HRS</div></div>
+              <div class="cd-cell"><div class="num" id="cd-mins">--</div><div class="lbl">MIN</div></div>
+              <div class="cd-cell"><div class="num" id="cd-secs">--</div><div class="lbl">SEC</div></div>
             </div>
           </div>
         </div>
       </div>
-    </section>);
 
-}
+      <div class="hero-stage-wrap">
+        <div id="hero-stage" class="hero-stage" role="slider" tabindex="0" aria-label="オーブをドラッグして声の位置を動かす">
+          <div class="stage-coord"></div>
+          <div class="stage-cross"></div>
+          <div class="stage-circle sc-1"></div>
+          <div class="stage-circle sc-2"></div>
+          <div class="stage-circle sc-3"></div>
+          <div class="stage-label sl-l">L · 左耳</div>
+          <div class="stage-label sl-r">R · 右耳</div>
+          <div class="stage-label sl-t">FRONT · 正面</div>
+          <div class="stage-label sl-b">BACK · 背面</div>
+          <div class="ear l"></div>
+          <div class="ear r"></div>
+          <div id="orb" class="orb" style="left:50%;top:50%;width:88px;height:88px">
+            <div class="orb-core"></div>
+            <div class="orb-ring or-1" style="inset:16%;opacity:0.85"></div>
+            <div class="orb-ring or-2" style="inset:4%;opacity:0.6"></div>
+            <div class="orb-ring or-3" style="inset:-8%;opacity:0.35"></div>
+          </div>
+          <div class="orb-readout">
+            <div><span>X</span><span id="coord-x">+0.00</span></div>
+            <div><span>Y</span><span id="coord-y">+0.00</span></div>
+            <div><span>HRTF</span>ON</div>
+          </div>
+          <div class="meters">
+            <div class="meter"><div class="bar"><i id="meter-l-fill" style="height:30%"></i></div><div>L</div></div>
+            <div class="meter"><div class="bar"><i id="meter-r-fill" style="height:30%"></i></div><div>R</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-// ====== FEATURES ======
-function Features() {
-  return (
-    <section className="features">
-      <div className="container">
-        <div className="feat-head">
-          <div className="sect-tag">03 // FEATURES</div>
-          <h2 className="display h-xl feat-h1">
-            ３つの<span style={{ color: 'var(--mint)' }}>あたらしさ</span>
+    <div class="ticker">
+      <div class="ticker-track">
+        <span><i></i>HRTF binaural<i></i>3D AUDIO ENVIRONMENT<i></i>iOS 17+ ONLY<i></i>06.30 RELEASE<i></i>VOIPOKE BETA<i></i>声優還元率 60%<i></i>100ポケ銭 PRESENT<i></i>ぼいポケ</span>
+        <span><i></i>HRTF binaural<i></i>3D AUDIO ENVIRONMENT<i></i>iOS 17+ ONLY<i></i>06.30 RELEASE<i></i>VOIPOKE BETA<i></i>声優還元率 60%<i></i>100ポケ銭 PRESENT<i></i>ボイポケ</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== EXPERIENCE ====== -->
+  <section class="experience">
+    <div class="container">
+      <div class="exp-head">
+        <div>
+          <div class="sect-tag">02 // EXPERIENCE</div>
+          <h2 class="display h-xl exp-h1" style="margin-top:24px">
+            <span class="l1">指であやつる</span>
+            <span class="l2">耳がよろこぶ</span>
           </h2>
         </div>
+        <div class="small" style="max-width:340px"></div>
+      </div>
 
-        <div className="bento">
-          <div className="b b1">
-            <div className="b1-vis" />
-            <div className="b1-trail" />
-            <div className="b1-orb" />
-            <div className="b-num">01 / 03</div>
-            <div className="b-tag">DRAG · 3D AUDIO</div>
-            <h3>ドラッグすると<br />声が動く</h3>
-            <p>画面のオーブをドラッグして耳もとへ近づけたり、ひだり耳で聴きたくなったり自由自在。
- さらに、ぼいポケ固有の"スタジオ機能"を実装。</p>
-          </div>
-
-          <div className="b b2">
-            <div className="b-num">02 / 03</div>
-            <div className="b-tag">PRESENT</div>
-            <div className="b2-stack"><i></i><i></i></div>
-            <div className="b2-coin">¥</div>
-            <h3>100ポケ銭<br />もらえる</h3>
-            <p>事前登録するだけで、アプリ内で使える <b style={{ color: 'var(--mint)' }}>100ポケ銭</b> をプレゼント。リリース当日から、すきなボイスにつかえます。</p>
-          </div>
-
-          <div className="b b3">
-            <div className="b-num">03 / 03</div>
-            <div className="b-tag">CREATOR FIRST</div>
-            <div className="ratio">60<sup>%</sup></div>
-            <div className="ratio-bar"><i /></div>
-            <div className="ratio-leg"><span>声優還元</span><span>業界平均 45%</span></div>
-            <h3 style={{ marginTop: 14 }}>声優への還元率<br />60%</h3>
-            <p>送る側も、受け取る側も嬉しい業界最高水準。趣味で終わらせない「声優活動」をここで構築しよう。</p>
-          </div>
-
-          <div className="b b4">
-            <div className="b-tag">WAVEFORM</div>
-            <h3>アプリひとつで完結する<br />本格直感型レコーディングUI/UX</h3>
-            <p></p>
-            <div className="b4-wave">
-              <svg viewBox="0 0 600 160" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="wg" x1="0" x2="1">
-                    <stop offset="0%" stopColor="#3FE0A000" />
-                    <stop offset="50%" stopColor="#3FE0A0" />
-                    <stop offset="100%" stopColor="#3FE0A000" />
-                  </linearGradient>
-                </defs>
-                {Array.from({ length: 60 }).map((_, i) => {
-                  const h = 20 + Math.abs(Math.sin(i * 0.4) * Math.cos(i * 0.13)) * 60 + i % 7 * 4;
-                  return <rect key={i} x={i * 10 + 4} y={80 - h / 2} width="3" height={h} fill="url(#wg)" />;
-                })}
-              </svg>
-            </div>
-          </div>
-
-          <div className="b b5">
-            <div className="b5-info">
-              <div className="b-tag">DEVICE</div>
-              <h3 style={{ fontSize: '27px' }}>iPhoneだけで<br />立体音響</h3>
-              <div className="b5-spec">対応: <b>iOS 17+</b> / iPhone 11以降</div>
-              <div className="b5-spec">推奨: <b>有線・無線イヤホン</b></div>
-              <div className="b5-spec">技術: <b>HRTF + AVAudioEnvironmentNode</b></div>
-            </div>
-            <div className="b5-iphone">
-              <div className="b5-iphone-screen">
-                <div className="b5-iphone-rings"><i /><i /><i /></div>
-                <div className="b5-iphone-orb" />
-              </div>
-            </div>
+      <div class="exp-grid">
+        <div class="exp-vis">
+          <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <defs>
+              <radialGradient id="orbg" cx="40%" cy="35%" r="70%">
+                <stop offset="0%" stop-color="#aaffd9"/>
+                <stop offset="40%" stop-color="#3FE0A0"/>
+                <stop offset="100%" stop-color="#0a3a26"/>
+              </radialGradient>
+              <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#3FE0A0" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#3FE0A0" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <g opacity="0.5" stroke="#E8F1EC" stroke-opacity="0.05">
+              <line x1="50"  y1="0" x2="50"  y2="400"/>
+              <line x1="100" y1="0" x2="100" y2="400"/>
+              <line x1="150" y1="0" x2="150" y2="400"/>
+              <line x1="200" y1="0" x2="200" y2="400"/>
+              <line x1="250" y1="0" x2="250" y2="400"/>
+              <line x1="300" y1="0" x2="300" y2="400"/>
+              <line x1="350" y1="0" x2="350" y2="400"/>
+              <line x1="400" y1="0" x2="400" y2="400"/>
+              <line x1="450" y1="0" x2="450" y2="400"/>
+              <line x1="0" y1="50"  x2="500" y2="50"/>
+              <line x1="0" y1="100" x2="500" y2="100"/>
+              <line x1="0" y1="150" x2="500" y2="150"/>
+              <line x1="0" y1="200" x2="500" y2="200"/>
+              <line x1="0" y1="250" x2="500" y2="250"/>
+              <line x1="0" y1="300" x2="500" y2="300"/>
+              <line x1="0" y1="350" x2="500" y2="350"/>
+            </g>
+            <circle cx="250" cy="200" r="60"  fill="none" stroke="#3FE0A0" stroke-opacity="0.18" stroke-dasharray="3 5"/>
+            <circle cx="250" cy="200" r="120" fill="none" stroke="#3FE0A0" stroke-opacity="0.18" stroke-dasharray="3 5"/>
+            <circle cx="250" cy="200" r="180" fill="none" stroke="#3FE0A0" stroke-opacity="0.18" stroke-dasharray="3 5"/>
+            <line x1="50"  y1="200" x2="450" y2="200" stroke="#3FE0A0" stroke-opacity="0.25"/>
+            <line x1="250" y1="40"  x2="250" y2="360" stroke="#3FE0A0" stroke-opacity="0.25"/>
+            <g>
+              <circle cx="250" cy="200" r="40" fill="#0f1d17" stroke="#3FE0A0" stroke-opacity="0.5"/>
+              <circle cx="250" cy="200" r="40" fill="url(#glow)" opacity="0.4"/>
+              <circle cx="212" cy="200" r="6" fill="none" stroke="#3FE0A0"/>
+              <circle cx="288" cy="200" r="6" fill="none" stroke="#3FE0A0"/>
+              <path d="M250 168 L246 158 L254 158 Z" fill="#3FE0A0"/>
+            </g>
+            <!-- exp-vis-orbit は CSS animation で円軌道を描く -->
+            <g class="exp-vis-orbit">
+              <circle r="34" fill="url(#glow)"/>
+              <circle r="22" fill="url(#orbg)" stroke="#3FE0A0" stroke-opacity="0.6"/>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#E8F1EC" opacity="0.5" letter-spacing="1.5">
+              <text x="20"  y="200" dy="-6">L</text>
+              <text x="478" y="200" dy="-6" text-anchor="end">R</text>
+              <text x="250" y="34"  text-anchor="middle">FRONT</text>
+              <text x="250" y="380" text-anchor="middle">BACK</text>
+            </g>
+          </svg>
+        </div>
+        <div class="exp-text">
+          <div class="sect-num">PROCESS // 03 STEPS</div>
+          <h3>こえを、あやつる時代</h3>
+          <p>
+            声優のこえを点として配置し、リスナーのまわりを移動。
+            左右の耳に届くタイミングと音量、周波数のわずかな差が、脳に「方向」を伝えます。<br>
+            ドラッグはそのまま、こえの座標になります。
+          </p>
+          <ul class="exp-list">
+            <li><span class="k">01</span><span class="v">指の位置から3次元座標を検出</span><span class="t">touch → vec3</span></li>
+            <li><span class="k">02</span><span class="v">HRTFで左右耳の波形を合成</span><span class="t">binaural mix</span></li>
+            <li><span class="k">03</span><span class="v">距離・反響・方向感をつくる</span><span class="t">env node</span></li>
+          </ul>
+          <div class="exp-callout">
+            ※ イヤホン推奨 ─ スピーカーだと、立体感はうすれます
           </div>
         </div>
       </div>
-    </section>);
+    </div>
+  </section>
 
-}
-
-// ====== MAKER ======
-function Maker() {
-  return (
-    <section className="maker">
-      <div className="container">
-        <div className="sect-tag" style={{ marginBottom: 36 }}>04 // MAKER</div>
-        <div className="maker-grid">
-          <div className="maker-portrait">
-            <div className="pc-tag">DEVELOPER · 開発者</div>
-            <div className="pc-name"></div>
-          </div>
-          <div className="maker-bio">
-            <div className="quote">
-              「<span className="accent">こえ</span>って、<br />
-              ほんとうは<br />
-              <span className="accent">環境</span>のなかにある。」
-            </div>
-            <p>
-              はじめまして。Reverb Labの <b style={{ color: 'var(--bone)' }}>たちばな</b>です。<br />
-              現役声優として活動しながら、開発者として声活アプリの開発を<br />
-              はじめました。<br />
-              シチュエーションボイスやボイスドラマを聴いていて感じた<br />
-              "物足りなさ"。<br />
-              それをとどけたくて、VoiPoke をはじめました。
-            </p>
-            <p>
-              声優としての知見や苦労をもとに、<br />従来とは比べものにならないアプリを開発します。
-            </p>
-          </div>
-          <div className="maker-meta" style={{ fontSize: "14px" }}>
-            <div className="row"><span>ROLE</span><b>声優 / 開発</b></div>
-            <div className="row"><span>YEARS</span><b>VA 5年</b></div>
-            <div className="row"><span>BOILAB</span><b>声活コミュニティ 20名</b></div>
-            <div className="row"><span>NOTE</span><b>note.com/tachibanavoice</b></div>
-            <a href="https://note.com/Tachibanavoice" target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ marginTop: 12, fontSize: "14px", justifyContent: "center", textAlign: "center" }}>note を読む →</a>
-          </div>
-        </div>
-      </div>
-    </section>);
-
-}
-
-// ====== JOIN ======
-function Join() {
-  const cards = [
-  { n: "01", g: "X", title: "X (旧Twitter)", body: "開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。", cta: "@Tachibanavoice をフォロー", href: "https://x.com/Tachibanavoice" },
-    // M-5: Discord は OAuth 自動招待。invite="voipoke-lp" を data 属性で渡す（クリック時に discord-invite.js が乗っ取り）
-    { n: "02", g: "D", title: "Discord", body: "声活コミュニティ「ぼいラボ」（現在 20 名）。事前登録者限定のベータ告知、収録の裏側、ペルソナ調査もここで。", cta: "招待リンクをひらく", href: "https://discord.gg/dkSvcxbFwe", invite: "voipoke-lp" },
-    { n: "03", g: "N", title: "note", body: "声優×個人開発の長文記事。VoiPokeの設計思想、ASMRの音響理論、開発日記をここで連載。", cta: "note を購読する", href: "https://note.com/Tachibanavoice" }];
-
-  return (
-    <section className="join">
-      <div className="container">
-        <div className="join-head">
-          <div className="join-h">
-            <div className="sect-tag">05 // JOIN</div>
-            <h2 className="display h-xl" style={{ marginTop: 24 }}>
-              リリースへの<br /><span style={{ color: 'var(--mint)' }}>道のり</span>
-            </h2>
-          </div>
-          <div className="small" style={{ maxWidth: 300 }}>ベータの抽選、ボイス収録の裏側、不具合の話 ── ぜんぶオープンにおいていきます。
-
-          </div>
-        </div>
-        <div className="join-grid">
-          {cards.map((c) =>
-          <a key={c.n} href={c.href} className="join-card"
-             {...(c.invite ? { 'data-discord-invite': c.invite } : {})}>
-              <div className="top">
-                <span className="num">{c.n}</span>
-                <span className="glyph">{c.g}</span>
-              </div>
-              <h4>{c.title}</h4>
-              <p>{c.body}</p>
-              <div className="go"><span>{c.cta}</span><span className="arr">→</span></div>
-            </a>
-          )}
-        </div>
-      </div>
-    </section>);
-
-}
-
-// ====== CLOSING ======
-function Closing() {
-  return (
-    <section className="closing">
-      <div className="closing-orb" />
-      <div className="container">
-        <div className="closing-tag pill"><span className="dot" />2026.06.30 / App Store</div>
-        <h2 className="display h-mega">
-          <span className="l1" style={{ fontSize: "120px" }}>6月30日</span>
-          <span className="l1">App Store で</span>
-          <span className="l2">会いましょう。</span>
+  <!-- ====== FEATURES ====== -->
+  <section class="features">
+    <div class="container">
+      <div class="feat-head">
+        <div class="sect-tag">03 // FEATURES</div>
+        <h2 class="display h-xl feat-h1">
+          ３つの<span style="color:var(--mint)">あたらしさ</span>
         </h2>
-        <div className="closing-meta">
-          <span>RELEASE / <b>2026.06.30</b></span>
-          <span>PLATFORM / <b>iOS 17+</b></span>
-          <span>PRICE / <b>無料DL</b></span>
-        </div>
-        <a href="#top" className="btn">事前登録に戻る ↑</a>
       </div>
-    </section>);
 
-}
+      <div class="bento">
+        <div class="b b1">
+          <div class="b1-vis"></div>
+          <div class="b1-trail"></div>
+          <div class="b1-orb"></div>
+          <div class="b-num">01 / 03</div>
+          <div class="b-tag">DRAG · 3D AUDIO</div>
+          <h3>ドラッグすると<br>声が動く</h3>
+          <p>画面のオーブをドラッグして耳もとへ近づけたり、ひだり耳で聴きたくなったり自由自在。 さらに、ぼいポケ固有の"スタジオ機能"を実装。</p>
+        </div>
 
-// ====== Footer ======
-function Footer() {
-  return (
-    <footer>
-      <div className="container">
-        <div className="ft-grid">
-          <div className="ft-mark"><span className="dot" />VOIPOKE / ぼいポケ © 2026</div>
-          <div className="ft-links">
-            <a href="/privacy">プライバシー</a>
-            <a href="/tokushoho">特商法</a>
-            <a href="mailto:tachibanavoice@icloud.com">お問い合わせ</a>
-            <a href="/press">プレスキット</a>
+        <div class="b b2">
+          <div class="b-num">02 / 03</div>
+          <div class="b-tag">PRESENT</div>
+          <div class="b2-stack"><i></i><i></i></div>
+          <div class="b2-coin">¥</div>
+          <h3>100ポケ銭<br>もらえる</h3>
+          <p>事前登録するだけで、アプリ内で使える <b style="color:var(--mint)">100ポケ銭</b> をプレゼント。リリース当日から、すきなボイスにつかえます。</p>
+        </div>
+
+        <div class="b b3">
+          <div class="b-num">03 / 03</div>
+          <div class="b-tag">CREATOR FIRST</div>
+          <div class="ratio">60<sup>%</sup></div>
+          <div class="ratio-bar"><i></i></div>
+          <div class="ratio-leg"><span>声優還元</span><span>業界平均 45%</span></div>
+          <h3 style="margin-top:14px">声優への還元率<br>60%</h3>
+          <p>送る側も、受け取る側も嬉しい業界最高水準。趣味で終わらせない「声優活動」をここで構築しよう。</p>
+        </div>
+
+        <div class="b b4">
+          <div class="b-tag">WAVEFORM</div>
+          <h3>アプリひとつで完結する<br>本格直感型レコーディングUI/UX</h3>
+          <p></p>
+          <div class="b4-wave">
+            <svg viewBox="0 0 600 160" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="wg" x1="0" x2="1">
+                  <stop offset="0%"   stop-color="#3FE0A000"/>
+                  <stop offset="50%"  stop-color="#3FE0A0"/>
+                  <stop offset="100%" stop-color="#3FE0A000"/>
+                </linearGradient>
+              </defs>
+              <rect x="4"   y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="14"  y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="24"  y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="34"  y="55" width="3" height="50" fill="url(#wg)"/>
+              <rect x="44"  y="30" width="3" height="100" fill="url(#wg)"/>
+              <rect x="54"  y="45" width="3" height="70" fill="url(#wg)"/>
+              <rect x="64"  y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="74"  y="35" width="3" height="90" fill="url(#wg)"/>
+              <rect x="84"  y="25" width="3" height="110" fill="url(#wg)"/>
+              <rect x="94"  y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="104" y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="114" y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="124" y="30" width="3" height="100" fill="url(#wg)"/>
+              <rect x="134" y="45" width="3" height="70" fill="url(#wg)"/>
+              <rect x="144" y="55" width="3" height="50" fill="url(#wg)"/>
+              <rect x="154" y="35" width="3" height="90" fill="url(#wg)"/>
+              <rect x="164" y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="174" y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="184" y="25" width="3" height="110" fill="url(#wg)"/>
+              <rect x="194" y="45" width="3" height="70" fill="url(#wg)"/>
+              <rect x="204" y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="214" y="30" width="3" height="100" fill="url(#wg)"/>
+              <rect x="224" y="55" width="3" height="50" fill="url(#wg)"/>
+              <rect x="234" y="35" width="3" height="90" fill="url(#wg)"/>
+              <rect x="244" y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="254" y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="264" y="25" width="3" height="110" fill="url(#wg)"/>
+              <rect x="274" y="45" width="3" height="70" fill="url(#wg)"/>
+              <rect x="284" y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="294" y="30" width="3" height="100" fill="url(#wg)"/>
+              <rect x="304" y="55" width="3" height="50" fill="url(#wg)"/>
+              <rect x="314" y="35" width="3" height="90" fill="url(#wg)"/>
+              <rect x="324" y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="334" y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="344" y="25" width="3" height="110" fill="url(#wg)"/>
+              <rect x="354" y="45" width="3" height="70" fill="url(#wg)"/>
+              <rect x="364" y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="374" y="30" width="3" height="100" fill="url(#wg)"/>
+              <rect x="384" y="55" width="3" height="50" fill="url(#wg)"/>
+              <rect x="394" y="35" width="3" height="90" fill="url(#wg)"/>
+              <rect x="404" y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="414" y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="424" y="25" width="3" height="110" fill="url(#wg)"/>
+              <rect x="434" y="45" width="3" height="70" fill="url(#wg)"/>
+              <rect x="444" y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="454" y="30" width="3" height="100" fill="url(#wg)"/>
+              <rect x="464" y="55" width="3" height="50" fill="url(#wg)"/>
+              <rect x="474" y="35" width="3" height="90" fill="url(#wg)"/>
+              <rect x="484" y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="494" y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="504" y="25" width="3" height="110" fill="url(#wg)"/>
+              <rect x="514" y="45" width="3" height="70" fill="url(#wg)"/>
+              <rect x="524" y="60" width="3" height="40" fill="url(#wg)"/>
+              <rect x="534" y="30" width="3" height="100" fill="url(#wg)"/>
+              <rect x="544" y="55" width="3" height="50" fill="url(#wg)"/>
+              <rect x="554" y="35" width="3" height="90" fill="url(#wg)"/>
+              <rect x="564" y="50" width="3" height="60" fill="url(#wg)"/>
+              <rect x="574" y="40" width="3" height="80" fill="url(#wg)"/>
+              <rect x="584" y="25" width="3" height="110" fill="url(#wg)"/>
+            </svg>
           </div>
-          <div>made by Reverb Lab · in Tokyo</div>
         </div>
-        <div className="ft-legal">App Store® および iPhone® は Apple Inc. の商標です。
-VoiPoke は Apple Inc. と提携、後援、または関連していません。
+
+        <div class="b b5">
+          <div class="b5-info">
+            <div class="b-tag">DEVICE</div>
+            <h3 style="font-size:27px">iPhoneだけで<br>立体音響</h3>
+            <div class="b5-spec">対応: <b>iOS 17+</b> / iPhone 11以降</div>
+            <div class="b5-spec">推奨: <b>有線・無線イヤホン</b></div>
+            <div class="b5-spec">技術: <b>HRTF + AVAudioEnvironmentNode</b></div>
+          </div>
+          <div class="b5-iphone">
+            <div class="b5-iphone-screen">
+              <div class="b5-iphone-rings"><i></i><i></i><i></i></div>
+              <div class="b5-iphone-orb"></div>
+            </div>
+          </div>
         </div>
       </div>
-    </footer>);
+    </div>
+  </section>
 
-}
+  <!-- ====== MAKER ====== -->
+  <section class="maker">
+    <div class="container">
+      <div class="sect-tag" style="margin-bottom:36px">04 // MAKER</div>
+      <div class="maker-grid">
+        <div class="maker-portrait">
+          <div class="pc-tag">DEVELOPER · 開発者</div>
+          <div class="pc-name"></div>
+        </div>
+        <div class="maker-bio">
+          <div class="quote">
+            「<span class="accent">こえ</span>って、<br>
+            ほんとうは<br>
+            <span class="accent">環境</span>のなかにある。」
+          </div>
+          <p>
+            はじめまして。Reverb Labの <b style="color:var(--bone)">たちばな</b>です。<br>
+            現役声優として活動しながら、開発者として声活アプリの開発を<br>
+            はじめました。<br>
+            シチュエーションボイスやボイスドラマを聴いていて感じた<br>
+            "物足りなさ"。<br>
+            それをとどけたくて、VoiPoke をはじめました。
+          </p>
+          <p>
+            声優としての知見や苦労をもとに、<br>従来とは比べものにならないアプリを開発します。
+          </p>
+        </div>
+        <div class="maker-meta" style="font-size:14px">
+          <div class="row"><span>ROLE</span><b>声優 / 開発</b></div>
+          <div class="row"><span>YEARS</span><b>VA 5年</b></div>
+          <div class="row"><span>BOILAB</span><b>声活コミュニティ 20名</b></div>
+          <div class="row"><span>NOTE</span><b>note.com/tachibanavoice</b></div>
+          <a href="https://note.com/Tachibanavoice" target="_blank" rel="noopener noreferrer" class="btn-ghost" style="margin-top:12px;font-size:14px;justify-content:center;text-align:center">note を読む →</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-function App() {
-  return (
-    <div className="wrap" id="top">
-      <Hero />
-      <Experience />
-      <Features />
-      <Maker />
-      <Join />
-      <Closing />
-      <Footer />
-    </div>);
+  <!-- ====== JOIN ====== -->
+  <section class="join">
+    <div class="container">
+      <div class="join-head">
+        <div class="join-h">
+          <div class="sect-tag">05 // JOIN</div>
+          <h2 class="display h-xl" style="margin-top:24px">
+            リリースへの<br><span style="color:var(--mint)">道のり</span>
+          </h2>
+        </div>
+        <div class="small" style="max-width:300px">ベータの抽選、ボイス収録の裏側、不具合の話 ── ぜんぶオープンにおいていきます。
+        </div>
+      </div>
+      <div class="join-grid">
+        <a href="https://x.com/Tachibanavoice" class="join-card">
+          <div class="top">
+            <span class="num">01</span>
+            <span class="glyph">X</span>
+          </div>
+          <h4>X (旧Twitter)</h4>
+          <p>開発の進捗、ベータの抽選、声優ゲスト発表。日々のメモはここに置いていきます。</p>
+          <div class="go"><span>@Tachibanavoice をフォロー</span><span class="arr">→</span></div>
+        </a>
+        <a href="https://discord.gg/dkSvcxbFwe" class="join-card" data-discord-invite="voipoke-lp">
+          <div class="top">
+            <span class="num">02</span>
+            <span class="glyph">D</span>
+          </div>
+          <h4>Discord</h4>
+          <p>声活コミュニティ「ぼいラボ」（現在 20 名）。事前登録者限定のベータ告知、収録の裏側、ペルソナ調査もここで。</p>
+          <div class="go"><span>招待リンクをひらく</span><span class="arr">→</span></div>
+        </a>
+        <a href="https://note.com/Tachibanavoice" class="join-card">
+          <div class="top">
+            <span class="num">03</span>
+            <span class="glyph">N</span>
+          </div>
+          <h4>note</h4>
+          <p>声優×個人開発の長文記事。VoiPokeの設計思想、ASMRの音響理論、開発日記をここで連載。</p>
+          <div class="go"><span>note を購読する</span><span class="arr">→</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
 
-}
+  <!-- ====== CLOSING ====== -->
+  <section class="closing">
+    <div class="closing-orb"></div>
+    <div class="container">
+      <div class="closing-tag pill"><span class="dot"></span>2026.06.30 / App Store</div>
+      <h2 class="display h-mega">
+        <span class="l1" style="font-size:120px">6月30日</span>
+        <span class="l1">App Store で</span>
+        <span class="l2">会いましょう。</span>
+      </h2>
+      <div class="closing-meta">
+        <span>RELEASE / <b>2026.06.30</b></span>
+        <span>PLATFORM / <b>iOS 17+</b></span>
+        <span>PRICE / <b>無料DL</b></span>
+      </div>
+      <a href="#top" class="btn">事前登録に戻る ↑</a>
+    </div>
+  </section>
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  <!-- ====== FOOTER ====== -->
+  <footer>
+    <div class="container">
+      <div class="ft-grid">
+        <div class="ft-mark"><span class="dot"></span>VOIPOKE / ぼいポケ © 2026</div>
+        <div class="ft-links">
+          <a href="/privacy">プライバシー</a>
+          <a href="/tokushoho">特商法</a>
+          <a href="mailto:tachibanavoice@icloud.com">お問い合わせ</a>
+          <a href="/press">プレスキット</a>
+        </div>
+        <div>made by Reverb Lab · in Tokyo</div>
+      </div>
+      <div class="ft-legal">App Store® および iPhone® は Apple Inc. の商標です。
+VoiPoke は Apple Inc. と提携、後援、または関連していません。
+      </div>
+    </div>
+  </footer>
+</div>
 
-</script>
+<!-- React + Babel JIT は削除済み（iOS Safari でロード遅延・JIT 失敗のため）
+     動的処理は /script.js で完結する純粋 vanilla JS に切替。voilab-lp と同方針。 -->
+<script src="/script.js" defer></script>
+
 
 <!-- Vercel Web Analytics + Speed Insights（ダッシュボード側で有効化済） -->
 <script defer src="/_vercel/insights/script.js"></script>

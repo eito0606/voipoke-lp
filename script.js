@@ -71,54 +71,14 @@
   // ========================================
   // 2. フォーム送信
   // ========================================
-  const form = document.getElementById('signup-form');
-  const result = document.getElementById('signup-result');
-
-  if (form && result) {
-    const FORM_ENDPOINT = form.action;
-    const isPlaceholder = FORM_ENDPOINT.includes('REPLACE_ME');
-
-    form.addEventListener('submit', async (event) => {
-      if (isPlaceholder) {
-        event.preventDefault();
-        result.textContent = '✋ 受付システムは準備中。エイトの SNS をフォローしておいてください。';
-        result.className = 'signup-result is-success';
-        return;
-      }
-
-      event.preventDefault();
-      const data = new FormData(form);
-      const email = data.get('email');
-
-      if (!email || typeof email !== 'string' || !email.includes('@')) {
-        result.textContent = '✗ メアドの形式を確認してください。';
-        result.className = 'signup-result is-error';
-        return;
-      }
-
-      result.textContent = '送信中…';
-      result.className = 'signup-result';
-
-      try {
-        const res = await fetch(FORM_ENDPOINT, {
-          method: 'POST',
-          headers: { Accept: 'application/json' },
-          body: data,
-        });
-        if (res.ok) {
-          result.textContent = '✓ 登録完了。リリース日（6/30）にお知らせします。';
-          result.className = 'signup-result is-success';
-          form.reset();
-        } else {
-          result.textContent = '✗ 送信に失敗しました。少し時間をおいて再度お試しください。';
-          result.className = 'signup-result is-error';
-        }
-      } catch {
-        result.textContent = '✗ ネットワークエラー。あとで試してください。';
-        result.className = 'signup-result is-error';
-      }
-    });
-  }
+  // ⚠️ 新 voipoke-lp（React 排除版）では index.html の inline <script> が
+  //   document.addEventListener('submit') で signup-form を捕まえて
+  //   Supabase Edge Function /functions/v1/signup-lp に anon key 付きで送る。
+  //   ここで二重 listen すると preventDefault は片方しか効かず両方が fetch を
+  //   呼んでしまい二重登録になるため、script.js 側は何もしない。
+  //
+  //   旧 React 版時代に script.js が form 処理を担っていた名残はコメントだけ残し、
+  //   実コードは index.html の inline script に統一する。
 
   // ========================================
   // 3. オーブの実ドラッグ（座標 + L/R メーター連動）
