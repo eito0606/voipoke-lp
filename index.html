@@ -278,8 +278,10 @@
   @media (max-width:980px){
     /* HERO をコンテンツの実高さに収める（min-height:100vh / padding 120/80 / inline align-self:end による空白を解消） */
     .hero{ min-height:auto; padding:88px 0 48px; }
-    /* PC 用の装飾「X→」「Y」「グリッド線」をモバイル非表示（視覚ノイズ削減 + 横幅起因の見切れ予防） */
+    /* PC 用の装飾「グリッド線」「中央十字線」「X→/Y ラベル」をモバイル非表示
+       （視覚ノイズ削減 + 中央十字線が hero-headline テキストと重なる問題を解消） */
     .hero-grid{ display:none; }
+    .hero-axes{ display:none; }
     .hero-axes::before, .hero-axes::after{ display:none; }
     .hero-inner{ grid-template-columns:1fr; gap:28px; align-items:start; }
     /* HeroStage を包む inline-style div を確実に打ち消す（nth-of-type で当てる方が Babel JIT 後の class/style 順序に依存しない） */
