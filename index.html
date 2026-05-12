@@ -1028,8 +1028,11 @@ function HeroStage({ orbSize, ringCount, showCoord }) {
     let raf,t0 = performance.now();
     const tick = (t) => {
       const dt = (t - t0) / 1000;
-      const cx = 0.5 + Math.cos(dt * 0.45) * 0.28;
-      const cy = 0.5 + Math.sin(dt * 0.6) * 0.22;
+      // 自動軌道：エイト指摘「中央軸に配置されてない」対応で振幅を縮小
+      //   旧 0.28 / 0.22 → モバイルでオーブが画面右下に張り付いて見えた
+      //   新 0.12 / 0.10 で常に中央軸付近を滞在する穏やかな漂い
+      const cx = 0.5 + Math.cos(dt * 0.45) * 0.12;
+      const cy = 0.5 + Math.sin(dt * 0.6) * 0.10;
       setPos({ x: cx, y: cy });
       raf = requestAnimationFrame(tick);
     };
@@ -1142,9 +1145,9 @@ function Hero() {
             <span className="accent">{TW.headlineLine2}</span>
           </h1>
           <p className="hero-sub">
-            <b>VoiPoke</b>は、指で<b>こえ</b>を動かす<br />
-            擬似ASMR×3D立体音響アプリ。<br />
-            <b>オーブ</b>のドラッグで声が泳ぎます。
+            指で<b>こえ</b>を動かす<br />
+            立体音響アプリ。<br />
+            ドラッグで声が泳ぐ。
           </p>
 
           <form className="reg-form" onSubmit={submit}>
