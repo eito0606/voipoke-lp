@@ -345,6 +345,31 @@
       max-width:100%;
       height:auto;
     }
+    /* iOS Safari の決定打：日本語長文を強制改行
+       Chrome headless では自然 wrap で収まるが、iOS Safari は句点・読点を
+       wrap 候補にしないため長い 1 行が viewport を超える事象が頻発する。
+       break-all + overflow-wrap:anywhere の二重で「どこででも改行」を強制。 */
+    .hero-sub, .reg-meta, .b p, .b h3, .bento p, .bento h3,
+    .exp-text p, .exp-text h3, .dev-text, .closing p,
+    .sect-tag, .small, .smaller {
+      word-break: break-all !important;
+      overflow-wrap: anywhere !important;
+      line-break: anywhere;
+    }
+    /* iOS Safari の決定打：bento カード内の SVG / Canvas / 絶対配置要素が
+       カードの overflow:hidden を貫通して overflow するバグへの対処。
+       clip-path で強制 clip + contain で paint 領域を厳格化する。 */
+    .b, .b1, .b2, .b3, .b4, .b5, .b6,
+    .bento, .exp-vis, .hero-stage {
+      overflow: hidden !important;
+      clip-path: inset(0);
+      contain: paint;
+    }
+    /* bento カード内の絵柄要素を確実にカード内に収める */
+    .b > *, .bento > *, .exp-vis > * {
+      max-width: 100%;
+      max-height: 100%;
+    }
   }
 
   .hero-headline{
