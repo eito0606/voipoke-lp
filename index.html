@@ -315,11 +315,12 @@
     .h-mega{ font-size:clamp(36px, 10.5vw, 44px) !important; line-height:1.05; }
     /* hero-sub の <br /> による強制改行を解除（モバイルでは container 幅を
        超える長い行になっていた → 自然な折り返しに任せる） */
-    .hero-sub br{ display:none; }
+    .hero-sub br{ display:none !important; }
     .hero-sub{ font-size:14.5px; line-height:1.7; }
     /* hero-headline.pre の 3 つ目の小さな pill「v0.9 · iOS 17+」は情報優先度が低い。
-       wrap が効かず画面右端で切れる原因になるためモバイル非表示にする。 */
-    .hero-headline .pre .pill.mono{ display:none; }
+       wrap が効かず画面右端で切れる原因になるためモバイル非表示にする。
+       !important + 親非依存セレクタで Babel JIT 後の DOM 順序にも勝つ。 */
+    .pill.mono, .pre .pill.mono, .hero .pill.mono{ display:none !important; }
     /* pill 2 個分の wrap を許可する保険：max-width で 1 個の pill が
        container を超えないようにする */
     .hero-headline .pre .pill{ max-width:100%; }
