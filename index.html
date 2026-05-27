@@ -1054,6 +1054,33 @@
           <div id="signup-result" class="signup-result"></div>
         </form>
 
+        <!-- 登録後の流れ（3ステップ）：「メール置くだけで、次は？」の不安を事前解消 -->
+        <div class="reg-flow" style="margin-top:16px;padding:16px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;">
+          <div style="font-size:11px;color:var(--mint);font-weight:700;letter-spacing:0.04em;margin-bottom:14px;">登録したら、こうなる</div>
+          <div style="display:flex;align-items:flex-start;gap:4px;">
+            <!-- ① -->
+            <div style="flex:1;text-align:center;">
+              <div style="width:26px;height:26px;line-height:26px;margin:0 auto 8px;border-radius:50%;background:var(--mint);color:#04110c;font-weight:800;font-size:13px;">1</div>
+              <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;">メール登録</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5;">10秒。<br>すぐ招待メールが届く</div>
+            </div>
+            <div style="color:rgba(255,255,255,0.25);font-size:14px;padding-top:4px;">→</div>
+            <!-- ② -->
+            <div style="flex:1;text-align:center;">
+              <div style="width:26px;height:26px;line-height:26px;margin:0 auto 8px;border-radius:50%;background:var(--mint);color:#04110c;font-weight:800;font-size:13px;">2</div>
+              <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;">限定βを試す</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5;">TestFlight ＋<br>100ポケ銭をGET</div>
+            </div>
+            <div style="color:rgba(255,255,255,0.25);font-size:14px;padding-top:4px;">→</div>
+            <!-- ③ -->
+            <div style="flex:1;text-align:center;">
+              <div style="width:26px;height:26px;line-height:26px;margin:0 auto 8px;border-radius:50%;background:var(--mint);color:#04110c;font-weight:800;font-size:13px;">3</div>
+              <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;">仲間と繋がる</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5;">ぼいラボで<br>声活仲間と</div>
+            </div>
+          </div>
+        </div>
+
         <div class="countdown">
           <div>
             <div class="cd-label">カウントダウン / 06.30 まで</div>
@@ -1605,8 +1632,8 @@ VoiPoke は Apple Inc. と提携、後援、または関連していません。
         applyToDOM();
         showResult(
           data.already_registered
-            ? '✓ すでに登録済みです。リリース日（6/30）にお知らせします。'
-            : '✓ 登録完了。リリース日（6/30）にお知らせします。',
+            ? '✓ すでに登録済みです。届いている招待メールをご確認ください（迷惑メールも念のため）。'
+            : '✓ 登録完了！数分以内に招待メールが届きます。そこからβ版を試せます（届かない場合は迷惑メールフォルダも確認してください）。',
           'success',
         );
       } else if (data.error === 'closed') {
