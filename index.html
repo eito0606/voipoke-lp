@@ -616,6 +616,7 @@ section{position:relative;padding:var(--space) 0}
         showResult(form, data.already_registered
           ? '✓ すでに登録済みです。届いている招待メールをご確認ください（迷惑メールも念のため）。'
           : '✓ 登録完了！数分以内に招待メールが届きます。そこからβ版を試せます（届かない場合は迷惑メールも確認してください）。', 'success');
+        if (typeof gtag === 'function') gtag('event', data.already_registered ? 'sign_up_repeat' : 'sign_up', { method: 'lp_email' });
       } else if (data.error==='closed'){ isClosed=true; applyToDOM(); showResult(form,'✗ 受付は終了しました（先着 500名）。','error'); }
       else if (data.error==='invalid_email'){ showResult(form,'✗ メアドの形式を確認してください。','error'); }
       else { showResult(form,'✗ 送信に失敗しました。少し時間をおいて再度お試しください。','error'); }
@@ -630,6 +631,7 @@ section{position:relative;padding:var(--space) 0}
     const email = (emailInput.value||'').trim();
     if(!email || !email.includes('@')){ showResult(form,'✗ メアドの形式を確認してください。','error'); return; }
     if(isClosed){ showResult(form,'✗ 受付は終了しました（先着 500名）。','error'); return; }
+    if (typeof gtag === 'function') gtag('event', 'cta_click', { cta: 'signup_submit' });
     showResult(form,'送信中…','info'); submitSignup(form, email);
   }, true);
   function start(){ fetchCount(); setInterval(applyToDOM,1500); setInterval(fetchCount,60000); }
