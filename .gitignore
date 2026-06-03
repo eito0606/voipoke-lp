@@ -42,3 +42,8 @@ AuthKey_*
 *service-account*
 GoogleService-Info.plist
 credentials.json
+
+# LP作業用（本番に含めない）
+.preview/
+index-v2.html
+index.backup-*.html
