@@ -587,10 +587,11 @@ section{position:relative;padding:var(--space) 0}
       });
     }
   }
-  function showResult(form, msg, kind){
+  function showResult(form, msg, kind, allowHtml){
     let el = form.querySelector('.signup-result') || form.querySelector('#signup-result');
     if (!el){ el = document.createElement('div'); el.className='signup-result'; form.appendChild(el); }
-    el.textContent = msg;
+    // allowHtml は、本ファイル内の静的・ユーザー入力を含まない文言にのみ true を渡す（XSS 回避）
+    if (allowHtml) el.innerHTML = msg; else el.textContent = msg;
     el.style.color = kind==='success' ? '#047857' : kind==='error' ? '#d23f3f' : 'rgba(65,84,74,.8)';
   }
   function getQuery(k){ try{ return new URLSearchParams(location.search).get(k)||null; }catch{ return null; } }
@@ -614,8 +615,8 @@ section{position:relative;padding:var(--space) 0}
         currentCount = Number.isFinite(data.count) ? data.count : currentCount+1;
         isClosed = currentCount >= (data.limit ?? LIMIT); applyToDOM();
         showResult(form, data.already_registered
-          ? '✓ すでに登録済みです。届いている招待メールをご確認ください（迷惑メールも念のため）。'
-          : '✓ 登録完了！数分以内に招待メールが届きます。そこからβ版を試せます（届かない場合は迷惑メールも確認してください）。', 'success');
+          ? '✓ すでに登録済みだよ。届いている招待メールをご確認ください（迷惑メールも念のため）。<br>待ってるあいだ、<a href="https://discord.gg/dkSvcxbFwe" data-discord-invite="signup-success" target="_blank" rel="noopener">ぼいラボ</a>でβ仲間と合流できるよ。'
+          : '✓ 登録完了！数分以内に招待メールが届きます。そこからβ版を試せます（届かない場合は迷惑メールも確認してください）。<br>いま合流すると早い → <a href="https://discord.gg/dkSvcxbFwe" data-discord-invite="signup-success" target="_blank" rel="noopener">ぼいラボでβ仲間と待つ</a>。', 'success', true);
         if (typeof gtag === 'function') gtag('event', data.already_registered ? 'sign_up_repeat' : 'sign_up', { method: 'lp_email' });
       } else if (data.error==='closed'){ isClosed=true; applyToDOM(); showResult(form,'✗ 受付は終了しました（先着 500名）。','error'); }
       else if (data.error==='invalid_email'){ showResult(form,'✗ メアドの形式を確認してください。','error'); }
