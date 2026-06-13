@@ -95,7 +95,7 @@ body{
 
 /* ---- タイポ ---- */
 .display{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1.2;letter-spacing:.01em}
-.h-mega{font-size:clamp(2rem,5.4vw,3.5rem);text-wrap:balance}
+.h-mega{font-size:clamp(2.4rem,6.6vw,4.8rem);text-wrap:balance}
 .h-xl{font-size:clamp(1.9rem,5vw,3.1rem)}
 .h-lg{font-size:clamp(1.5rem,4vw,2.2rem)}
 .accent{color:var(--mint-deep)}
@@ -176,29 +176,30 @@ section{position:relative;padding:var(--space) 0}
 .reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}
 
 /* ============ HERO ============ */
-.hero{padding-top:clamp(34px,6vw,64px);padding-bottom:clamp(40px,6vw,72px);overflow:hidden}
-.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center}
-.pre{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
-.hero h1{margin:6px 0 18px}
-.hero-sub{font-size:clamp(1.04rem,2.6vw,1.3rem);color:var(--ink-soft);font-weight:500;margin-bottom:28px}
+.hero{position:relative;padding-top:clamp(40px,7vw,88px);padding-bottom:clamp(44px,7vw,84px);overflow:hidden}
+/* 中央寄せ：タイトルを大きく中央に、画像は周囲に背景溶け込み */
+.hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;min-height:clamp(540px,64vw,740px)}
+.pre{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;justify-content:center}
+.hero h1{margin:4px 0 16px}
+.hero-sub{font-size:clamp(1.06rem,2.6vw,1.35rem);color:var(--ink-soft);font-weight:600;margin-bottom:30px}
 .hero-sub b{color:var(--mint-deep)}
-.hero-cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.hero-cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center}
 .hero-note{margin-top:14px;font-size:.78rem;color:var(--ink-faint)}
-/* ヒーロー：丸いぼやけた窓3つで実画像をblend */
-.hero-visual{position:relative;min-height:clamp(460px,58vw,660px);display:flex;justify-content:center;align-items:center}
-.hero-visual::before{content:"";position:absolute;width:78%;height:74%;left:11%;top:13%;border-radius:48%;
-  background:radial-gradient(50% 50% at 50% 50%,var(--glow),transparent 72%);filter:blur(30px);z-index:0}
-.hwin{position:absolute;border-radius:50%;overflow:hidden;z-index:1;box-shadow:0 22px 60px -28px rgba(8,60,44,.5)}
+.hero-headline{position:relative;z-index:3;max-width:840px;margin:0 auto}
+/* 中央テキストの視認性スクリム（うっすら白緑のハロー） */
+.hero-headline::before{content:"";position:absolute;z-index:-1;inset:-12% -16%;
+  background:radial-gradient(58% 54% at 50% 44%,rgba(238,245,240,.94),rgba(238,245,240,.5) 58%,transparent 80%)}
+/* 背景に溶ける大窓3つ（中央タイトルの周囲・全面レイヤー） */
+.hero-visual{position:absolute;inset:0;z-index:0;pointer-events:none;max-width:1240px;margin-inline:auto;left:0;right:0}
+.hwin{position:absolute;border-radius:50%;overflow:hidden;opacity:.9;box-shadow:0 30px 70px -34px rgba(8,60,44,.42)}
 .hwin img{width:100%;height:100%;object-fit:cover;display:block}
 /* 縁を溶かすフェザーマスク（背景にblend） */
-.hwin{-webkit-mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 84%);mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 84%)}
-.hwin.w1{width:73%;aspect-ratio:1;left:1%;top:2%;animation:float1 9s var(--ease) infinite}
-.hwin.w2{width:51%;aspect-ratio:1;right:0%;top:33%;z-index:2;animation:float2 11s var(--ease) infinite}
-.hwin.w3{width:47%;aspect-ratio:1;left:10%;bottom:0%;animation:float1 10s var(--ease) infinite reverse}
+.hwin{-webkit-mask-image:radial-gradient(circle at 50% 50%,#000 46%,transparent 80%);mask-image:radial-gradient(circle at 50% 50%,#000 46%,transparent 80%)}
+.hwin.w1{width:clamp(230px,27vw,420px);aspect-ratio:1;left:-3%;top:3%;animation:float1 9s var(--ease) infinite}
+.hwin.w2{width:clamp(200px,23vw,360px);aspect-ratio:1;right:-3%;top:27%;animation:float2 11s var(--ease) infinite}
+.hwin.w3{width:clamp(180px,22vw,330px);aspect-ratio:1;left:7%;bottom:-1%;animation:float1 10s var(--ease) infinite reverse}
 @keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
-/* テキスト視認性スクリム（左の見出し帯） */
-.hero-headline{position:relative;z-index:3}
 /* 画像プレースホルダ（未生成時 onerror） */
 .ph{display:flex;align-items:center;justify-content:center;background:
   repeating-linear-gradient(135deg,#e6f5ec,#e6f5ec 14px,#dcefe3 14px,#dcefe3 28px);color:var(--mint-deep)}
@@ -267,8 +268,8 @@ body[data-aud="listener"] .countdown{display:block}
 .col-before .col-label{color:var(--ink-faint);background:var(--glass-strong);border:1px solid var(--glass-line)}
 .col-after .col-label{color:#fff;background:linear-gradient(120deg,var(--mint),var(--mint-deep));box-shadow:0 8px 18px -8px var(--glow)}
 .cmp-cell{overflow:hidden;display:flex;flex-direction:column}
-.cmp-cell .cmp-img{height:170px;overflow:hidden}
-.cmp-cell .cmp-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cmp-cell .cmp-img{height:clamp(210px,25vw,250px);overflow:hidden}
+.cmp-cell .cmp-img img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
 .cmp-cell .cmp-img .ph{width:100%;height:100%}
 .cmp-cell .cmp-body{padding:18px 20px}
 .cmp-cell .cmp-body h4{font-size:1rem;color:var(--ink);font-weight:800;margin-bottom:5px}
@@ -447,6 +448,14 @@ body[data-aud="listener"] .countdown{display:block}
 
 <!-- ============ 1) ヒーロー ============ -->
 <section class="hero">
+  <div class="hero-visual" aria-hidden="true">
+    <div class="hwin w1"><img src="/LP_HERO1.jpeg" alt="" width="600" height="600" fetchpriority="high"
+      onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
+    <div class="hwin w2"><img src="/LP_HERO2.jpeg" alt="" width="420" height="420" loading="lazy"
+      onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
+    <div class="hwin w3"><img src="/LP_HERO3.jpeg" alt="" width="380" height="380" loading="lazy"
+      onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
+  </div>
   <div class="container hero-inner">
     <div class="hero-headline">
       <div class="pre">
@@ -488,15 +497,6 @@ body[data-aud="listener"] .countdown{display:block}
           <div class="cd-cell"><div class="num" id="cd-secs">--</div><div class="lbl">SEC</div></div>
         </div>
       </div>
-    </div>
-
-    <div class="hero-visual" aria-hidden="true">
-      <div class="hwin w1"><img src="/LP_HERO1.jpeg" alt="" width="600" height="600" fetchpriority="high"
-        onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
-      <div class="hwin w2"><img src="/LP_HERO2.jpeg" alt="" width="420" height="420" loading="lazy"
-        onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
-      <div class="hwin w3"><img src="/LP_HERO3.jpeg" alt="" width="380" height="380" loading="lazy"
-        onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
     </div>
   </div>
 </section>
@@ -633,15 +633,15 @@ body[data-aud="listener"] .countdown{display:block}
       <div class="badge-grid three reveal" data-d="1">
         <div class="fbadge glass-soft">
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11a6 6 0 0 1 12 0c0 4-3 4-3 7a2 2 0 0 1-4 0"/><path d="M9 18a3 3 0 0 1-3-3"/></svg></div>
-          <div class="nm">聴覚</div><div class="sub">立体音響でこえが泳ぐ</div>
+          <div class="nm">聴覚</div>
         </div>
         <div class="fbadge glass-soft">
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg></div>
-          <div class="nm">視覚</div><div class="sub">オーブが光って応える</div>
+          <div class="nm">視覚</div>
         </div>
         <div class="fbadge glass-soft">
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1.5a4 4 0 0 1-3.3-1.7L4 15.5a1.6 1.6 0 0 1 2.6-1.8L8 15.5"/></svg></div>
-          <div class="nm">触覚</div><div class="sub">指でドラッグして動かす</div>
+          <div class="nm">触覚</div>
         </div>
       </div>
     </div>
@@ -657,30 +657,21 @@ body[data-aud="listener"] .countdown{display:block}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
           メールをおく
         </div>
-        <p class="reg-desc">リリースしたら<b>いちばんにお知らせ</b>が届きます。<br>登録のかたには、<b>welcome100ポケ銭</b>をプレゼント。最初の1本から、損なく試せます。</p>
-        <!-- 離脱要因A：どんなこえか分からない不安・試聴への期待を上品に（嘘の再生UIは作らない） -->
-        <p class="sample-note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>
-          サンプル音源は準備中です。<b>リリースで、いちばんに聴けます。</b>
-        </p>
+        <p class="reg-desc">リリースを、いちばんに受け取れます。</p>
         <form id="signup-form" class="signup-form" action="https://ykmerwuwehgjdyfhpeiy.supabase.co/functions/v1/signup-lp" method="post">
           <div class="reg-row">
             <input type="email" name="email" required placeholder="your.name@example.com" aria-label="メールアドレス">
             <button type="submit" class="btn reg-cta">ここに置いておく</button>
           </div>
           <div class="reg-meta">
-            <span>リリースとwelcome特典のお知らせ用です。いつでも配信停止できます。</span>
+            <span>10秒・無料・いつでも配信停止。</span>
+            <a href="https://x.com/Tachibanavoice" target="_blank" rel="noopener" style="color:var(--mint-deep);font-weight:700">作り手を見る</a>
           </div>
           <div id="signup-result" class="signup-result"></div>
         </form>
         <span class="welcome-line">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 5 5.6.6-4.2 3.8L17 18l-5-2.7L7 18l1.2-5.6L4 8.6 9.6 8z"/></svg>
-          事前登録のかた限定で、アプリ内で使える<b>welcome100ポケ銭</b>をプレゼント。
-        </span>
-        <!-- 離脱要因B：知らないアプリへの警戒・作り手の一言で安心担保（捏造なし） -->
-        <span class="maker-note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
-          現役の声優が、聴く人のための体験としてつくっています。<a href="https://x.com/Tachibanavoice" target="_blank" rel="noopener" style="color:var(--mint-deep);font-weight:700;text-decoration:underline;margin-left:6px">作り手を見る</a>
+          登録特典：アプリ内で使える<b>welcome100ポケ銭</b>。
         </span>
       </div>
     </div>
