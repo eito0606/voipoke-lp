@@ -95,7 +95,7 @@ body{
 
 /* ---- タイポ ---- */
 .display{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1.2;letter-spacing:.01em}
-.h-mega{font-size:clamp(2.2rem,7vw,4.4rem)}
+.h-mega{font-size:clamp(2rem,5.4vw,3.5rem);text-wrap:balance}
 .h-xl{font-size:clamp(1.9rem,5vw,3.1rem)}
 .h-lg{font-size:clamp(1.5rem,4vw,2.2rem)}
 .accent{color:var(--mint-deep)}
@@ -177,7 +177,7 @@ section{position:relative;padding:var(--space) 0}
 
 /* ============ HERO ============ */
 .hero{padding-top:clamp(34px,6vw,64px);padding-bottom:clamp(40px,6vw,72px);overflow:hidden}
-.hero-inner{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(24px,4vw,56px);align-items:center}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center}
 .pre{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
 .hero h1{margin:6px 0 18px}
 .hero-sub{font-size:clamp(1.04rem,2.6vw,1.3rem);color:var(--ink-soft);font-weight:500;margin-bottom:28px}
@@ -185,16 +185,16 @@ section{position:relative;padding:var(--space) 0}
 .hero-cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .hero-note{margin-top:14px;font-size:.78rem;color:var(--ink-faint)}
 /* ヒーロー：丸いぼやけた窓3つで実画像をblend */
-.hero-visual{position:relative;min-height:clamp(380px,52vw,540px);display:flex;justify-content:center;align-items:center}
+.hero-visual{position:relative;min-height:clamp(460px,58vw,660px);display:flex;justify-content:center;align-items:center}
 .hero-visual::before{content:"";position:absolute;width:78%;height:74%;left:11%;top:13%;border-radius:48%;
   background:radial-gradient(50% 50% at 50% 50%,var(--glow),transparent 72%);filter:blur(30px);z-index:0}
 .hwin{position:absolute;border-radius:50%;overflow:hidden;z-index:1;box-shadow:0 22px 60px -28px rgba(8,60,44,.5)}
 .hwin img{width:100%;height:100%;object-fit:cover;display:block}
 /* 縁を溶かすフェザーマスク（背景にblend） */
 .hwin{-webkit-mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 84%);mask-image:radial-gradient(circle at 50% 50%,#000 52%,transparent 84%)}
-.hwin.w1{width:62%;aspect-ratio:1;left:6%;top:6%;animation:float1 9s var(--ease) infinite}
-.hwin.w2{width:42%;aspect-ratio:1;right:2%;top:30%;z-index:2;animation:float2 11s var(--ease) infinite}
-.hwin.w3{width:38%;aspect-ratio:1;left:18%;bottom:2%;animation:float1 10s var(--ease) infinite reverse}
+.hwin.w1{width:73%;aspect-ratio:1;left:1%;top:2%;animation:float1 9s var(--ease) infinite}
+.hwin.w2{width:51%;aspect-ratio:1;right:0%;top:33%;z-index:2;animation:float2 11s var(--ease) infinite}
+.hwin.w3{width:47%;aspect-ratio:1;left:10%;bottom:0%;animation:float1 10s var(--ease) infinite reverse}
 @keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
 /* テキスト視認性スクリム（左の見出し帯） */
@@ -367,7 +367,7 @@ body[data-aud="listener"] .countdown{display:block}
 /* ============ レスポンシブ ============ */
 @media(max-width:880px){
   .hero-inner{grid-template-columns:1fr;gap:30px}
-  .hero-visual{order:-1;min-height:clamp(300px,72vw,420px)}
+  .hero-visual{order:-1;min-height:clamp(340px,84vw,480px)}
   .spatial{grid-template-columns:1fr}
   .badge-grid{grid-template-columns:repeat(2,1fr)}
   .badge-grid.three{grid-template-columns:repeat(3,1fr)}
@@ -456,13 +456,13 @@ body[data-aud="listener"] .countdown{display:block}
 
       <!-- リスナー向け -->
       <div class="only-listener">
-        <h1 class="display h-mega">声優さんの声が<br><span class="accent">自分だけのモノ</span>になる<br>極上体験。</h1>
-        <p class="hero-sub"><b>声優の声を、指で動かせる</b>新感覚ASMR。<br>距離も場所も、あなた好みに。擬似ASMR × 立体音響アプリ。</p>
+        <h1 class="display h-mega">声優さんの声が、<br>自分だけの<br><span class="accent">極上体験</span>に。</h1>
+        <p class="hero-sub"><b>指でうごかせる、新感覚ASMR。</b></p>
       </div>
       <!-- 声優向け -->
       <div class="only-creator">
-        <h1 class="display h-mega">これからつくる、<br>あなたのこえが<br>誰かの<span class="accent">極上体験</span>になる。</h1>
-        <p class="hero-sub">録って、空間に置いて、とどける。<br>収録から販売まで<b>アプリの中で一気通貫</b>。<br>立体音響の作品を、ここから。</p>
+        <h1 class="display h-mega">これからつくる<br>あなたのこえが、<br>誰かの<span class="accent">極上体験</span>に。</h1>
+        <p class="hero-sub"><b>収録から販売まで、アプリの中で完結。</b></p>
       </div>
 
       <div class="hero-cta-row">
