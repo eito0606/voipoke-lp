@@ -99,9 +99,11 @@ body{
 .h-xl{font-size:clamp(1.9rem,5vw,3.1rem)}
 .h-lg{font-size:clamp(1.5rem,4vw,2.2rem)}
 /* ヒーロー「四角のトリック」：フォント大小コントラスト */
-.hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1.08;letter-spacing:.01em;display:flex;flex-direction:column;align-items:center;gap:.02em;margin:4px 0 18px;text-wrap:nowrap}
-.hero-sq .ln{font-size:clamp(1.2rem,2.9vw,2rem)}
-.hero-sq .hl{font-size:clamp(2.7rem,7.8vw,5.4rem);color:var(--mint-deep);font-weight:800}
+.hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:.94;letter-spacing:0;display:flex;flex-direction:column;align-items:center;gap:.01em;margin:6px 0 24px}
+.hero-sq{max-width:100%}
+.hero-sq .ln{font-size:clamp(1.05rem,3.2vw,3rem);display:block;max-width:100%;overflow-wrap:anywhere}
+.hero-sq .hl{font-size:clamp(2.15rem,11vw,9rem);color:var(--mint-deep);font-weight:800;letter-spacing:-.02em}
+@media(max-width:360px){.hero-sq .hl{font-size:8.6vw}.hero-sq .ln{font-size:clamp(.82rem,3.4vw,1.05rem)}}
 .accent{color:var(--mint-deep)}
 .mono{font-family:var(--font-mono);letter-spacing:.02em}
 /* セクション小見出し：温かい日本語ラベル（やわらかいミントのピル） */
