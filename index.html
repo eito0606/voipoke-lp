@@ -101,9 +101,12 @@ body{
 /* ヒーロー「四角のトリック」：フォント大小コントラスト */
 .hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1;letter-spacing:.005em;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2.2vw,30px);margin:10px 0 30px;max-width:100%}
 /* 接続語＝淡く小さく後退（ぼーっと見ても強調語だけ浮く） */
-.hero-sq .ln{font-size:clamp(1.15rem,2.5vw,2rem);color:var(--ink-soft);font-weight:600;display:block;max-width:100%;overflow-wrap:anywhere;line-height:1.05}
-/* 強調語＝ミント太字・大きく前進（インパクト） */
-.hero-sq .hl{color:var(--mint-deep);font-weight:800;letter-spacing:-.015em;line-height:.92}
+.hero-sq .ln{font-family:var(--font-body);font-size:clamp(1.15rem,2.5vw,2rem);color:var(--ink-soft);font-weight:600;display:block;max-width:100%;overflow-wrap:anywhere;line-height:1.05}
+/* 強調語＝明朝セリフでミント太字・大きく前進（混植で上質に） */
+.hero-sq .hl{font-family:var(--font-disp);color:var(--mint-deep);font-weight:800;letter-spacing:-.015em;line-height:.92}
+/* サブキャッチ＝主タイトルと被らない小さなタグUI */
+.hero-tag{display:inline-flex;align-items:center;gap:8px;margin:2px auto 28px;padding:9px 18px;border-radius:999px;background:var(--glass-strong);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow-sm);backdrop-filter:blur(8px);font-family:var(--font-body);font-size:clamp(.84rem,1.7vw,1rem);font-weight:700;color:var(--mint-deep);letter-spacing:.02em}
+.hero-tag svg{width:16px;height:16px;flex:none}
 .hero-sq .hl.a{font-size:clamp(2.9rem,7vw,6.2rem)}
 .hero-sq .hl.b{font-size:clamp(2.5rem,6vw,5.4rem)}
 .hero-sq .hl.c{font-size:clamp(3.3rem,8.6vw,7.8rem)}
@@ -488,18 +491,18 @@ body[data-aud="listener"] .countdown{display:block}
           <span class="ln"><b class="hl b">自分だけ</b>の</span>
           <span class="ln"><b class="hl c">極上</b>体験に</span>
         </h1>
-        <p class="hero-sub"><b>指でうごかす体験型ASMR</b></p>
+        <div class="hero-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1.5a4 4 0 0 1-3.3-1.7L4 15.5a1.6 1.6 0 0 1 2.6-1.8L8 15.5"/></svg>指でうごかす体験型ASMR</div>
       </div>
       <!-- 声優向け -->
       <div class="only-creator">
         <h1 class="display h-mega">これからつくる<br>あなたのこえが、<br>誰かの<span class="accent">極上体験</span>に。</h1>
-        <p class="hero-sub"><b>収録から販売まで、アプリの中で完結。</b></p>
+        <div class="hero-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M10 18h4"/></svg>収録から販売まで、アプリの中で完結</div>
       </div>
 
       <div class="hero-cta-row">
         <a href="#regist" class="btn only-listener as-flex">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
-          メアド、ここに置いとく？
+          メアドをおいておく
         </a>
         <a href="https://discord.gg/M9Za7XZgbF" data-discord-invite="hero-creator" target="_blank" rel="noopener" class="btn only-creator as-flex">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037 13.6 13.6 0 0 0-.61 1.25 18.27 18.27 0 0 0-5.487 0 12.5 12.5 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.74 19.74 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.027 14.1 14.1 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13 13 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10 10 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01q.181.149.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418m7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418"/></svg>
