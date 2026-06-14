@@ -103,13 +103,13 @@ body{
 /* 接続語＝淡く小さく後退（ぼーっと見ても強調語だけ浮く） */
 .hero-sq .ln{font-family:var(--font-body);font-size:clamp(1.15rem,2.5vw,2rem);color:var(--ink-soft);font-weight:600;display:block;max-width:100%;overflow-wrap:anywhere;line-height:1.05}
 /* 強調語＝明朝セリフでミント太字・大きく前進（混植で上質に） */
-.hero-sq .hl{font-family:var(--font-disp);color:var(--mint-deep);font-weight:800;letter-spacing:-.015em;line-height:.92}
+.hero-sq .hl{font-family:var(--font-disp);font-weight:800;letter-spacing:-.015em;line-height:.92;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;background-image:linear-gradient(135deg,var(--mint-bright),var(--mint-deep))}
 /* サブキャッチ＝主タイトルと被らない小さなタグUI */
-.hero-tag{display:inline-flex;align-items:center;gap:8px;margin:2px auto 28px;padding:9px 18px;border-radius:999px;background:var(--glass-strong);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow-sm);backdrop-filter:blur(8px);font-family:var(--font-body);font-size:clamp(.84rem,1.7vw,1rem);font-weight:700;color:var(--mint-deep);letter-spacing:.02em}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;margin:2px auto 32px;padding:8px 16px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);backdrop-filter:blur(8px);font-family:var(--font-body);font-size:clamp(.82rem,1.6vw,.96rem);font-weight:600;color:var(--ink-faint);letter-spacing:.02em}
 .hero-tag svg{width:16px;height:16px;flex:none}
-.hero-sq .hl.a{font-size:clamp(2.9rem,7vw,6.2rem)}
-.hero-sq .hl.b{font-size:clamp(2.5rem,6vw,5.4rem)}
-.hero-sq .hl.c{font-size:clamp(3.3rem,8.6vw,7.8rem)}
+.hero-sq .hl.a{font-size:clamp(2.9rem,7vw,6.2rem);background-image:linear-gradient(118deg,var(--mint-bright) 8%,var(--mint) 58%,var(--mint-deep) 100%)}
+.hero-sq .hl.b{font-size:clamp(2.5rem,6vw,5.4rem);background-image:linear-gradient(158deg,var(--mint) 14%,var(--mint-deep) 92%)}
+.hero-sq .hl.c{font-size:clamp(3.3rem,8.6vw,7.8rem);background-image:linear-gradient(128deg,var(--mint-bright) 0%,var(--mint) 44%,var(--mint-deep) 96%)}
 @media(max-width:380px){.hero-sq .hl.a{font-size:3rem}.hero-sq .hl.b{font-size:2.6rem}.hero-sq .hl.c{font-size:3.5rem}.hero-sq .ln{font-size:1.05rem}.hero-sq{gap:12px}}
 .accent{color:var(--mint-deep)}
 .mono{font-family:var(--font-mono);letter-spacing:.02em}
@@ -240,7 +240,7 @@ section{position:relative;padding:var(--space) 0}
 /* 登録後の3ステップ（すっきり・矢印なし） */
 .reg-steps{padding:clamp(20px,3vw,30px)}
 .rs-label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;color:var(--mint-deep);font-weight:700;margin-bottom:18px;text-align:center}
-.rs-list{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0;margin:0}
+.rs-list{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,26px);padding:0;margin:0}
 .rs-list li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px}
 .rs-num{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(120deg,var(--mint),var(--mint-deep));color:#fff;font-weight:800;font-size:1.02rem;box-shadow:0 8px 18px -8px var(--glow);flex:none}
 .rs-tx{display:flex;flex-direction:column;gap:3px}
@@ -255,18 +255,18 @@ section{position:relative;padding:var(--space) 0}
 .maker-note{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:.8rem;color:var(--ink-faint);font-weight:600}
 .maker-note svg{width:16px;height:16px;flex:none;color:var(--mint-deep)}
 /* カウントダウン */
-.countdown{margin-top:18px;padding:16px 18px;display:none}
+.countdown{margin-top:28px;padding:clamp(22px,2.6vw,30px) clamp(20px,2.4vw,28px);display:none}
 body[data-aud="listener"] .countdown{display:block}
-.cd-label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:10px}
-.cd-grid{display:flex;gap:10px}
-.cd-cell{flex:1;text-align:center;background:rgba(255,255,255,.6);border:1px solid var(--glass-line);border-radius:12px;padding:10px 4px}
+.cd-label{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:16px}
+.cd-grid{display:flex;gap:clamp(8px,1.3vw,14px)}
+.cd-cell{flex:1;text-align:center;background:rgba(255,255,255,.6);border:1px solid var(--glass-line);border-radius:14px;padding:17px 6px}
 .cd-cell .num{font-family:var(--font-mono);font-size:clamp(1.3rem,4vw,1.9rem);font-weight:500;color:var(--mint-deep)}
 .cd-cell .lbl{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;color:var(--ink-faint)}
 
 /* ============ セクションカード：ロケーション / 五感 ============ */
-.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.7vw,22px)}
 .badge-grid.three{grid-template-columns:repeat(3,1fr)}
-.fbadge{padding:22px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
+.fbadge{padding:clamp(26px,2.8vw,36px) 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
 .fbadge:hover{transform:translateY(-4px);box-shadow:var(--glass-shadow)}
 .fbadge .ic{width:54px;height:54px;border-radius:16px;background:var(--mint-tint);color:var(--mint-deep);display:grid;place-items:center}
 .fbadge .ic svg{width:28px;height:28px}
