@@ -99,15 +99,15 @@ body{
 .h-xl{font-size:clamp(1.9rem,5vw,3.1rem)}
 .h-lg{font-size:clamp(1.5rem,4vw,2.2rem)}
 /* ヒーロー「四角のトリック」：フォント大小コントラスト */
-.hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1.02;letter-spacing:.005em;display:flex;flex-direction:column;align-items:center;gap:.08em;margin:6px 0 22px;max-width:100%}
+.hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1;letter-spacing:.005em;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2.2vw,30px);margin:10px 0 30px;max-width:100%}
 /* 接続語＝淡く小さく後退（ぼーっと見ても強調語だけ浮く） */
-.hero-sq .ln{font-size:clamp(1rem,2.1vw,1.55rem);color:var(--ink-soft);font-weight:600;display:block;max-width:100%;overflow-wrap:anywhere}
-/* 強調語＝ミント太字・自然な大きさで前進 */
-.hero-sq .hl{color:var(--mint-deep);font-weight:800;letter-spacing:-.01em;line-height:1}
-.hero-sq .hl.a{font-size:clamp(2.3rem,5.4vw,4.2rem)}
-.hero-sq .hl.b{font-size:clamp(2rem,4.7vw,3.6rem)}
-.hero-sq .hl.c{font-size:clamp(2.7rem,6.4vw,5rem)}
-@media(max-width:380px){.hero-sq .hl.a{font-size:2.4rem}.hero-sq .hl.b{font-size:2.05rem}.hero-sq .hl.c{font-size:2.8rem}.hero-sq .ln{font-size:.95rem}}
+.hero-sq .ln{font-size:clamp(1.15rem,2.5vw,2rem);color:var(--ink-soft);font-weight:600;display:block;max-width:100%;overflow-wrap:anywhere;line-height:1.05}
+/* 強調語＝ミント太字・大きく前進（インパクト） */
+.hero-sq .hl{color:var(--mint-deep);font-weight:800;letter-spacing:-.015em;line-height:.92}
+.hero-sq .hl.a{font-size:clamp(2.9rem,7vw,6.2rem)}
+.hero-sq .hl.b{font-size:clamp(2.5rem,6vw,5.4rem)}
+.hero-sq .hl.c{font-size:clamp(3.3rem,8.6vw,7.8rem)}
+@media(max-width:380px){.hero-sq .hl.a{font-size:3rem}.hero-sq .hl.b{font-size:2.6rem}.hero-sq .hl.c{font-size:3.5rem}.hero-sq .ln{font-size:1.05rem}.hero-sq{gap:12px}}
 .accent{color:var(--mint-deep)}
 .mono{font-family:var(--font-mono);letter-spacing:.02em}
 /* セクション小見出し：温かい日本語ラベル（やわらかいミントのピル） */
@@ -191,7 +191,7 @@ section{position:relative;padding:var(--space) 0}
 /* ============ HERO ============ */
 .hero{position:relative;padding-top:clamp(40px,7vw,88px);padding-bottom:clamp(44px,7vw,84px);overflow:hidden}
 /* 中央寄せ：タイトルを大きく中央に、画像は周囲に背景溶け込み */
-.hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;min-height:clamp(460px,54vw,620px)}
+.hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;min-height:clamp(520px,60vw,700px)}
 .pre{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;justify-content:center}
 .hero h1{margin:4px 0 16px}
 .hero-sub{font-size:clamp(1.06rem,2.6vw,1.35rem);color:var(--ink-soft);font-weight:600;margin-bottom:30px}
