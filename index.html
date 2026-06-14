@@ -118,6 +118,9 @@ b{color:var(--ink);font-weight:700}
 .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 4px var(--glow);animation:pulse 2.4s var(--ease) infinite}
 .pill svg{width:14px;height:14px}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px var(--glow)}50%{box-shadow:0 0 0 8px transparent}}
+/* カウントダウン直下のバッジ（すっきりリッチ） */
+.pre-below{margin-top:22px;margin-bottom:0}
+.pill-soft{background:rgba(255,255,255,.74);border-color:rgba(255,255,255,.8);box-shadow:0 8px 20px -10px rgba(8,60,44,.26);padding:8px 16px}
 
 /* ---- ボタン ---- */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;
@@ -221,6 +224,16 @@ section{position:relative;padding:var(--space) 0}
 .signup-result{margin-top:10px;font-size:.86rem;font-weight:700;min-height:1.2em}
 .welcome-line{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:.82rem;color:var(--mint-deep);font-weight:700}
 .welcome-line svg{width:16px;height:16px}
+/* 登録後の3ステップ（すっきり・矢印なし） */
+.reg-steps{padding:clamp(20px,3vw,30px)}
+.rs-label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;color:var(--mint-deep);font-weight:700;margin-bottom:18px;text-align:center}
+.rs-list{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0;margin:0}
+.rs-list li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px}
+.rs-num{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(120deg,var(--mint),var(--mint-deep));color:#fff;font-weight:800;font-size:1.02rem;box-shadow:0 8px 18px -8px var(--glow);flex:none}
+.rs-tx{display:flex;flex-direction:column;gap:3px}
+.rs-tx b{color:var(--ink);font-size:.96rem}
+.rs-tx span{font-size:.82rem;color:var(--ink-soft);line-height:1.6}
+@media(max-width:560px){.rs-list{grid-template-columns:1fr;gap:14px}.rs-list li{flex-direction:row;text-align:left;align-items:center;gap:14px}}
 /* 試聴への期待（離脱要因A）＝やわらかいミントのバー */
 .sample-note{display:flex;align-items:center;gap:9px;margin-bottom:16px;padding:11px 15px;border-radius:13px;font-size:.86rem;color:var(--ink-soft);background:var(--mint-tint);border:1px solid var(--glass-line)}
 .sample-note svg{width:18px;height:18px;flex:none;color:var(--mint-deep)}
@@ -458,11 +471,6 @@ body[data-aud="listener"] .countdown{display:block}
   </div>
   <div class="container hero-inner">
     <div class="hero-headline">
-      <div class="pre">
-        <span class="pill"><span class="dot"></span>事前登録 受付中</span>
-        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h13l-1.2 8.4a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7L5 4z"/><path d="M5 4 4 1H2M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM16 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>2026.06.30 リリース予定</span>
-      </div>
-
       <!-- リスナー向け -->
       <div class="only-listener">
         <h1 class="display h-mega">声優さんの声が、<br>自分だけの<br><span class="accent">極上体験</span>に。</h1>
@@ -496,6 +504,10 @@ body[data-aud="listener"] .countdown{display:block}
           <div class="cd-cell"><div class="num" id="cd-mins">--</div><div class="lbl">MIN</div></div>
           <div class="cd-cell"><div class="num" id="cd-secs">--</div><div class="lbl">SEC</div></div>
         </div>
+      </div>
+      <div class="pre pre-below">
+        <span class="pill pill-soft"><span class="dot"></span>事前登録 受付中</span>
+        <span class="pill pill-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>2026.06.30 リリース</span>
       </div>
     </div>
   </div>
@@ -594,9 +606,7 @@ body[data-aud="listener"] .countdown{display:block}
   <div class="container">
     <div class="glass sec-card reveal">
       <div class="sec-head" style="text-align:center;margin-bottom:clamp(28px,4vw,44px)">
-        <div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>すきな場所で</div>
-        <h2 class="display h-xl">こえに、<span class="accent">その場の空気</span>を。</h2>
-        <p class="lead" style="max-width:46ch;margin:0 auto"><b>環境音をかさねて、その場にいるみたいに。</b><br>夜のしずけさにも、昼の作業のとなりにも。</p>
+        <h2 class="display h-xl">自分だけの<span class="accent">ロケーション</span>で。</h2>
       </div>
       <div class="badge-grid reveal" data-d="1">
         <div class="fbadge glass-soft">
@@ -616,7 +626,7 @@ body[data-aud="listener"] .countdown{display:block}
           <div class="nm">焚き火</div><div class="sub">パチパチと炎</div>
         </div>
       </div>
-      <p class="badge-tail reveal" data-d="2">こんな音が<b>全8種</b>。きょうの気分で選べます。</p>
+      <p class="badge-tail reveal" data-d="2">どんなシチュエーションで癒されますか。</p>
     </div>
   </div>
 </section>
@@ -626,9 +636,8 @@ body[data-aud="listener"] .countdown{display:block}
   <div class="container">
     <div class="glass sec-card reveal">
       <div class="sec-head" style="text-align:center;margin-bottom:clamp(28px,4vw,44px)">
-        <div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.5 2.5 2.5 6.5 0 9M12 3c-2.5 2.5-2.5 6.5 0 9"/><circle cx="12" cy="16" r="5"/></svg>五感でたのしむ</div>
-        <h2 class="display h-xl">3つの感覚で<br><span class="accent">たのしめる</span></h2>
-        <p class="lead" style="max-width:44ch;margin:0 auto"><b>聴くだけじゃない。見て、ふれて、味わう。</b><br>指でうごかすと、こえも一緒にうごきます。</p>
+        <h2 class="display h-xl">新感覚。<br>3つの感覚で<span class="accent">楽しめる</span>。</h2>
+        <p class="lead" style="max-width:44ch;margin:28px auto 0"><b>聴くだけじゃない。見て、ふれて、味わう。</b><br>指でうごかすと、こえも一緒にうごきます。</p>
       </div>
       <div class="badge-grid three reveal" data-d="1">
         <div class="fbadge glass-soft">
@@ -669,11 +678,15 @@ body[data-aud="listener"] .countdown{display:block}
           </div>
           <div id="signup-result" class="signup-result"></div>
         </form>
-        <span class="welcome-line">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 5 5.6.6-4.2 3.8L17 18l-5-2.7L7 18l1.2-5.6L4 8.6 9.6 8z"/></svg>
-          登録特典：アプリ内で使える<b>welcome100ポケ銭</b>。
-        </span>
       </div>
+    </div>
+    <div class="reg-steps glass-soft reveal" style="max-width:640px;margin:18px auto 0">
+      <div class="rs-label">登録したら、こうなる</div>
+      <ol class="rs-list">
+        <li><span class="rs-num">1</span><div class="rs-tx"><b>メールを登録</b><span>たった10秒。</span></div></li>
+        <li><span class="rs-num">2</span><div class="rs-tx"><b>招待が届く</b><span>TestFlightで先行体験。</span></div></li>
+        <li><span class="rs-num">3</span><div class="rs-tx"><b>いちばんに楽しむ</b><span>リリースを待たずに。</span></div></li>
+      </ol>
     </div>
   </div>
 </section>
@@ -774,7 +787,6 @@ body[data-aud="listener"] .countdown{display:block}
     <div class="sec-head reveal" style="text-align:center">
       <div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13v3a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 0zM20 13v3a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 0z"/></svg>音のひみつ</div>
       <h2 class="display h-xl">指でうごかすと<br><span class="accent">こえもうごく</span>しくみ</h2>
-      <p class="lead" style="max-width:44ch;margin:0 auto">立体音響を、やさしく一言で。<br><b>むずかしいことは、アプリがぜんぶやります。</b></p>
     </div>
     <div class="spatial">
       <div class="reveal">
@@ -806,15 +818,15 @@ body[data-aud="listener"] .countdown{display:block}
         <ul class="spatial-steps">
           <li class="glass-soft">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11a6 6 0 0 1 12 0c0 4-3 4-3 7M9 18a3 3 0 0 1-3-3"/><path d="M2 9c1-1 1.6-1.6 2.5-2M22 9c-1-1-1.6-1.6-2.5-2"/></svg></span>
-            <div class="tx"><b>人は左右の耳の"音のズレ"で方向を感じます。</b><br>右から聞こえる声は、右耳にほんの少しだけ早く届きます。</div>
+            <div class="tx"><b>人は左右の耳の"音のズレ"で方向を感じます。</b></div>
           </li>
           <li class="glass-soft">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
-            <div class="tx"><b>その"ズレ方"を再現するのがHRTFという技術です。</b><br>頭や耳のかたちで変わる聞こえ方を、こえに重ねます。</div>
+            <div class="tx"><b>その"ズレ方"を再現するのがHRTFという技術です。</b></div>
           </li>
           <li class="glass-soft">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/><path d="m16 8 2 2 4-4"/></svg></span>
-            <div class="tx"><b>だからオーブを動かすと、こえもうごきます。</b><br>左に置けば左耳から。近づければ耳もとから。あなたの距離で。</div>
+            <div class="tx"><b>だからオーブを動かすと、こえもうごきます。</b></div>
           </li>
         </ul>
         <span class="earphone-note">
@@ -854,10 +866,10 @@ body[data-aud="listener"] .countdown{display:block}
     <div class="sec-head reveal" style="text-align:center"><div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3"/><path d="M12 17h.01"/></svg>ぎもんにこたえます</div><h2 class="display h-lg">よくある疑問にこたえます</h2></div>
     <div class="faq">
       <details class="glass-soft reveal"><summary>いつ使えるようになりますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">2026年6月30日リリース予定です。<br>事前登録のかたには、リリースのお知らせをいちばんにお届けします。</div></details>
-      <details class="glass-soft reveal"><summary>お金はかかりますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">事前登録は無料です。アプリの料金はリリース時にご案内します。<br>登録のかた限定で、アプリ内で使えるwelcome100ポケ銭をプレゼントします。</div></details>
+      <details class="glass-soft reveal"><summary>お金はかかりますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">事前登録は無料です。アプリの料金はリリース時にご案内します。</div></details>
       <details class="glass-soft reveal"><summary>立体音響はどうやって聴くのがいいですか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">イヤホン・ヘッドホンでの体験がおすすめです。<br>左右の耳に届く音のズレで、こえの位置を表現しています。</div></details>
       <details class="glass-soft reveal"><summary>環境音は何種類ありますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">水族館・雨音・森のなか・焚き火など、全8種を用意しています。<br>こえと重ねて、その日の気分に合う場所を選べます。</div></details>
-      <details class="glass-soft reveal"><summary>登録したメールはどう使われますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">リリースとwelcome特典のお知らせにのみ使用します。<br>いつでも配信停止できます。</div></details>
+      <details class="glass-soft reveal"><summary>登録したメールはどう使われますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">リリースのお知らせにのみ使用します。<br>いつでも配信停止できます。</div></details>
     </div>
   </div>
 </section>
