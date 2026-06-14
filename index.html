@@ -98,6 +98,10 @@ body{
 .h-mega{font-size:clamp(2.4rem,6.6vw,4.8rem);text-wrap:balance}
 .h-xl{font-size:clamp(1.9rem,5vw,3.1rem)}
 .h-lg{font-size:clamp(1.5rem,4vw,2.2rem)}
+/* ヒーロー「四角のトリック」：フォント大小コントラスト */
+.hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1.08;letter-spacing:.01em;display:flex;flex-direction:column;align-items:center;gap:.02em;margin:4px 0 18px;text-wrap:nowrap}
+.hero-sq .ln{font-size:clamp(1.2rem,2.9vw,2rem)}
+.hero-sq .hl{font-size:clamp(2.7rem,7.8vw,5.4rem);color:var(--mint-deep);font-weight:800}
 .accent{color:var(--mint-deep)}
 .mono{font-family:var(--font-mono);letter-spacing:.02em}
 /* セクション小見出し：温かい日本語ラベル（やわらかいミントのピル） */
@@ -473,8 +477,12 @@ body[data-aud="listener"] .countdown{display:block}
     <div class="hero-headline">
       <!-- リスナー向け -->
       <div class="only-listener">
-        <h1 class="display h-mega">声優さんの声が、<br>自分だけの<br><span class="accent">極上体験</span>に。</h1>
-        <p class="hero-sub"><b>指でうごかせる、新感覚ASMR。</b></p>
+        <h1 class="hero-sq">
+          <span class="ln"><b class="hl">声優</b>さんのシチュボが</span>
+          <span class="ln"><b class="hl">自分だけ</b>の</span>
+          <span class="ln"><b class="hl">極上</b>体験に</span>
+        </h1>
+        <p class="hero-sub"><b>指でうごかす体験型ASMR</b></p>
       </div>
       <!-- 声優向け -->
       <div class="only-creator">
@@ -499,10 +507,10 @@ body[data-aud="listener"] .countdown{display:block}
       <div class="countdown glass-soft">
         <div class="cd-label">カウントダウン / 06.30 リリースまで</div>
         <div class="cd-grid">
-          <div class="cd-cell"><div class="num" id="cd-days">--</div><div class="lbl">DAYS</div></div>
-          <div class="cd-cell"><div class="num" id="cd-hours">--</div><div class="lbl">HRS</div></div>
-          <div class="cd-cell"><div class="num" id="cd-mins">--</div><div class="lbl">MIN</div></div>
-          <div class="cd-cell"><div class="num" id="cd-secs">--</div><div class="lbl">SEC</div></div>
+          <div class="cd-cell"><div class="num" id="cd-days">--</div><div class="lbl">日</div></div>
+          <div class="cd-cell"><div class="num" id="cd-hours">--</div><div class="lbl">時間</div></div>
+          <div class="cd-cell"><div class="num" id="cd-mins">--</div><div class="lbl">分</div></div>
+          <div class="cd-cell"><div class="num" id="cd-secs">--</div><div class="lbl">秒</div></div>
         </div>
       </div>
       <div class="pre pre-below">
@@ -606,7 +614,7 @@ body[data-aud="listener"] .countdown{display:block}
   <div class="container">
     <div class="glass sec-card reveal">
       <div class="sec-head" style="text-align:center;margin-bottom:clamp(28px,4vw,44px)">
-        <h2 class="display h-xl">自分だけの<span class="accent">ロケーション</span>で。</h2>
+        <h2 class="display h-xl">自分だけの<br><span class="accent">ロケーション</span>で。</h2>
       </div>
       <div class="badge-grid reveal" data-d="1">
         <div class="fbadge glass-soft">
