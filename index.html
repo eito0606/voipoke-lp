@@ -102,8 +102,11 @@ body{
 .hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:.94;letter-spacing:0;display:flex;flex-direction:column;align-items:center;gap:.01em;margin:6px 0 24px}
 .hero-sq{max-width:100%}
 .hero-sq .ln{font-size:clamp(1.05rem,3.2vw,3rem);display:block;max-width:100%;overflow-wrap:anywhere}
-.hero-sq .hl{font-size:clamp(2.15rem,11vw,9rem);color:var(--mint-deep);font-weight:800;letter-spacing:-.02em}
-@media(max-width:360px){.hero-sq .hl{font-size:8.6vw}.hero-sq .ln{font-size:clamp(.82rem,3.4vw,1.05rem)}}
+.hero-sq .hl{color:var(--mint-deep);font-weight:800;letter-spacing:-.02em}
+.hero-sq .hl.a{font-size:clamp(2rem,9.6vw,7.4rem)}
+.hero-sq .hl.b{font-size:clamp(1.7rem,7.8vw,6rem)}
+.hero-sq .hl.c{font-size:clamp(2.7rem,13.5vw,10.4rem)}
+@media(max-width:360px){.hero-sq .hl.a{font-size:7.8vw}.hero-sq .hl.b{font-size:6.4vw}.hero-sq .hl.c{font-size:9.6vw}.hero-sq .ln{font-size:clamp(.82rem,3.4vw,1.05rem)}}
 .accent{color:var(--mint-deep)}
 .mono{font-family:var(--font-mono);letter-spacing:.02em}
 /* セクション小見出し：温かい日本語ラベル（やわらかいミントのピル） */
@@ -480,9 +483,9 @@ body[data-aud="listener"] .countdown{display:block}
       <!-- リスナー向け -->
       <div class="only-listener">
         <h1 class="hero-sq">
-          <span class="ln"><b class="hl">声優</b>さんのシチュボが</span>
-          <span class="ln"><b class="hl">自分だけ</b>の</span>
-          <span class="ln"><b class="hl">極上</b>体験に</span>
+          <span class="ln"><b class="hl a">声優</b>さんのシチュボが</span>
+          <span class="ln"><b class="hl b">自分だけ</b>の</span>
+          <span class="ln"><b class="hl c">極上</b>体験に</span>
         </h1>
         <p class="hero-sub"><b>指でうごかす体験型ASMR</b></p>
       </div>
