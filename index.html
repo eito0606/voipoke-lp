@@ -210,10 +210,18 @@ section{position:relative;padding:var(--space) 0}
 .sec-card .sec-head{margin-bottom:clamp(30px,4.4vw,46px)}
 
 /* ---- スクロールリビール（JS有効時だけ隠す＝no-JSでも見える） ---- */
-.reveal{transition:opacity .7s var(--ease),transform .7s var(--ease)}
-.js .reveal{opacity:0;transform:translateY(26px)}
-.reveal.in{opacity:1!important;transform:none!important}
-.reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}
+.reveal{transition:opacity .85s var(--ease),transform .9s var(--ease),filter .85s var(--ease)}
+.js .reveal{opacity:0;transform:translateY(38px) scale(.965);filter:blur(5px)}
+.reveal.in{opacity:1!important;transform:none!important;filter:none!important}
+.reveal[data-d="1"]{transition-delay:.1s}.reveal[data-d="2"]{transition-delay:.2s}.reveal[data-d="3"]{transition-delay:.3s}
+/* リスナー/声優 切替＝固有のビュートランジション（クロスフェード＋微ズーム） */
+@media(prefers-reduced-motion:no-preference){
+  ::view-transition-old(root){animation:vtOut .5s var(--ease) both}
+  ::view-transition-new(root){animation:vtIn .56s var(--ease) both}
+}
+@keyframes vtOut{to{opacity:0;transform:scale(.99) translateY(-8px);filter:blur(4px)}}
+@keyframes vtIn{from{opacity:0;transform:scale(1.014) translateY(12px);filter:blur(6px)}}
+.aud-toggle:active{transform:scale(.96)}
 
 /* ============ HERO ============ */
 .hero{position:relative;padding-top:clamp(40px,7vw,88px);padding-bottom:clamp(44px,7vw,84px);overflow:hidden}
@@ -1025,7 +1033,13 @@ body[data-aud="listener"] .countdown{display:block}
   if(audToggle){
     audToggle.addEventListener('click', () => {
       const cur = body.getAttribute('data-aud');
-      setAudience(cur === 'creator' ? 'listener' : 'creator', true);
+      const next = cur === 'creator' ? 'listener' : 'creator';
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (document.startViewTransition && !reduce) {
+        document.startViewTransition(() => setAudience(next, true));
+        return;
+      }
+      setAudience(next, true);
     });
   }
 })();
