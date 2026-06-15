@@ -170,6 +170,24 @@ body[data-aud="listener"] .aud-badge[data-aud="listener"],
 body[data-aud="creator"] .aud-badge[data-aud="creator"]{
   color:#fff;background:linear-gradient(120deg,var(--mint),var(--mint-deep));box-shadow:0 8px 18px -8px var(--glow)}
 .aud-badge .lbl-sm{display:none}
+/* ツールバー右：ぼいラボ参加／メアドで登録／単一トグル */
+.tb-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tb-badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-body);font-size:.82rem;font-weight:700;color:var(--mint-deep);text-decoration:none;padding:8px 14px;border-radius:999px;background:var(--glass-strong);border:1px solid var(--glass-line);white-space:nowrap;transition:background .3s var(--ease)}
+.tb-badge:hover{background:#fff}
+.tb-badge svg{width:16px;height:16px;flex:none}
+.tb-reg{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-body);font-size:.82rem;font-weight:800;color:#fff;text-decoration:none;padding:9px 16px;border-radius:999px;background:linear-gradient(120deg,var(--mint),var(--mint-deep));box-shadow:0 8px 18px -8px var(--glow);white-space:nowrap;transition:transform .3s var(--ease)}
+.tb-reg:hover{transform:translateY(-2px)}
+.tb-reg svg{width:16px;height:16px;flex:none}
+/* 単一トグル＝固有トンマナ（ミント枠で直感的に） */
+.aud-toggle{display:inline-flex;align-items:center;font-family:var(--font-body);font-size:.82rem;font-weight:800;color:var(--ink);cursor:pointer;padding:9px 16px;border-radius:999px;background:var(--glass-strong);border:1.5px solid var(--mint);box-shadow:var(--glass-shadow-sm);white-space:nowrap;transition:background .3s var(--ease)}
+.aud-toggle:hover{background:var(--mint-tint)}
+.aud-toggle span{display:inline-flex;align-items:center;gap:7px}
+.aud-toggle svg{width:16px;height:16px;flex:none;color:var(--mint-deep)}
+@media(max-width:760px){
+  .tb-badge .tb-lbl,.tb-reg .tb-lbl{display:none}
+  .tb-badge,.tb-reg{padding:9px 11px}
+  .aud-toggle{font-size:.76rem;padding:8px 12px}
+}
 
 /* ---- 表示出し分け（既定=listener） ---- */
 .only-listener,.only-creator{display:none}
@@ -185,7 +203,7 @@ body[data-aud="creator"] .only-creator.as-grid{display:grid}
 section{position:relative;padding:var(--space) 0}
 .sec-head{margin-bottom:clamp(40px,5.5vw,64px)}
 .sec-head h2{margin-top:18px}
-.sec-head p{margin-top:20px}
+.sec-head p{margin-top:30px}
 .sec-card{padding:clamp(32px,5.5vw,60px)}
 .sec-card .sec-head{margin-bottom:clamp(30px,4.4vw,46px)}
 
@@ -461,16 +479,20 @@ body[data-aud="listener"] .countdown{display:block}
       <span class="brand-mark"><img src="/assets/voipoke-icon.png" alt="VoiPoke" width="40" height="40"></span>
       <span class="brand-name">VoiPoke<small>REVERB LAB</small></span>
     </a>
-    <nav class="audience-switch" aria-label="閲覧する立場の切り替え">
-      <button type="button" class="aud-badge" data-aud="listener" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13v3a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 0zM20 13v3a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 0z"/></svg>
-        <span class="lbl-lg">リスナーはこちら</span><span class="lbl-sm">きく</span>
+    <div class="tb-actions">
+      <a href="https://discord.gg/M9Za7XZgbF" data-discord-invite="topbar" target="_blank" rel="noopener" class="tb-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span class="tb-lbl">ぼいラボに参加</span>
+      </a>
+      <a href="#regist" class="tb-reg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
+        <span class="tb-lbl">メアドで登録</span>
+      </a>
+      <button type="button" class="aud-toggle" id="audToggle" aria-label="閲覧する立場を切り替え">
+        <span class="only-listener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v4M8.5 21h7"/></svg>声優はこちら</span>
+        <span class="only-creator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13v3a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 0zM20 13v3a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 0z"/></svg>リスナーはこちら</span>
       </button>
-      <button type="button" class="aud-badge" data-aud="creator" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v4M8.5 21h7"/></svg>
-        <span class="lbl-lg">声優はこちら</span><span class="lbl-sm">つくる</span>
-      </button>
-    </nav>
+    </div>
   </div>
 </header>
 
@@ -500,11 +522,11 @@ body[data-aud="listener"] .countdown{display:block}
       <!-- 声優向け -->
       <div class="only-creator">
         <h1 class="hero-sq">
-          <span class="ln">これから<b class="hl a">つくる</b></span>
-          <span class="ln">あなたの<b class="hl b">こえ</b>が、</span>
-          <span class="ln">誰かの<b class="hl c">極上</b>体験に</span>
+          <span class="ln">あなたの<b class="hl a">声</b>が</span>
+          <span class="ln">誰かに<b class="hl b">とどく</b>体験を</span>
+          <span class="ln">もっと<b class="hl c">気軽に</b>。</span>
         </h1>
-        <div class="hero-tag">収録から販売まで、アプリの中で完結</div>
+        <div class="hero-tag">収録から販売まで、アプリ1つで完結</div>
       </div>
 
       <div class="hero-cta-row">
@@ -542,12 +564,11 @@ body[data-aud="listener"] .countdown{display:block}
 <section class="only-creator">
   <div class="container">
     <div class="cr-intro reveal">
-      <div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v4M8.5 21h7"/></svg>つくる人へ</div>
-      <h2 class="display h-xl">あなたのこえを、<br><span class="accent">作品にして届ける</span>。</h2>
-      <p class="lead" style="max-width:46ch;margin:0 auto">機材も編集ソフトもいりません。<br>スマホ1つで、録って・整えて・値づけして・とどける。</p>
+      <h2 class="display h-xl">声優専用のSNS。<br><span class="accent">ついに登場</span>。</h2>
+      <p class="lead" style="max-width:46ch;margin:26px auto 0">機材コスト0。スマホ1つで<br><b>作業工数を大幅削減</b>。</p>
       <span class="cr-trust">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
-        現役の声優が、つくる人のための場所として用意しています。
+        現役声優が、同じ作る人のための場所を本気で設計しています。
       </span>
     </div>
 
@@ -560,8 +581,7 @@ body[data-aud="listener"] .countdown{display:block}
         </div>
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>収録から販売まで</span>
-          <h3>収録から販売まで、<br>アプリの中だけで完結。</h3>
-          <p>PCも高い機材もいりません。スマホ1つで<br><b>録って・整えて・値づけして・届ける</b>。</p>
+          <h3>収録から販売まで<br>アプリ1つで完結。</h3>
         </div>
       </div>
 
@@ -574,7 +594,6 @@ body[data-aud="listener"] .countdown{display:block}
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1.5a4 4 0 0 1-3.3-1.7L4 15.5a1.6 1.6 0 0 1 2.6-1.8L8 15.5"/></svg>うごく作品</span>
           <h3>あなたのシチュボが、<br>"さわってうごく"体験に。</h3>
-          <p>聴く人がオーブに触れて、こえを動かせる作品。<br><b>"さわって動く体験"として記憶に残ります。</b></p>
         </div>
       </div>
 
@@ -587,7 +606,6 @@ body[data-aud="listener"] .countdown{display:block}
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 5 5.6.6-4.2 3.8L17 18l-5-2.7L7 18l1.2-5.6L4 8.6 9.6 8z"/></svg>ポケ銭</span>
           <h3>聴く人の応援が、<br>そのまま<span class="accent">あなたの収益</span>に。</h3>
-          <p><b>ポケ銭＝投げ銭のように、応援がまっすぐ届くしくみ。</b><br>販売価格はあなたが決め、収益になります（詳細はリリース時）。</p>
         </div>
       </div>
 
@@ -599,24 +617,59 @@ body[data-aud="listener"] .countdown{display:block}
         </div>
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a8 8 0 1 0 8 8"/><path d="M12 8v4l3 2"/></svg>スキマ時間</span>
-          <h3>夜と土日だけで、<br>ゼロから最初の1本。</h3>
-          <p>本職があっても大丈夫。<b>まとまった時間がなくても進められます</b>。<br>仕事終わりの30分から、あなたの1本目を。</p>
+          <h3>仕事終わりと休日の<br>隙間時間に最初の1本。</h3>
         </div>
       </div>
     </div>
 
-    <!-- (5) 募集CTA：先行クリエイター・ぼいラボへ（主CTA1つ） -->
-    <div class="cr-cta glass reveal">
+    <!-- 比較：従来の音声プラットフォーム vs VoiPoke -->
+    <div class="cr-compare reveal" style="margin-top:clamp(52px,6.5vw,86px)">
+      <div class="sec-head" style="text-align:center;margin-bottom:clamp(28px,4vw,46px)">
+        <h2 class="display h-xl">従来のプラットフォームと、<br><span class="accent">くらべてみた</span>。</h2>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-col col-before reveal">
+          <span class="col-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
+            従来の音声プラットフォーム
+          </span>
+          <div class="cmp-cell glass-soft">
+            <div class="cmp-img"><img src="/assets/compare-c1.jpeg" alt="制作工数に見合わない低単価のイメージ" loading="lazy" width="540" height="340"
+              onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
+            <div class="cmp-body"><h4>作業に見合わない低単価</h4><p>細かい制作工数をかけても、単価は決まったまま。労力と釣り合いません。</p></div>
+          </div>
+          <div class="cmp-cell glass-soft">
+            <div class="cmp-img"><img src="/assets/compare-c2.jpeg" alt="PCや編集ソフトでの制作工数が多いイメージ" loading="lazy" width="540" height="340"
+              onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
+            <div class="cmp-body"><h4>コストも工数も肥大</h4><p>PCと編集ソフトが必須。収録後もノイズ処理や無音除去に追われます。</p></div>
+          </div>
+        </div>
+        <div class="compare-col col-after reveal" data-d="1">
+          <span class="col-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            VoiPoke
+          </span>
+          <div class="cmp-cell glass-soft">
+            <div class="cmp-img"><img src="/assets/compare-c3.jpeg" alt="スマホで自分で価格を決められるイメージ" loading="lazy" width="540" height="340"
+              onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
+            <div class="cmp-body"><h4>自分で価値付け</h4><p>価格はあなたが決められます。かけた価値が、そのまま届きます。</p></div>
+          </div>
+          <div class="cmp-cell glass-soft">
+            <div class="cmp-img"><img src="/assets/compare-c4.jpeg" alt="スマホ1つで収録から完結するイメージ" loading="lazy" width="540" height="340"
+              onerror="this.parentNode.classList.add('ph');this.replaceWith(Object.assign(document.createElement('span'),{textContent:'準備中'}))"></div>
+            <div class="cmp-body"><h4>スマホ1つで完結</h4><p>録って・整えて・届けるまでアプリの中だけ。面倒な後処理もいりません。</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- (5) 募集CTA：先行クリエイター・ぼいラボへ -->
+    <div class="cr-cta glass reveal" style="margin-top:clamp(48px,6vw,80px)">
       <div class="cr-cta-inner">
         <span class="pill"><span class="dot"></span>先行クリエイター 募集中</span>
-        <h2 class="display h-lg">先行クリエイターとして、<br><span class="accent">いま動き出す</span>。</h2>
-        <p class="lead" style="max-width:42ch;margin:0 auto">VoiPokeはまだ準備中。だからこそ先行クリエイターは、<b>リリース初日から作品を並べられます</b>。</p>
-        <ul class="cr-perks" style="list-style:none;display:flex;flex-wrap:wrap;gap:8px 10px;justify-content:center;margin:18px auto 0;max-width:46ch">
-          <li class="pill">リリース前から仲間と準備</li>
-          <li class="pill">リリース初日から並ぶ</li>
-          <li class="pill">使い手の声が開発に届く</li>
-        </ul>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px">
+        <h2 class="display h-lg">99%が足踏みをしている中、<br>1%の<span class="accent">先行者利益</span>を勝ち取ろう。</h2>
+        <p class="lead" style="max-width:44ch;margin:24px auto 0">リリースまで残りわずか。<br>先行クリエイターはリリース初日から作品を並べられます。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px">
           <a href="#regist" class="btn as-flex">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
             メアドをおいておく
@@ -626,7 +679,7 @@ body[data-aud="listener"] .countdown{display:block}
             ぼいラボに参加
           </a>
         </div>
-        <p class="hero-note" style="margin-top:16px">ぼいラボ（無料Discord）で、つくる相談・仲間の作例が見られます。</p>
+        <p class="hero-note" style="margin-top:16px">ぼいラボ(無料Discord)でVoiPokeクリエイターの仲間と交流しよう。</p>
       </div>
     </div>
   </div>
@@ -691,7 +744,7 @@ body[data-aud="listener"] .countdown{display:block}
 <!-- ============ 4) 第1段階：メールをおく（事前登録フォーム）※リスナービュー専用 ============ -->
 <section id="regist">
   <div class="container">
-    <div class="glass sec-card reveal" style="max-width:640px;margin:0 auto">
+    <div class="glass sec-card reveal" style="max-width:900px;margin:0 auto">
       <div class="reg-form">
         <div class="reg-ttl">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
@@ -711,7 +764,7 @@ body[data-aud="listener"] .countdown{display:block}
         </form>
       </div>
     </div>
-    <div class="reg-steps glass-soft reveal" style="max-width:640px;margin:18px auto 0">
+    <div class="reg-steps glass-soft reveal" style="max-width:900px;margin:18px auto 0">
       <div class="rs-label">登録したら、こうなる</div>
       <ol class="rs-list">
         <li><span class="rs-num">1</span><div class="rs-tx"><b>メールを登録</b><span>たった10秒。</span></div></li>
@@ -722,13 +775,28 @@ body[data-aud="listener"] .countdown{display:block}
   </div>
 </section>
 
+<!-- 声優版FAQ ※声優ビュー専用 -->
+<section class="faq-sec only-creator">
+  <div class="container">
+    <div class="sec-head reveal" style="text-align:center"><div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3"/><path d="M12 17h.01"/></svg>ぎもんにこたえます</div><h2 class="display h-lg">つくる人の、よくある疑問</h2></div>
+    <div class="faq">
+      <details class="glass-soft reveal"><summary>VoiPokeでつくる人は何ができるんですか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">スマホアプリ1つで、収録から販売までを完結できます。<br>音声を録って、作品として並べて、リスナーに届けるまでがアプリの中でつながっています。</div></details>
+      <details class="glass-soft reveal"><summary>お金はどうやって入りますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">作品の価格はご自身で決められます。<br>さらに「ポケ銭」で、リスナーからの応援が直接届くしくみもあります。手数料やお振り込みの条件はリリース時にご案内します。</div></details>
+      <details class="glass-soft reveal"><summary>PCや編集ソフトは必要ですか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">スマホ1つでだいじょうぶです。PCも専用の編集ソフトもいりません。<br>面倒な後処理もアプリ側でととのうので、録ることに集中できます。</div></details>
+      <details class="glass-soft reveal"><summary>いつから使えますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">2026年6月30日リリース予定です。<br>先行登録をしておくと、初日にご案内が届きます。</div></details>
+      <details class="glass-soft reveal"><summary>先行クリエイターのメリットはありますか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">リリース初日から、あなたの作品を並べてスタートできます。<br>いちばん最初の盛り上がりに、自分の声を置いておけます。</div></details>
+      <details class="glass-soft reveal"><summary>ぼいラボってなんですか？<svg class="pm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary><div class="ans">声優が集まる無料のDiscordコミュニティです。<br>つくることの相談ができたり、仲間の作例を見られたりするので、はじめての一歩を後押ししてくれます。</div></details>
+    </div>
+  </div>
+</section>
+
 <!-- ============ 5) 日常での使いかた（2列×3行 / モバイル縦積み）※リスナービュー専用 ============ -->
 <section class="only-listener">
   <div class="container">
     <div class="sec-head reveal" style="text-align:center">
       <div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a8 8 0 1 0 8 8"/><path d="M12 8v4l3 2"/><path d="M17 4l2 2 3-3"/></svg>こんな毎日に</div>
       <h2 class="display h-xl">いつもの一日の、<span class="accent">すきまに</span>。</h2>
-      <p class="lead" style="max-width:40ch;margin:0 auto"><b>朝の家事、昼の作業、眠る前。</b><br>特別な時間じゃなくていい、いつものすきまに。</p>
+      <p class="lead" style="max-width:40ch;margin:26px auto 0"><b>朝の家事、昼の作業、眠る前。</b><br>特別な時間じゃなくていい、いつものすきまに。</p>
     </div>
     <div class="daily-grid">
       <!-- 行1：左テキスト / 右=画像1 -->
@@ -771,7 +839,7 @@ body[data-aud="listener"] .countdown{display:block}
     <div class="sec-head reveal" style="text-align:center">
       <div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M5 8 3 12l4 0-2-4zM5 8l0 8"/><path d="M19 6l-2 4 4 0-2-4zM19 6l0 10"/></svg>これまでとちがう</div>
       <h2 class="display h-xl">いままでのASMRと<span class="accent">くらべてみた</span></h2>
-      <p class="lead" style="max-width:42ch;margin:0 auto">おなじ"癒し"でも、体験のかたちがちがいます。<br><b>左がいままで、右がVoiPoke。</b></p>
+      <p class="lead" style="max-width:42ch;margin:26px auto 0">おなじ"癒し"でも、体験のかたちがちがいます。<br><b>左がいままで、右がVoiPoke。</b></p>
     </div>
     <div class="compare-grid">
       <!-- 左列：従来 -->
@@ -879,7 +947,7 @@ body[data-aud="listener"] .countdown{display:block}
         <span class="s">全8種の環境音</span>
       </div>
       <h2 class="display h-xl">10秒だけで<br><span class="accent">いちばんに受け取れます。</span></h2>
-      <p class="lead" style="margin:0 auto">リリースのお知らせを、まっさきに。<br>メアド、ここに置いておきませんか？</p>
+      <p class="lead" style="margin:26px auto 0">リリースのお知らせを、まっさきに。<br>メアド、ここに置いておきませんか？</p>
       <form id="signup-form-2" class="signup-form reg-form glass-soft" action="https://ykmerwuwehgjdyfhpeiy.supabase.co/functions/v1/signup-lp" method="post">
         <div class="reg-row">
           <input type="email" name="email" required placeholder="your.name@example.com" aria-label="メールアドレス">
@@ -951,9 +1019,13 @@ body[data-aud="listener"] .countdown{display:block}
   }
   // 初期：URLパラメータ優先（無ければ listener）
   setAudience(readParam() || 'listener', false);
-  document.querySelectorAll('.aud-badge').forEach((b) => {
-    b.addEventListener('click', () => setAudience(b.dataset.aud, true));
-  });
+  const audToggle = document.getElementById('audToggle');
+  if(audToggle){
+    audToggle.addEventListener('click', () => {
+      const cur = body.getAttribute('data-aud');
+      setAudience(cur === 'creator' ? 'listener' : 'creator', true);
+    });
+  }
 })();
 </script>
 
