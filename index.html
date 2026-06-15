@@ -105,8 +105,8 @@ body{
 /* 強調語＝明朝セリフでミント太字・大きく前進（混植で上質に） */
 .hero-sq .hl{font-family:var(--font-disp);font-weight:800;letter-spacing:-.015em;line-height:.92;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;background-image:linear-gradient(135deg,var(--mint-bright),var(--mint-deep))}
 /* サブキャッチ＝主タイトルと被らない小さなタグUI */
-.hero-tag{display:inline-flex;align-items:center;gap:7px;margin:2px auto 32px;padding:8px 16px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);backdrop-filter:blur(8px);font-family:var(--font-body);font-size:clamp(.82rem,1.6vw,.96rem);font-weight:600;color:var(--ink-faint);letter-spacing:.02em}
-.hero-tag svg{width:16px;height:16px;flex:none}
+/* サブキャッチ＝固有バッジではなくテキストのみ（他要素と差を出す） */
+.hero-tag{display:block;margin:0 auto 40px;font-family:var(--font-body);font-size:clamp(.92rem,1.8vw,1.1rem);font-weight:600;color:var(--ink-faint);letter-spacing:.06em;text-align:center}
 .hero-sq .hl.a{font-size:clamp(2.9rem,7vw,6.2rem);background-image:linear-gradient(118deg,var(--mint-bright) 8%,var(--mint) 58%,var(--mint-deep) 100%)}
 .hero-sq .hl.b{font-size:clamp(2.5rem,6vw,5.4rem);background-image:linear-gradient(158deg,var(--mint) 14%,var(--mint-deep) 92%)}
 .hero-sq .hl.c{font-size:clamp(3.3rem,8.6vw,7.8rem);background-image:linear-gradient(128deg,var(--mint-bright) 0%,var(--mint) 44%,var(--mint-deep) 96%)}
@@ -132,7 +132,7 @@ b{color:var(--ink);font-weight:700}
 .pill svg{width:14px;height:14px}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px var(--glow)}50%{box-shadow:0 0 0 8px transparent}}
 /* カウントダウン直下のバッジ（すっきりリッチ） */
-.pre-below{margin-top:22px;margin-bottom:0}
+.pre-below{margin-top:36px;margin-bottom:0}
 .pill-soft{background:rgba(255,255,255,.74);border-color:rgba(255,255,255,.8);box-shadow:0 8px 20px -10px rgba(8,60,44,.26);padding:8px 16px}
 
 /* ---- ボタン ---- */
@@ -255,7 +255,7 @@ section{position:relative;padding:var(--space) 0}
 .maker-note{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:.8rem;color:var(--ink-faint);font-weight:600}
 .maker-note svg{width:16px;height:16px;flex:none;color:var(--mint-deep)}
 /* カウントダウン */
-.countdown{margin-top:28px;padding:clamp(22px,2.6vw,30px) clamp(20px,2.4vw,28px);display:none}
+.countdown{margin-top:44px;padding:clamp(22px,2.6vw,30px) clamp(20px,2.4vw,28px);display:none}
 body[data-aud="listener"] .countdown{display:block}
 .cd-label{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:16px}
 .cd-grid{display:flex;gap:clamp(8px,1.3vw,14px)}
@@ -491,12 +491,12 @@ body[data-aud="listener"] .countdown{display:block}
           <span class="ln"><b class="hl b">自分だけ</b>の</span>
           <span class="ln"><b class="hl c">極上</b>体験に</span>
         </h1>
-        <div class="hero-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1.5a4 4 0 0 1-3.3-1.7L4 15.5a1.6 1.6 0 0 1 2.6-1.8L8 15.5"/></svg>指でうごかす体験型ASMR</div>
+        <div class="hero-tag">指でうごかす体験型ASMR×環境音</div>
       </div>
       <!-- 声優向け -->
       <div class="only-creator">
         <h1 class="display h-mega">これからつくる<br>あなたのこえが、<br>誰かの<span class="accent">極上体験</span>に。</h1>
-        <div class="hero-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M10 18h4"/></svg>収録から販売まで、アプリの中で完結</div>
+        <div class="hero-tag">収録から販売まで、アプリの中で完結</div>
       </div>
 
       <div class="hero-cta-row">
@@ -691,7 +691,7 @@ body[data-aud="listener"] .countdown{display:block}
           </div>
           <div class="reg-meta">
             <span>10秒・無料・いつでも配信停止。</span>
-            <a href="https://x.com/Tachibanavoice" target="_blank" rel="noopener" style="color:var(--mint-deep);font-weight:700">作り手を見る</a>
+            <a href="https://x.com/Tachibanavoice" target="_blank" rel="noopener" style="color:var(--mint-deep);font-weight:700">開発者について</a>
           </div>
           <div id="signup-result" class="signup-result"></div>
         </form>
