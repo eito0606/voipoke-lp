@@ -148,6 +148,10 @@ b{color:var(--ink);font-weight:700}
 .btn:hover::after{left:130%}
 .btn:active{transform:translateY(-1px) scale(.99)}
 .btn svg{width:18px;height:18px}
+/* 副CTA＝ゴースト（先行登録メインに対してぼいラボを従に） */
+.btn-ghost{background:var(--glass-strong);color:var(--mint-deep);border:1.5px solid var(--glass-line);box-shadow:var(--glass-shadow-sm);padding:14px 24px;font-size:.95rem}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{background:#fff;color:var(--mint-deep);box-shadow:var(--glass-shadow)}
 
 /* ============ ツールバー（リスナー/声優 チェンジバッジ） ============ */
 .topbar{position:sticky;top:0;z-index:50;background:rgba(244,250,246,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--glass-line)}
@@ -495,22 +499,26 @@ body[data-aud="listener"] .countdown{display:block}
       </div>
       <!-- 声優向け -->
       <div class="only-creator">
-        <h1 class="display h-mega">これからつくる<br>あなたのこえが、<br>誰かの<span class="accent">極上体験</span>に。</h1>
+        <h1 class="hero-sq">
+          <span class="ln">これから<b class="hl a">つくる</b></span>
+          <span class="ln">あなたの<b class="hl b">こえ</b>が、</span>
+          <span class="ln">誰かの<b class="hl c">極上</b>体験に</span>
+        </h1>
         <div class="hero-tag">収録から販売まで、アプリの中で完結</div>
       </div>
 
       <div class="hero-cta-row">
-        <a href="#regist" class="btn only-listener as-flex">
+        <a href="#regist" class="btn as-flex">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
           メアドをおいておく
         </a>
-        <a href="https://discord.gg/M9Za7XZgbF" data-discord-invite="hero-creator" target="_blank" rel="noopener" class="btn only-creator as-flex">
+        <a href="https://discord.gg/M9Za7XZgbF" data-discord-invite="hero-creator" target="_blank" rel="noopener" class="btn btn-ghost only-creator as-flex">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037 13.6 13.6 0 0 0-.61 1.25 18.27 18.27 0 0 0-5.487 0 12.5 12.5 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.74 19.74 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.027 14.1 14.1 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13 13 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10 10 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01q.181.149.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418m7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418"/></svg>
-          ぼいラボでつくる準備をはじめてみる？
+          ぼいラボに参加
         </a>
       </div>
       <p class="hero-note only-listener">登録は10秒・無料。お知らせ配信はいつでも止められます。</p>
-      <p class="hero-note only-creator">あなたのこえを待つ人がいます。リスナー向けにも、いま事前登録を募集中です。<br>ぼいラボ＝声優が集まる無料のDiscord。つくる相談ができます。<br>VoiPokeはまだ準備中。リリースに向けて、ぼいラボで仲間と動き出せます。</p>
+      <p class="hero-note only-creator">登録は10秒・無料。リリースをいちばんに。<br>ぼいラボ（無料Discord）で、つくる相談もできます。</p>
       <!-- 圧の少ない言い回し（断定でなく案内）。命令形ではなく意思確認形CTAを維持 -->
 
       <div class="countdown glass-soft">
@@ -536,7 +544,7 @@ body[data-aud="listener"] .countdown{display:block}
     <div class="cr-intro reveal">
       <div class="sect-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v4M8.5 21h7"/></svg>つくる人へ</div>
       <h2 class="display h-xl">あなたのこえを、<br><span class="accent">作品にして届ける</span>。</h2>
-      <p class="lead" style="max-width:46ch;margin:0 auto">機材も、編集ソフトも、むずかしい手順もいりません。<br>スマホ1つで、録って・整えて・値づけして・とどける。</p>
+      <p class="lead" style="max-width:46ch;margin:0 auto">機材も編集ソフトもいりません。<br>スマホ1つで、録って・整えて・値づけして・とどける。</p>
       <span class="cr-trust">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
         現役の声優が、つくる人のための場所として用意しています。
@@ -553,7 +561,7 @@ body[data-aud="listener"] .countdown{display:block}
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>収録から販売まで</span>
           <h3>収録から販売まで、<br>アプリの中だけで完結。</h3>
-          <p>PCも、高い機材もいりません。スマホ1つで<b>録って・整えて・値づけして・届ける</b>。<br>作品づくりに必要なものは、ぜんぶこの中に入っています。</p>
+          <p>PCも高い機材もいりません。スマホ1つで<br><b>録って・整えて・値づけして・届ける</b>。</p>
         </div>
       </div>
 
@@ -566,7 +574,7 @@ body[data-aud="listener"] .countdown{display:block}
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1.5a4 4 0 0 1-3.3-1.7L4 15.5a1.6 1.6 0 0 1 2.6-1.8L8 15.5"/></svg>うごく作品</span>
           <h3>あなたのシチュボが、<br>"さわってうごく"体験に。</h3>
-          <p>フラットな音源では埋もれがち。VoiPokeなら、聴く人がオーブに触れてこえを動かせます。<br><b>"さわって動く体験"として、ファンの記憶に残ります。</b></p>
+          <p>聴く人がオーブに触れて、こえを動かせる作品。<br><b>"さわって動く体験"として記憶に残ります。</b></p>
         </div>
       </div>
 
@@ -579,7 +587,7 @@ body[data-aud="listener"] .countdown{display:block}
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 5 5.6.6-4.2 3.8L17 18l-5-2.7L7 18l1.2-5.6L4 8.6 9.6 8z"/></svg>ポケ銭</span>
           <h3>聴く人の応援が、<br>そのまま<span class="accent">あなたの収益</span>に。</h3>
-          <p><b>ポケ銭＝投げ銭のように、ファンの応援がまっすぐ届くしくみ。</b><br>販売価格は、あなたが決められます。受け取ったポケ銭は、あなたの収益に（手数料・受取条件はリリース時にご案内）。</p>
+          <p><b>ポケ銭＝投げ銭のように、応援がまっすぐ届くしくみ。</b><br>販売価格はあなたが決め、収益になります（詳細はリリース時）。</p>
         </div>
       </div>
 
@@ -592,7 +600,7 @@ body[data-aud="listener"] .countdown{display:block}
         <div class="cr-body">
           <span class="cr-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a8 8 0 1 0 8 8"/><path d="M12 8v4l3 2"/></svg>スキマ時間</span>
           <h3>夜と土日だけで、<br>ゼロから最初の1本。</h3>
-          <p>本職があっても大丈夫。スマホ完結だから、<b>まとまった時間がなくても進められます</b>。<br>仕事終わりの30分、休みの日のすきま。そこから、あなたの1本目を。</p>
+          <p>本職があっても大丈夫。<b>まとまった時間がなくても進められます</b>。<br>仕事終わりの30分から、あなたの1本目を。</p>
         </div>
       </div>
     </div>
@@ -608,11 +616,17 @@ body[data-aud="listener"] .countdown{display:block}
           <li class="pill">リリース初日から並ぶ</li>
           <li class="pill">使い手の声が開発に届く</li>
         </ul>
-        <p class="hero-note" style="margin-top:14px"><b>ぼいラボ＝声優が集まる無料のDiscord。</b>つくり方の相談・先行クリエイター情報・仲間の作例が見られます。</p>
-        <a href="https://discord.gg/M9Za7XZgbF" data-discord-invite="creator-block" target="_blank" rel="noopener" class="btn" style="margin-top:24px">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037 13.6 13.6 0 0 0-.61 1.25 18.27 18.27 0 0 0-5.487 0 12.5 12.5 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.74 19.74 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.027 14.1 14.1 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13 13 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10 10 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01q.181.149.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418m7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418"/></svg>
-          ぼいラボでつくる準備をはじめてみる？
-        </a>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px">
+          <a href="#regist" class="btn as-flex">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
+            メアドをおいておく
+          </a>
+          <a href="https://discord.gg/M9Za7XZgbF" data-discord-invite="creator-block" target="_blank" rel="noopener" class="btn btn-ghost as-flex">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037 13.6 13.6 0 0 0-.61 1.25 18.27 18.27 0 0 0-5.487 0 12.5 12.5 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.74 19.74 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.027 14.1 14.1 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13 13 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10 10 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01q.181.149.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418m7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418"/></svg>
+            ぼいラボに参加
+          </a>
+        </div>
+        <p class="hero-note" style="margin-top:16px">ぼいラボ（無料Discord）で、つくる相談・仲間の作例が見られます。</p>
       </div>
     </div>
   </div>
@@ -675,7 +689,7 @@ body[data-aud="listener"] .countdown{display:block}
 </section>
 
 <!-- ============ 4) 第1段階：メールをおく（事前登録フォーム）※リスナービュー専用 ============ -->
-<section id="regist" class="only-listener">
+<section id="regist">
   <div class="container">
     <div class="glass sec-card reveal" style="max-width:640px;margin:0 auto">
       <div class="reg-form">
