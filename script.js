@@ -109,7 +109,9 @@
     //   touchscreen には hover/cursor の概念も無く、ユーザーが触ったら反応する
     //   のが mobile UX の素直な形（voilab-lp も同様）。
     const isMobile = window.matchMedia('(max-width: 980px)').matches;
-    let auto = !reduceMotion && !isMobile;
+    // アプリの OrbView 同様、待機時は画面を旋回せず"その場で呼吸＋フロート"（CSSアニメ）。
+    // 旧LPの自動旋回（画面を周回）は廃止＝アプリ忠実コピーのため auto は常に false。
+    let auto = false;
     let autoT = 0;
 
     const fmt = (n) => (n >= 0 ? '+' : '') + n.toFixed(2);
@@ -144,6 +146,10 @@
 
       // ARIA
       orb.setAttribute('aria-valuenow', String(Math.round(posX * 100)));
+
+      // 音声デモ・モジュール連携（疎結合・CustomEvent）。
+      // posX:-1(左)..+1(右) / posY:-1(上=遠い)..+1(下=近い)。
+      orb.dispatchEvent(new CustomEvent('orbmove', { detail: { x: posX, y: posY } }));
     }
 
     // 初期位置
@@ -163,6 +169,7 @@
     function onDown(e) {
       dragging = true;
       auto = false;
+      orb.dispatchEvent(new CustomEvent('orbinteract')); // ユーザー操作（自動旋回・初期化とは区別）
       orb.setPointerCapture && orb.setPointerCapture(e.pointerId);
       const { nx, ny } = pointerToPos(e.clientX, e.clientY);
       applyPos(nx, ny);
@@ -177,10 +184,8 @@
       if (!dragging) return;
       dragging = false;
       orb.releasePointerCapture && orb.releasePointerCapture(e.pointerId);
-      // 5秒後に自動軌道再開（モバイルでは元から auto=false なので再開しない）
-      setTimeout(() => {
-        if (!dragging) auto = !reduceMotion && !isMobile;
-      }, 5000);
+      orb.dispatchEvent(new CustomEvent('orbup')); // リリース＝アプリの"ぷるん"バネ演出トリガー
+      // 旋回は廃止したので再開しない（その場で呼吸/フロートを継続）
     }
 
     orb.addEventListener('pointerdown', onDown);
@@ -202,6 +207,7 @@
         default: return;
       }
       e.preventDefault();
+      orb.dispatchEvent(new CustomEvent('orbinteract')); // キーボード操作もユーザー操作
       applyPos(nx, ny);
     });
 
