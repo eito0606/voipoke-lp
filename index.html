@@ -101,7 +101,7 @@ body{
 /* ヒーロー「四角のトリック」：フォント大小コントラスト */
 .hero-sq{font-family:var(--font-disp);font-weight:800;color:var(--ink);line-height:1;letter-spacing:.005em;display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vw,32px);margin:12px 0 clamp(40px,5vw,76px);max-width:100%}
 /* 接続語＝淡く小さく後退（ぼーっと見ても強調語だけ浮く） */
-.hero-sq .ln{font-family:var(--font-body);font-size:clamp(1.15rem,2.5vw,2rem);color:var(--ink-soft);font-weight:600;display:block;max-width:100%;overflow-wrap:anywhere;line-height:1.05}
+.hero-sq .ln{font-family:var(--font-body);font-size:clamp(1.15rem,2.5vw,2rem);color:var(--ink-soft);font-weight:600;display:block;max-width:100%;overflow-wrap:normal;word-break:normal;line-break:strict;text-wrap:balance;line-height:1.05}
 /* 強調語＝明朝セリフでミント太字・大きく前進（混植で上質に） */
 .hero-sq .hl{font-family:var(--font-disp);font-weight:800;letter-spacing:-.015em;line-height:.92;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;background-image:linear-gradient(135deg,var(--mint-bright),var(--mint-deep))}
 /* サブキャッチ＝主タイトルと被らない小さなタグUI */
@@ -530,8 +530,21 @@ main{overflow-x:clip}
 /* ============ レスポンシブ ============ */
 @media(max-width:880px){
   .hero-inner{gap:30px;min-height:auto}
-  /* モバイル：装飾の背景画像はテキスト/カードに重なる＆はみ出すため非表示（絶対配置で order が効かない問題の根治） */
-  .hero-visual{display:none}
+  /* モバイル：背景の装飾画像は「復活」させるが、タイトル/カードに被らないよう
+     ヒーロー上部の四隅だけに小さく逃がす＋透過を下げて背面固定。
+     .hero は overflow:hidden ＆ .hero-visual は .hero 内 inset:0 なのでカードには到達しない。
+     可読性は .hero-headline::before の白緑スクリム（z-index 上位）で確保。 */
+  .hero-visual{display:block;opacity:.5}
+  .hwin{box-shadow:0 18px 40px -26px rgba(8,60,44,.36)}
+  /* 左上：タイトルの左肩の外側 */
+  .hwin.w1{width:clamp(120px,34vw,150px);left:-9%;top:1%;animation:float1 9s var(--ease) infinite}
+  /* 右上：タイトルの右肩の外側 */
+  .hwin.w2{width:clamp(108px,30vw,140px);right:-8%;top:9%;animation:float2 11s var(--ease) infinite}
+  /* 右下：ヒーロー下方の余白（CTA帯より下・カードの手前で止まる＝hero内） */
+  .hwin.w3{width:clamp(104px,28vw,130px);right:-6%;bottom:2%;left:auto;animation:float1 10s var(--ease) infinite reverse}
+  /* タイトル背後の白緑スクリムをモバイルで強めて、写真上でも文字をくっきり保つ */
+  .hero-headline::before{inset:-16% -22%;
+    background:radial-gradient(70% 62% at 50% 42%,rgba(238,245,240,.97),rgba(238,245,240,.78) 56%,rgba(238,245,240,0) 86%)}
   .spatial{grid-template-columns:1fr}
   .badge-grid{grid-template-columns:repeat(2,1fr)}
   .badge-grid.three{grid-template-columns:repeat(3,1fr)}
