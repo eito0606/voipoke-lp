@@ -159,7 +159,7 @@ b{color:var(--ink);font-weight:700}
 .brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font-weight:900}
 .brand-mark{width:30px;height:30px;border-radius:9px;overflow:hidden;background:#0d1a14}
 .brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
-.brand-name small{display:block;font-family:var(--font-mono);font-size:.52rem;letter-spacing:.18em;color:var(--ink-faint);font-weight:500}
+.brand-name small{display:block;font-family:var(--font-body);font-size:.52rem;letter-spacing:.08em;color:var(--ink-faint);font-weight:700}
 /* 切替バッジ群（2バッジを完全に同一サイズ＝等幅・等高に） */
 .audience-switch{margin-left:auto;display:inline-flex;gap:5px;padding:5px;border-radius:999px;background:var(--glass-strong);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow-sm)}
 .aud-badge{flex:1 1 0;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-body);font-weight:800;font-size:.84rem;color:var(--ink-soft);
@@ -289,7 +289,7 @@ section{position:relative;padding:var(--space) 0}
 .welcome-line svg{width:16px;height:16px}
 /* 登録後の3ステップ（すっきり・矢印なし） */
 .reg-steps{padding:clamp(20px,3vw,30px)}
-.rs-label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;color:var(--mint-deep);font-weight:700;margin-bottom:18px;text-align:center}
+.rs-label{font-family:var(--font-body);font-size:.7rem;letter-spacing:.08em;color:var(--mint-deep);font-weight:700;margin-bottom:18px;text-align:center}
 .rs-list{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,26px);padding:0;margin:0}
 .rs-list li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px}
 .rs-num{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(120deg,var(--mint),var(--mint-deep));color:#fff;font-weight:800;font-size:1.02rem;box-shadow:0 8px 18px -8px var(--glow);flex:none}
@@ -307,11 +307,11 @@ section{position:relative;padding:var(--space) 0}
 /* カウントダウン */
 .countdown{margin-top:60px;padding:clamp(22px,2.6vw,30px) clamp(20px,2.4vw,28px);display:none}
 body[data-aud="listener"] .countdown{display:block}
-.cd-label{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:16px}
+.cd-label{font-family:var(--font-body);font-weight:700;font-size:.72rem;letter-spacing:.08em;color:var(--ink-faint);margin-bottom:16px}
 .cd-grid{display:flex;gap:clamp(8px,1.3vw,14px)}
 .cd-cell{flex:1;text-align:center;background:rgba(255,255,255,.6);border:1px solid var(--glass-line);border-radius:14px;padding:17px 6px}
 .cd-cell .num{font-family:var(--font-mono);font-size:clamp(1.3rem,4vw,1.9rem);font-weight:500;color:var(--mint-deep)}
-.cd-cell .lbl{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;color:var(--ink-faint)}
+.cd-cell .lbl{font-family:var(--font-body);font-weight:700;font-size:.6rem;letter-spacing:.08em;color:var(--ink-faint)}
 
 /* ============ セクションカード：ロケーション / 五感 ============ */
 .badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.7vw,22px)}
@@ -388,7 +388,7 @@ body[data-aud="listener"] .countdown{display:block}
 .meter{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--font-mono);font-size:.55rem;color:var(--ink-faint)}
 .meter .bar{width:7px;height:46px;background:rgba(16,120,90,.12);border-radius:4px;display:flex;align-items:flex-end;overflow:hidden}
 .meter .bar i{display:block;width:100%;background:linear-gradient(var(--mint-bright),var(--mint-deep));border-radius:4px}
-.orb-hint{position:absolute;top:12px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;color:var(--ink-faint);background:rgba(255,255,255,.7);border:1px solid var(--glass-line);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.orb-hint{position:absolute;top:12px;left:50%;transform:translateX(-50%);font-family:var(--font-body);font-weight:700;font-size:.6rem;letter-spacing:.08em;color:var(--ink-faint);background:rgba(255,255,255,.7);border:1px solid var(--glass-line);border-radius:999px;padding:4px 11px;white-space:nowrap}
 
 /* ============ 体験ファースト（オーブ＋出現フォーム・リスナーFV直下） ============ */
 .exp-sec{padding-top:clamp(6px,2vw,18px)}
@@ -507,7 +507,7 @@ main{overflow-x:clip}
 .cta-final .glass{padding:clamp(34px,6vw,64px);background:linear-gradient(160deg,rgba(255,255,255,.85),var(--mint-tint));position:relative;overflow:hidden}
 .cta-final .glass::before{content:"";position:absolute;inset:-40% -10% auto;height:80%;background:radial-gradient(50% 60% at 50% 0,var(--glow),transparent 70%)}
 .cta-final .info-pills{display:inline-flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}
-.cta-final .info-pills .s{font-family:var(--font-mono);font-size:.74rem;font-weight:500;color:var(--mint-deep);background:#fff;border:1px solid var(--glass-line);border-radius:999px;padding:7px 14px}
+.cta-final .info-pills .s{font-family:var(--font-body);letter-spacing:.08em;font-size:.74rem;font-weight:700;color:var(--mint-deep);background:#fff;border:1px solid var(--glass-line);border-radius:999px;padding:7px 14px}
 .cta-final h2{margin-bottom:12px}
 .cta-final .reg-form{max-width:540px;margin:24px auto 0;text-align:left}
 
