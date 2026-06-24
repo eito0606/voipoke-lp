@@ -571,8 +571,11 @@ main{overflow-x:clip}
 }
 @media(max-width:560px){
   :root{--radius:18px}
-  .reg-row{flex-direction:column}
+  .reg-row{flex-direction:column;row-gap:24px}
   .reg-cta{width:100%}
+  /* スマホは入力欄とCTAが縦積みになるため、100ポケ銭の吹き出しがその隙間で横に飛び出し入力欄/CTAに重なる。CTA右上の角に乗せ直し、入力欄に被らず文字も隠さない位置へ */
+  .reg-cta-wrap .poke-badge{top:-20px;right:6px;left:auto}
+  .reg-cta-wrap .poke-badge::after{right:18px}
   .badge-grid.three{grid-template-columns:1fr}
   .aud-badge{padding:9px 13px;min-width:64px}
   .aud-badge .lbl-lg{display:none}
