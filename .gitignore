@@ -47,3 +47,4 @@ credentials.json
 .preview/
 index-v2.html
 index.backup-*.html
+.env*.local
