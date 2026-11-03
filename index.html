@@ -1035,57 +1035,11 @@
       border-radius: 13px
     }
 
-    /* 事前登録特典：CTA右上の吹き出しバッジ＋VoiPokeのポケ銭コイン（アプリのgoldCoin忠実再現） */
+    /* 事前登録フォームのCTAを包む箱 */
     .reg-cta-wrap {
       position: relative;
       display: inline-flex;
       flex: none
-    }
-
-    .poke-badge {
-      position: absolute;
-      top: -13px;
-      right: -6px;
-      z-index: 3;
-      align-items: center;
-      gap: 5px;
-      background: #fff;
-      border: 1.5px solid var(--mint);
-      border-radius: 999px;
-      padding: 4px 11px 4px 5px;
-      font-size: .72rem;
-      font-weight: 800;
-      color: var(--mint-deep);
-      white-space: nowrap;
-      box-shadow: 0 8px 18px -7px var(--glow), 0 0 0 3px rgba(255, 255, 255, .6)
-    }
-
-    .poke-badge::after {
-      content: "";
-      position: absolute;
-      right: 20px;
-      bottom: -5px;
-      width: 9px;
-      height: 9px;
-      background: #fff;
-      border-right: 1.5px solid var(--mint);
-      border-bottom: 1.5px solid var(--mint);
-      transform: rotate(45deg)
-    }
-
-    .poke-coin {
-      flex: none;
-      display: inline-grid;
-      place-items: center;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #fff0a3 0%, #fad16b 52%, #c78f2e 100%);
-      box-shadow: 0 0 0 1.5px #c78f2e, inset 0 0 0 1px rgba(255, 255, 255, .55), inset 0 -2px 3px rgba(120, 80, 10, .32);
-      color: #73500a;
-      font-size: 11px;
-      font-weight: 900;
-      line-height: 1
     }
 
     @media(max-width:560px) {
@@ -2713,17 +2667,6 @@
         width: 100%
       }
 
-      /* スマホは入力欄とCTAが縦積みになるため、100ポケ銭の吹き出しがその隙間で横に飛び出し入力欄/CTAに重なる。CTA右上の角に乗せ直し、入力欄に被らず文字も隠さない位置へ */
-      .reg-cta-wrap .poke-badge {
-        top: -20px;
-        right: 6px;
-        left: auto
-      }
-
-      .reg-cta-wrap .poke-badge::after {
-        right: 18px
-      }
-
       .badge-grid.three {
         grid-template-columns: 1fr
       }
@@ -2999,8 +2942,7 @@
                   data-loc="experience">
                   <div class="reg-row">
                     <input type="email" name="email" required placeholder="your.name@example.com" aria-label="メールアドレス">
-                    <span class="reg-cta-wrap"><span class="poke-badge only-listener as-flex"><span class="poke-coin"
-                          aria-hidden="true">¥</span>100ポケ銭もらえる</span><button type="submit"
+                    <span class="reg-cta-wrap"><button type="submit"
                         class="btn reg-cta">置いておく</button></span>
                   </div>
                   <div class="reg-meta">
@@ -3311,8 +3253,7 @@
               action="https://ykmerwuwehgjdyfhpeiy.supabase.co/functions/v1/signup-lp" method="post">
               <div class="reg-row">
                 <input type="email" name="email" required placeholder="your.name@example.com" aria-label="メールアドレス">
-                <span class="reg-cta-wrap"><span class="poke-badge only-listener as-flex"><span class="poke-coin"
-                      aria-hidden="true">¥</span>100ポケ銭もらえる</span><button type="submit"
+                <span class="reg-cta-wrap"><button type="submit"
                     class="btn reg-cta">ここに置いておく</button></span>
               </div>
               <div class="reg-meta">
@@ -3610,8 +3551,7 @@
             action="https://ykmerwuwehgjdyfhpeiy.supabase.co/functions/v1/signup-lp" method="post">
             <div class="reg-row">
               <input type="email" name="email" required placeholder="your.name@example.com" aria-label="メールアドレス">
-              <span class="reg-cta-wrap"><span class="poke-badge only-listener as-flex"><span class="poke-coin"
-                    aria-hidden="true">¥</span>100ポケ銭もらえる</span><button type="submit"
+              <span class="reg-cta-wrap"><button type="submit"
                   class="btn reg-cta">ここに置いておく</button></span>
             </div>
             <div class="reg-meta"><span>登録は無料。いつでも配信停止できます。</span></div>
