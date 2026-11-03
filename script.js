@@ -1,10 +1,9 @@
 // script.js — VoiPoke 事前登録 LP のクライアント側ロジック（v0.4 instrument）
 //
 // 役割:
-//   1. リリース日（2026/08/10 09:00 JST）までのカウントダウン（4セル：D/H/M/S）
-//   2. 事前登録フォーム送信
-//   3. オーブの実ドラッグ（座標表示・L/R メーター連動）
-//   4. スクロール連動 reveal
+//   1. 事前登録フォーム送信
+//   2. オーブの実ドラッグ（座標表示・L/R メーター連動）
+//   3. スクロール連動 reveal
 //
 // 設計方針:
 //   - 外部依存ゼロ（CDN なし、ライブラリなし）
@@ -15,58 +14,6 @@
   'use strict';
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ========================================
-  // 1. カウントダウン（D/H/M/S 4セル）
-  // ========================================
-  const RELEASE_AT = new Date('2026-08-10T09:00:00+09:00').getTime();
-  const TICK_MS = 1000; // 秒単位更新
-
-  const cd = {
-    days: document.getElementById('cd-days'),
-    hours: document.getElementById('cd-hours'),
-    mins: document.getElementById('cd-mins'),
-    secs: document.getElementById('cd-secs'),
-  };
-
-  const pad2 = (n) => String(Math.max(0, Math.floor(n))).padStart(2, '0');
-
-  function updateCountdown() {
-    const diff = RELEASE_AT - Date.now();
-    if (diff <= 0) {
-      cd.days && (cd.days.textContent = '00');
-      cd.hours && (cd.hours.textContent = '00');
-      cd.mins && (cd.mins.textContent = '00');
-      cd.secs && (cd.secs.textContent = '00');
-      return false;
-    }
-    const days = Math.floor(diff / 86_400_000);
-    const hours = Math.floor((diff / 3_600_000) % 24);
-    const mins = Math.floor((diff / 60_000) % 60);
-    const secs = Math.floor((diff / 1_000) % 60);
-    cd.days && (cd.days.textContent = pad2(days));
-    cd.hours && (cd.hours.textContent = pad2(hours));
-    cd.mins && (cd.mins.textContent = pad2(mins));
-    cd.secs && (cd.secs.textContent = pad2(secs));
-    return true;
-  }
-
-  if (cd.days && cd.hours && cd.mins && cd.secs) {
-    updateCountdown();
-    let timer = setInterval(() => {
-      if (!updateCountdown()) clearInterval(timer);
-    }, TICK_MS);
-
-    // タブ切替時の同期＋一時停止（バッテリー優しく）
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        updateCountdown();
-        if (!timer) timer = setInterval(updateCountdown, TICK_MS);
-      } else {
-        clearInterval(timer); timer = null;
-      }
-    });
-  }
 
   // ========================================
   // 2. フォーム送信
